@@ -50,44 +50,44 @@ enyo.kind({
         kind: "onyx.MoreToolbar",
         components: [{
             kind: "onyx.Button",
-            content: "Eraser",
-            ontap: "selectEraser"
+            ontap: "selectEraser",
+            classes: "mi mi-eraser mi-lg"
         }, {
             kind: "onyx.Button",
-            content: "Pen",
-            ontap: "selectPen"
+            ontap: "selectPen",
+            classes: "mi mi-pen mi-lg"
         }, {
             kind: "onyx.PickerDecorator",
             components: [{
                 name: "colorPicker",
-                style: "background-color: black; color:black",
-                content: "C",
+                style: "background-color: black",
+                classes: "mi mi-palette mi-lg",
             }, {
                 kind: "onyx.Picker",
                 onChange: "colorItemSelected",
                 components: [{
                     name: "red",
-                    style: "background-color: red; color: red",
-                    content: "C",
+                    style: "background-color: red;",
+                    classes: "mi mi-palette mi-lg"
                 }, {
                     name: "blue",
-                    style: "background-color: blue; color: blue",
-                    content: "C",
+                    style: "background-color: blue;",
+                    classes: "mi mi-palette mi-lg"
                 }, {
                     name: "green",
-                    style: "background-color: green; color: green",
-                    content: "C",
+                    style: "background-color: green;",
+                    classes: "mi mi-palette mi-lg"
                 }, {
                     name: "black",
-                    style: "background-color: black; color:black",
-                    content: "C",
+                    style: "background-color: black;",
+                    classes: "mi mi-palette mi-lg"
                 }, ]
             }, ],
         }, {
             kind: "onyx.MenuDecorator",
             onSelect: "optionSelected",
             components: [{
-                content: "More Options..."
+                classes: "mi mi-setting mi-lg"
             }, {
                 kind: "onyx.Menu",
                 components: [{
@@ -110,15 +110,15 @@ enyo.kind({
             }, ]
         }, {
             kind: "onyx.Button",
-            content: "Previous",
+            classes: "mi mi-arrow-left mi-lg",
             ontap: "selectPrevious"
         }, {
             kind: "onyx.Button",
-            content: "New Page",
+            classes: "mi mi-file-outline mi-lg",
             ontap: "selectNewPage"
         }, {
             kind: "onyx.Button",
-            content: "Next",
+            classes: "mi mi-arrow-right mi-lg",
             ontap: "selectNext"
         }, {
             style: "width: 35%",
@@ -133,7 +133,7 @@ enyo.kind({
             }, ],
         }, {
             kind: "onyx.Button",
-            content: "Logout",
+            classes: "mi mi-account-cancel mi-lg",
             ontap: "logout"
         }, {
             name: "createJoinRoomPopup",
