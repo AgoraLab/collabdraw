@@ -11,7 +11,7 @@ enyo.kind({
         },
         uid: 'test',
         room: 'one',
-        canvasWidth: 1000,
+        canvasWidth: 800,
         canvasHeight: 550,
         appIpAddress: "",
         appPort: "",
@@ -83,6 +83,36 @@ enyo.kind({
                     classes: "mi mi-palette mi-lg"
                 }, ]
             }, ],
+        }, {
+            kind: "onyx.MenuDecorator",
+            onSelect: "lineOptionSelected",
+            components: [{
+                classes: "mi mi-list-collapse mi-lg"
+            }, {
+                kind: "onyx.Menu",
+                components: [{
+                    name: "lineOption1",
+                    style: "height:2px;background-color:#fff;margin:12px 0;padding:0px;"
+                }, {
+                    name: "lineOption2",
+                    style: "height:3px;background-color:#fff;margin:12px 0;padding:1px;"
+                }, {
+                    name: "lineOption3",
+                    style: "height:5px;background-color:#fff;margin:12px 0;padding:2px;"
+                }, {
+                    name: "lineOption4",
+                    style: "height:10px;background-color:#fff;margin:12px 0;padding:3px;"
+                }, ]
+            }, ]
+        }, {
+            kind: "onyx.Button",
+            classes: "mi mi-undo mi-lg",
+            ontap: "undoPath",
+            onTap: "selectUndo"
+        }, {
+            kind: "onyx.Button",
+            classes: "mi mi-redo mi-lg",
+            ontap: "redoPath"
         }, {
             kind: "onyx.MenuDecorator",
             onSelect: "optionSelected",
@@ -180,6 +210,14 @@ enyo.kind({
             }, ],
         }]
     }, ],
+
+    undoPath: function(inSender, inEvent) {
+        this.whiteboard.undo();
+    },
+
+    redoPath: function(inSender, inEvent) {
+        this.whiteboard.redo();
+    },
 
     drawRectangle: function(inSender, inEvent) {
         this.whiteboard.drawRectangle();

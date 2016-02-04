@@ -26,6 +26,8 @@ enyo.kind({
         this.uid = uid;
         this.room = room;
         this.cvs = new Raphael(name, width, height);
+        //this.cvs.setViewBox(0, 0, width, height, true);
+        //this.cvs.setSize("100%", "100%");
         this.connection = new Connection(websocketAddress, this, room);
         this.callback = callback;
     },
@@ -185,4 +187,12 @@ enyo.kind({
     drawRectangle: function() {
         this.cvs.rect(10, 10, 50, 50);
     },
+
+    undo: function() {
+        console.log("undo");
+    },
+
+    redo: function() {
+        console.log("redo");
+    }
 });

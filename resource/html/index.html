@@ -22,10 +22,23 @@
 </head>
 <body class="enyo-unselectable">
 <script>
-			var app = new App();
-			app.setAppIpAddress(appIpAddress);
-			app.setAppPort(appPort);
-			app.renderInto(document.body);
+    function viewport() {
+        var e = window
+            , a = 'inner';
+        if (!( 'innerWidth' in window)) {
+            a = 'client';
+            e = document.documentElement || document.body;
+        }
+        return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
+    }
+    var viewportSize = viewport();
+
+    var app = new App();
+    app.setAppIpAddress(appIpAddress);
+    app.setAppPort(appPort);
+    app.setCanvasHeight(viewportSize.height);
+    app.setCanvasWidth(viewportSize.width);
+    app.renderInto(document.body);
 
 </script>
 </body>
