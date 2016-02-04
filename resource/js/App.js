@@ -70,8 +70,20 @@ enyo.kind({
                     style: "background-color: red;",
                     classes: "fa fa-magic"
                 }, {
+                    name: "orange",
+                    style: "background-color: orange;",
+                    classes: "fa fa-magic"
+                }, {
+                    name: "yellow",
+                    style: "background-color: yellow;",
+                    classes: "fa fa-magic"
+                }, {
                     name: "blue",
                     style: "background-color: blue;",
+                    classes: "fa fa-magic"
+                }, {
+                    name: "cyan",
+                    style: "background-color: cyan;",
                     classes: "fa fa-magic"
                 }, {
                     name: "green",
@@ -81,7 +93,11 @@ enyo.kind({
                     name: "black",
                     style: "background-color: black;",
                     classes: "fa fa-magic"
-                }, ]
+                }, {
+                    name: "purple",
+                    style: "background-color: purple;",
+                    classes: "fa fa-magic"
+                }]
             }, ],
         }, {
             kind: "onyx.MenuDecorator",
@@ -123,6 +139,10 @@ enyo.kind({
             classes: "fa fa-search-minus",
             ontap: "zoomOutPane"
         }, {
+            kind: "onyx.Button",
+            classes: "fa fa-crop",
+            ontap: "cropContent"
+        }, {
             kind: "onyx.MenuDecorator",
             onSelect: "optionSelected",
             components: [{
@@ -160,8 +180,7 @@ enyo.kind({
             classes: "fa fa-arrow-right",
             ontap: "selectNext"
         }, {
-            style: "width: 35%",
-            content: " "
+            style: "width: 1%"
         }, {
             kind: "onyx.PickerDecorator",
             components: [{}, {
@@ -172,7 +191,7 @@ enyo.kind({
             }, ],
         }, {
             kind: "onyx.Button",
-            classes: "mi mi-",
+            classes: "fa fa-lock",
             ontap: "logout"
         }, {
             name: "createJoinRoomPopup",
@@ -233,6 +252,10 @@ enyo.kind({
 
     redoPath: function(inSender, inEvent) {
         this.whiteboard.redo();
+    },
+
+    cropContent: function(inSender, inEvent) {
+        this.whiteboard.cropContent();
     },
 
     drawRectangle: function(inSender, inEvent) {
@@ -302,7 +325,6 @@ enyo.kind({
     colorItemSelected: function(inSender, inEvent) {
         var color = inEvent.selected.name;
         this.$.colorPicker.applyStyle("background-color", color);
-        this.$.colorPicker.applyStyle("color", color);
         this.curves.color = color;
         this.curves.width = "3px";
     },

@@ -209,5 +209,23 @@ enyo.kind({
 
     redo: function() {
         console.log("redo");
+    },
+
+    cropContent: function() {
+        var content = this.cvs.toSVG();
+        var a = $("<a id='download-img'>")
+            .attr("download", "img.png")
+            .appendTo("body");
+        var canvas_tag = $("<canvas id='my-canvas' style='display:none;'></canvas>")
+            .appendTo("body");
+
+        canvg(document.getElementById("my-canvas"), content);
+        setTimeout(function() {
+            var dataURL = document.getElementById('my-canvas').toDataURL("image/png");
+            $('#download-img').attr('href', dataURL);
+            a[0].click();
+            a.remove();
+            canvas_tag.remove();
+        }, 500);
     }
 });
