@@ -25,11 +25,10 @@ enyo.kind({
     constructor: function(name, width, height, uid, room, page, websocketAddress, callback) {
         this.uid = uid;
         this.room = room;
-        this.cvs = new Raphael(name, width, height);
-        //this.cvs.setViewBox(0, 0, width, height, true);
-        //this.cvs.setSize("100%", "100%");
+        this.cvs = new ScaleRaphael(name, width, height);
         this.connection = new Connection(websocketAddress, this, room);
         this.callback = callback;
+        this.zoomRatio = 1;
     },
 
     /**
@@ -186,6 +185,22 @@ enyo.kind({
 
     drawRectangle: function() {
         this.cvs.rect(10, 10, 50, 50);
+    },
+
+    zoomIn: function() {
+        this.zoomRatio += 0.1;
+        this.cvs.scaleAll(this.zoomRatio);
+    },
+
+    zoomOut: function() {
+        this.zoomRatio -= 0.1;
+        this.cvs.scaleAll(this.zoomRatio);
+        //var width = this.cvs.canvas.offsetWidth,
+            //height = this.cvs.canvas.offsetHeight,
+            //new_width = width - width * 0.1;
+        //this.cvs.setViewBox(0, 0, width * 0.9, height * 0.9 , true);
+        //this.cvs.canvas.setAttribute('preserveAspectRatio', 'none');
+        //this.cvs.setSize("100%", "100%");
     },
 
     undo: function() {

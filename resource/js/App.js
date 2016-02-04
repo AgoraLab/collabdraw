@@ -51,43 +51,43 @@ enyo.kind({
         components: [{
             kind: "onyx.Button",
             ontap: "selectEraser",
-            classes: "mi mi-eraser mi-lg"
+            classes: "fa fa-eraser"
         }, {
             kind: "onyx.Button",
             ontap: "selectPen",
-            classes: "mi mi-pen mi-lg"
+            classes: "fa fa-pencil"
         }, {
             kind: "onyx.PickerDecorator",
             components: [{
                 name: "colorPicker",
                 style: "background-color: black",
-                classes: "mi mi-palette mi-lg",
+                classes: "fa fa-magic"
             }, {
                 kind: "onyx.Picker",
                 onChange: "colorItemSelected",
                 components: [{
                     name: "red",
                     style: "background-color: red;",
-                    classes: "mi mi-palette mi-lg"
+                    classes: "fa fa-magic"
                 }, {
                     name: "blue",
                     style: "background-color: blue;",
-                    classes: "mi mi-palette mi-lg"
+                    classes: "fa fa-magic"
                 }, {
                     name: "green",
                     style: "background-color: green;",
-                    classes: "mi mi-palette mi-lg"
+                    classes: "fa fa-magic"
                 }, {
                     name: "black",
                     style: "background-color: black;",
-                    classes: "mi mi-palette mi-lg"
+                    classes: "fa fa-magic"
                 }, ]
             }, ],
         }, {
             kind: "onyx.MenuDecorator",
             onSelect: "lineOptionSelected",
             components: [{
-                classes: "mi mi-list-collapse mi-lg"
+                classes: "fa fa-minus"
             }, {
                 kind: "onyx.Menu",
                 components: [{
@@ -106,18 +106,27 @@ enyo.kind({
             }, ]
         }, {
             kind: "onyx.Button",
-            classes: "mi mi-undo mi-lg",
+            classes: "fa fa-rotate-left",
             ontap: "undoPath",
             onTap: "selectUndo"
         }, {
             kind: "onyx.Button",
-            classes: "mi mi-redo mi-lg",
+            classes: "fa fa-rotate-right",
             ontap: "redoPath"
+        }, {
+            kind: "onyx.Button",
+            classes: "fa fa-search-plus",
+            ontap: "zoomInPane",
+            onTap: "selectUndo"
+        }, {
+            kind: "onyx.Button",
+            classes: "fa fa-search-minus",
+            ontap: "zoomOutPane"
         }, {
             kind: "onyx.MenuDecorator",
             onSelect: "optionSelected",
             components: [{
-                classes: "mi mi-setting mi-lg"
+                classes: "fa fa-gear"
             }, {
                 kind: "onyx.Menu",
                 components: [{
@@ -140,15 +149,15 @@ enyo.kind({
             }, ]
         }, {
             kind: "onyx.Button",
-            classes: "mi mi-arrow-left mi-lg",
+            classes: "fa fa-arrow-left",
             ontap: "selectPrevious"
         }, {
             kind: "onyx.Button",
-            classes: "mi mi-file-outline mi-lg",
+            classes: "fa fa-file-o",
             ontap: "selectNewPage"
         }, {
             kind: "onyx.Button",
-            classes: "mi mi-arrow-right mi-lg",
+            classes: "fa fa-arrow-right",
             ontap: "selectNext"
         }, {
             style: "width: 35%",
@@ -163,7 +172,7 @@ enyo.kind({
             }, ],
         }, {
             kind: "onyx.Button",
-            classes: "mi mi-account-cancel mi-lg",
+            classes: "mi mi-",
             ontap: "logout"
         }, {
             name: "createJoinRoomPopup",
@@ -211,6 +220,13 @@ enyo.kind({
         }]
     }, ],
 
+    zoomInPane: function(inSender, inEvent) {
+        this.whiteboard.zoomIn();
+    },
+
+    zoomOutPane: function(inSender, inEvent) {
+        this.whiteboard.zoomOut();
+    },
     undoPath: function(inSender, inEvent) {
         this.whiteboard.undo();
     },
