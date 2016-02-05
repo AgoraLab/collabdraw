@@ -145,13 +145,22 @@ enyo.kind({
                 this.drawAndSendPath('touchend', oldx, oldy, x, y, lc, lw, send)
                 break;
             case 'arrow':
-
                 var BBox = this.element.getBBox();
                 if (BBox.width == 0 && BBox.height == 0) {
                     this.element.remove();
                 }
                 break;
             case 'circle':
+                var width = x - this.drawStartX,
+                    height = y - this.drawStartY,
+                    radius = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)),
+                    element;
+
+                element = this.cvs.circle(this.drawStartX, this.drawStartY, radius);
+                element.attr({
+                    "stroke": lc,
+                    "stroke-width": lw
+                });
                 break;
             case 'square':
                 var width = x - this.drawStartX,
@@ -195,6 +204,15 @@ enyo.kind({
                 });
                 break;
             case 'ellipse':
+                var width = x - this.drawStartX,
+                    height = y - this.drawStartY,
+                    element;
+
+                element = this.cvs.ellipse(this.drawStartX, this.drawStartY, Math.abs(width), Math.abs(height));
+                element.attr({
+                    "stroke": lc,
+                    "stroke-width": lw
+                });
                 break;
             default:
                 console.log("not supported yet.");
@@ -320,8 +338,6 @@ enyo.kind({
 
     drawSquare: function() {
         this.drawingItem = 'square';
-        this.cvs.rect(10, 10, 150, 150);
-        console.log("Drawing square");
     },
 
     drawArrow: function() {
@@ -330,14 +346,10 @@ enyo.kind({
 
     drawEllipse: function() {
         this.drawingItem = 'ellipse';
-        this.cvs.ellipse(200, 400, 100, 50);
-        console.log("Drawing ellipse");
     },
 
     drawCircle: function() {
         this.drawingItem = 'circle';
-        this.cvs.circle(100, 100, 80);
-        console.log("Drawing circle");
     },
 
     zoomIn: function() {
