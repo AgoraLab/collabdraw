@@ -52,6 +52,50 @@ enyo.kind({
         return this.cvs;
     },
 
+    // start, move, and up are the drag functions
+    start: function() {
+        // storing original coordinates
+        this.ox = this.attr("x");
+        this.oy = this.attr("y");
+        this.attr({
+            opacity: 1
+        });
+        if (this.attr("y") < 60 && this.attr("x") < 60) this.attr({
+            fill: "#000"
+        });
+    },
+
+    move: function(dx, dy) {
+        // move will be called with dx and dy
+        if (this.attr("y") > 200 || this.attr("x") > 300) this.attr({
+            x: this.ox + dx,
+            y: this.oy + dy
+        });
+        else {
+            nowX = Math.min(300, this.ox + dx);
+            nowY = Math.min(200, this.oy + dy);
+            nowX = Math.max(0, nowX);
+            nowY = Math.max(0, nowY);
+            this.attr({
+                x: nowX,
+                y: nowY
+            });
+            if (this.attr("fill") != "#000") this.attr({
+                fill: "#000"
+            });
+        }
+    },
+
+    up: function() {
+        // restoring state
+        this.attr({
+            opacity: .5
+        });
+        if (this.attr("y") < 60 && this.attr("x") < 60) this.attr({
+            fill: "#AEAEAE"
+        });
+    },
+
     /**
      * Called when user starts a path
      * @param {Object} x
@@ -93,19 +137,29 @@ enyo.kind({
                 });
                 break;
             case 'circle':
+                this.element = this.cvs.circle(x, y, 0);
+                this.element.drag(this.move, this.start, this.up);
+                this.element.attr({
+                    "stroke": lc,
+                    "stroke-width": lw
+                });
                 break;
             case 'square':
-                break;
             case 'rectangle':
-                this.element  = this.cvs.path("M" + x + " " + y);
-                var arrowEndStyle = "classic-medium-medium";
-
+                this.element = this.cvs.rect(x, y, 0, 0);
+                this.element.drag(this.move, this.start, this.up);
                 this.element.attr({
                     "stroke": lc,
                     "stroke-width": lw
                 });
                 break;
             case 'ellipse':
+                this.element = this.cvs.ellipse(x, y, 0, 0);
+                this.element.drag(this.move, this.start, this.up);
+                this.element.attr({
+                    "stroke": lc,
+                    "stroke-width": lw
+                });
                 break;
             default:
                 console.log("not supported yet.");
@@ -124,12 +178,41 @@ enyo.kind({
                 this.drawAndSendArrow('touchmove', this.drawStartX, this.drawStartY, x, y, lc, lw, send);
                 break;
             case 'circle':
+                var width = x - this.drawStartX,
+                    height = y - this.drawStartY,
+                    radius = Math.max(Math.abs(width), Math.abs(height));
+
+                this.element.attr({
+                        "r": radius
+                });
                 break;
             case 'square':
+                var width = x - this.drawStartX,
+                    height = y - this.drawStartY,
+                    lineWidth = Math.max(width, height);
+
+                this.element.attr({
+                    "width": lineWidth > 0 ? lineWidth: 0,
+                    "height": lineWidth > 0 ? lineWidth: 0
+                });
                 break;
             case 'rectangle':
+                var width = x - this.drawStartX,
+                    height = y - this.drawStartY;
+
+                this.element.attr({
+                    "width": width > 0 ? width : 0,
+                    "height": height > 0 ? height : 0
+                });
                 break;
             case 'ellipse':
+                var width = x - this.drawStartX,
+                    height = y - this.drawStartY;
+
+                this.element.attr({
+                    "rx": width > 0 ? width : 0,
+                    "ry": height > 0 ? height : 0
+                });
                 break;
             default:
                 console.log("not supported yet.");
@@ -145,74 +228,14 @@ enyo.kind({
                 this.drawAndSendPath('touchend', oldx, oldy, x, y, lc, lw, send)
                 break;
             case 'arrow':
-                var BBox = this.element.getBBox();
-                if (BBox.width == 0 && BBox.height == 0) {
-                    this.element.remove();
-                }
-                break;
             case 'circle':
-                var width = x - this.drawStartX,
-                    height = y - this.drawStartY,
-                    radius = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)),
-                    element;
-
-                element = this.cvs.circle(this.drawStartX, this.drawStartY, radius);
-                element.attr({
-                    "stroke": lc,
-                    "stroke-width": lw
-                });
-                break;
             case 'square':
-                var width = x - this.drawStartX,
-                    height = y - this.drawStartY,
-                    absWidth = Math.abs(x - this.drawStartX),
-                    absHeight = Math.abs(y - this.drawStartY),
-                    rect;
-
-                if (width < 0 || height < 0) {
-                    if (absWidth > absHeight) {
-                        rect = this.cvs.rect(x, y, absWidth, absWidth);
-                    } else {
-                        rect = this.cvs.rect(x, y, absHeight, absHeight);
-                    }
-                } else {
-                    if (absWidth > absHeight) {
-                        rect = this.cvs.rect(this.drawStartX, this.drawStartY, absWidth, absWidth);
-                    } else {
-                        rect = this.cvs.rect(this.drawStartX, this.drawStartY, absHeight, absHeight);
-                    }
-                }
-                rect.attr({
-                    "stroke": lc,
-                    "stroke-width": lw
-                });
-
-                break;
-            case 'rectangle':
-                var width = x - this.drawStartX,
-                    height = y - this.drawStartY,
-                    rect;
-                if (width < 0 || height < 0) {
-                    rect = this.cvs.rect(x, y, Math.abs(x - this.drawStartX), Math.abs(y - this.drawStartY));
-                } else {
-                    rect = this.cvs.rect(this.drawStartX, this.drawStartY, Math.abs(x - this.drawStartX), Math.abs(y - this.drawStartY));
-                }
-
-                rect.attr({
-                    "stroke": lc,
-                    "stroke-width": lw
-                });
-                break;
             case 'ellipse':
-                var width = x - this.drawStartX,
-                    height = y - this.drawStartY,
-                    element;
-
-                element = this.cvs.ellipse(this.drawStartX, this.drawStartY, Math.abs(width), Math.abs(height));
-                element.attr({
-                    "stroke": lc,
-                    "stroke-width": lw
-                });
+            case 'rectangle':
+                var BBox = this.element.getBBox();
+                if ( BBox.width == 0 && BBox.height == 0 ) {
+                  this.element.remove();
+                }
                 break;
             default:
                 console.log("not supported yet.");
@@ -368,6 +391,35 @@ enyo.kind({
 
     redo: function() {
         console.log("redo");
+    },
+
+    appclicked: function(x, y) {
+        if (this.addingText) {
+            var text = this.cvs.text(x, y, 'Adding text here')
+            .attr({'text-anchor': 'start', 'font-size': '25px'})
+            .transform([]);
+            // Initialize text editing for the text element
+            this.cvs.inlineTextEditing(text);
+
+            // Start inline editing on click
+            text.click(function(){
+                // Retrieve created <input type=text> field
+                var input = this.inlineTextEditing.startEditing();
+
+                input.addEventListener("blur", function(e){
+                    // Stop inline editing after blur on the text field
+                    text.inlineTextEditing.stopEditing();
+                }, true);
+            });
+
+            //reset adding text status
+            this.addingText = false;
+        }
+    },
+
+    addText: function() {
+        this.drawingItem = '';
+        this.addingText = true;
     },
 
     cropContent: function() {

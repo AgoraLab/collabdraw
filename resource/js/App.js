@@ -23,6 +23,7 @@ enyo.kind({
         style: "text-align: center; padding: 20px; background-color: #F0F0F0; z-index: 0",
         components: [{
             style: "margin: auto; background-color: #FFFFFF;",
+            ontap: "appclicked",
             ondragstart: "touchstart",
             ondragover: "touchmove",
             ondragfinish: "touchend",
@@ -149,6 +150,11 @@ enyo.kind({
                     style: "height:10px;background-color:#fff;margin:12px 0;padding:3px;"
                 }, ]
             }, ]
+        }, {
+            kind: "onyx.Button",
+            classes: "fa fa-text-width",
+            ontap: "addText",
+            onTap: "addText"
         }, {
             kind: "onyx.Button",
             classes: "fa fa-rotate-left",
@@ -307,6 +313,13 @@ enyo.kind({
         this.whiteboard.drawCircle();
     },
 
+    appclicked: function(inSender, inEvent) {
+        var canvasBounds = this.$.canvasContainer.getBounds();
+        var x = inEvent.pageX - canvasBounds.left;
+        var y = inEvent.pageY - canvasBounds.top;
+        this.whiteboard.appclicked(x, y);
+    },
+
     touchstart: function(inSender, inEvent) {
         var canvasBounds = this.$.canvasContainer.getBounds();
         this.curves.oldx = inEvent.pageX - canvasBounds.left;
@@ -345,6 +358,10 @@ enyo.kind({
         this.curves.color = '#000000';
         this.curves.width = '3px';
         this.whiteboard.selectPen();
+    },
+
+    addText: function(inSender, inEvent) {
+        this.whiteboard.addText();
     },
 
     optionSelected: function(inSender, inEvent) {
