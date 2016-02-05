@@ -344,6 +344,7 @@ enyo.kind({
     selectPen: function(inSender, inEvent) {
         this.curves.color = '#000000';
         this.curves.width = '3px';
+        this.whiteboard.selectPen();
     },
 
     optionSelected: function(inSender, inEvent) {

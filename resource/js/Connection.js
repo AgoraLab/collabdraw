@@ -96,6 +96,10 @@ enyo.kind({
         }
     },
 
+    sendArrow: function(data) {
+        // TODO implement data sending logic.
+    },
+
     /**
      * Clear all other canvases (in the same room on the same page)
      */

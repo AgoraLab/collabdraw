@@ -59,6 +59,9 @@ enyo.kind({
      * @param {Object} send
      */
     startPath: function(x, y, lc, lw, send) {
+        this.drawStartX = x;
+        this.drawStartY = y;
+
         switch(this.drawingItem) {
             case 'pen':
                 if (send) {
@@ -72,14 +75,21 @@ enyo.kind({
                 }
                 break;
             case 'arrow':
-                this.drawStartX = x;
-                this.drawStartY = y;
                 this.element  = this.cvs.path("M" + x + " " + y);
+                var arrowEndStyle = "classic-medium-medium";
 
                 this.element.attr({
                     "stroke": lc,
                     "stroke-width": lw,
-                    "arrow-end":"classic-medium-medium"
+                    "arrow-end": arrowEndStyle
+                });
+                this.connection.sendArrow({
+                    startX: x,
+                    startY: y,
+                    type: 'touchstart',
+                    lineColor: lc,
+                    lineWidth: lw,
+                    arrowEnd: arrowEndStyle
                 });
                 break;
             case 'circle':
@@ -87,6 +97,13 @@ enyo.kind({
             case 'square':
                 break;
             case 'rectangle':
+                this.element  = this.cvs.path("M" + x + " " + y);
+                var arrowEndStyle = "classic-medium-medium";
+
+                this.element.attr({
+                    "stroke": lc,
+                    "stroke-width": lw
+                });
                 break;
             case 'ellipse':
                 break;
@@ -137,8 +154,45 @@ enyo.kind({
             case 'circle':
                 break;
             case 'square':
+                var width = x - this.drawStartX,
+                    height = y - this.drawStartY,
+                    absWidth = Math.abs(x - this.drawStartX),
+                    absHeight = Math.abs(y - this.drawStartY),
+                    rect;
+
+                if (width < 0 || height < 0) {
+                    if (absWidth > absHeight) {
+                        rect = this.cvs.rect(x, y, absWidth, absWidth);
+                    } else {
+                        rect = this.cvs.rect(x, y, absHeight, absHeight);
+                    }
+                } else {
+                    if (absWidth > absHeight) {
+                        rect = this.cvs.rect(this.drawStartX, this.drawStartY, absWidth, absWidth);
+                    } else {
+                        rect = this.cvs.rect(this.drawStartX, this.drawStartY, absHeight, absHeight);
+                    }
+                }
+                rect.attr({
+                    "stroke": lc,
+                    "stroke-width": lw
+                });
+
                 break;
             case 'rectangle':
+                var width = x - this.drawStartX,
+                    height = y - this.drawStartY,
+                    rect;
+                if (width < 0 || height < 0) {
+                    rect = this.cvs.rect(x, y, Math.abs(x - this.drawStartX), Math.abs(y - this.drawStartY));
+                } else {
+                    rect = this.cvs.rect(this.drawStartX, this.drawStartY, Math.abs(x - this.drawStartX), Math.abs(y - this.drawStartY));
+                }
+
+                rect.attr({
+                    "stroke": lc,
+                    "stroke-width": lw
+                });
                 break;
             case 'ellipse':
                 break;
@@ -256,9 +310,12 @@ enyo.kind({
         this.connection.makeVideo();
     },
 
+    selectPen: function() {
+        this.drawingItem = 'pen';
+    },
+
     drawRectangle: function() {
         this.drawingItem = 'rectangle';
-        this.cvs.rect(10, 10, 50, 100);
     },
 
     drawSquare: function() {
@@ -269,8 +326,6 @@ enyo.kind({
 
     drawArrow: function() {
         this.drawingItem = 'arrow';
-        // TODO
-        console.log("Drawing arrow");
     },
 
     drawEllipse: function() {
