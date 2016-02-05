@@ -53,10 +53,39 @@ enyo.kind({
             ontap: "selectEraser",
             classes: "fa fa-eraser"
         }, {
-            kind: "onyx.Button",
-            ontap: "selectPen",
-            classes: "fa fa-pencil"
-        }, {
+            kind: "onyx.PickerDecorator",
+            components: [{
+                name: "penPicker",
+                classes: "fa fa-pencil"
+            }, {
+                kind: "onyx.Picker",
+                components: [{
+                    name: "pen",
+                    ontap: "selectPen",
+                    classes: "fa fa-pencil"
+                }, {
+                    name: "rectangle",
+                    ontap: "drawRectangle",
+                    classes: "fa fa-square-o"
+                }, {
+                    name: "square",
+                    ontap: "drawSquare",
+                    classes: "fa fa-square-o"
+                }, {
+                    name: "arrow",
+                    ontap: "drawArrow",
+                    classes: "fa fa-arrow-right"
+                }, {
+                    name: "circle",
+                    ontap: "drawCircle",
+                    classes: "fa fa-circle-o"
+                }, {
+                    name: "ellipse",
+                    ontap: "drawEllipse",
+                    classes: "fa fa-circle-o"
+                }]
+            }],
+        },{
             kind: "onyx.PickerDecorator",
             components: [{
                 name: "colorPicker",
@@ -260,6 +289,22 @@ enyo.kind({
 
     drawRectangle: function(inSender, inEvent) {
         this.whiteboard.drawRectangle();
+    },
+
+    drawSquare: function(inSender, inEvent) {
+        this.whiteboard.drawSquare();
+    },
+
+    drawArrow: function(inSender, inEvent) {
+        this.whiteboard.drawArrow();
+    },
+
+    drawEllipse: function(inSender, inEvent) {
+        this.whiteboard.drawEllipse();
+    },
+
+    drawCircle: function(inSender, inEvent) {
+        this.whiteboard.drawCircle();
     },
 
     touchstart: function(inSender, inEvent) {

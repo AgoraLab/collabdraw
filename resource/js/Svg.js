@@ -29,6 +29,11 @@ enyo.kind({
         this.connection = new Connection(websocketAddress, this, room);
         this.callback = callback;
         this.zoomRatio = 1;
+        // Pen drawing by default, user can select circle, ellipse, etc.
+        this.drawingItem = 'pen';
+        this.element = null;
+        this.drawStartX = 0;
+        this.drawStartY = 0;
     },
 
     /**
@@ -54,14 +59,39 @@ enyo.kind({
      * @param {Object} send
      */
     startPath: function(x, y, lc, lw, send) {
-        if (send) {
-            this.connection.sendPath({
-                oldx: x,
-                oldy: y,
-                type: 'touchstart',
-                lineColor: lc,
-                lineWidth: lw,
-            });
+        switch(this.drawingItem) {
+            case 'pen':
+                if (send) {
+                    this.connection.sendPath({
+                        oldx: x,
+                        oldy: y,
+                        type: 'touchstart',
+                        lineColor: lc,
+                        lineWidth: lw,
+                    });
+                }
+                break;
+            case 'arrow':
+                this.drawStartX = x;
+                this.drawStartY = y;
+                this.element  = this.cvs.path("M" + x + " " + y);
+
+                this.element.attr({
+                    "stroke": lc,
+                    "stroke-width": lw,
+                    "arrow-end":"classic-medium-medium"
+                });
+                break;
+            case 'circle':
+                break;
+            case 'square':
+                break;
+            case 'rectangle':
+                break;
+            case 'ellipse':
+                break;
+            default:
+                console.log("not supported yet.");
         }
     },
 
@@ -69,18 +99,61 @@ enyo.kind({
      * Called when user continues path (without lifting finger)
      */
     continuePath: function(oldx, oldy, x, y, lc, lw, send) {
-        this.drawAndSendPath('touchmove', oldx, oldy, x, y, lc, lw, send)
+        switch(this.drawingItem) {
+            case 'pen':
+                this.drawAndSendPath('touchmove', oldx, oldy, x, y, lc, lw, send)
+                break;
+            case 'arrow':
+                this.drawAndSendArrow('touchmove', this.drawStartX, this.drawStartY, x, y, lc, lw, send);
+                break;
+            case 'circle':
+                break;
+            case 'square':
+                break;
+            case 'rectangle':
+                break;
+            case 'ellipse':
+                break;
+            default:
+                console.log("not supported yet.");
+        }
     },
 
     /**
      * Called when user lifts finger
      */
     endPath: function(oldx, oldy, x, y, lc, lw, send) {
-        this.drawAndSendPath('touchend', oldx, oldy, x, y, lc, lw, send)
+        switch(this.drawingItem) {
+            case 'pen':
+                this.drawAndSendPath('touchend', oldx, oldy, x, y, lc, lw, send)
+                break;
+            case 'arrow':
+
+                var BBox = this.element.getBBox();
+                if (BBox.width == 0 && BBox.height == 0) {
+                    this.element.remove();
+                }
+                break;
+            case 'circle':
+                break;
+            case 'square':
+                break;
+            case 'rectangle':
+                break;
+            case 'ellipse':
+                break;
+            default:
+                console.log("not supported yet.");
+        }
+    },
+
+    drawAndSendArrow: function(type, oldx, oldy, x, y, lc, lw, send) {
+        var path = "M" + oldx + " " + oldy + "L" + (x > 0 ? x: 0) + " " + (y > 0 ? y : 0);
+        this.element.attr("path", path);
     },
 
     drawAndSendPath: function(type, oldx, oldy, x, y, lc, lw, send) {
-        path = "M " + oldx + " " + oldy + " L " + x + " " + y + " Z";
+        var path = "M " + oldx + " " + oldy + " L " + x + " " + y + " Z";
         var p = this.cvs.path(path);
         p.attr("stroke", lc);
         p.attr("stroke-width", lw)
@@ -184,7 +257,32 @@ enyo.kind({
     },
 
     drawRectangle: function() {
-        this.cvs.rect(10, 10, 50, 50);
+        this.drawingItem = 'rectangle';
+        this.cvs.rect(10, 10, 50, 100);
+    },
+
+    drawSquare: function() {
+        this.drawingItem = 'square';
+        this.cvs.rect(10, 10, 150, 150);
+        console.log("Drawing square");
+    },
+
+    drawArrow: function() {
+        this.drawingItem = 'arrow';
+        // TODO
+        console.log("Drawing arrow");
+    },
+
+    drawEllipse: function() {
+        this.drawingItem = 'ellipse';
+        this.cvs.ellipse(200, 400, 100, 50);
+        console.log("Drawing ellipse");
+    },
+
+    drawCircle: function() {
+        this.drawingItem = 'circle';
+        this.cvs.circle(100, 100, 80);
+        console.log("Drawing circle");
     },
 
     zoomIn: function() {
@@ -195,12 +293,6 @@ enyo.kind({
     zoomOut: function() {
         this.zoomRatio -= 0.1;
         this.cvs.scaleAll(this.zoomRatio);
-        //var width = this.cvs.canvas.offsetWidth,
-            //height = this.cvs.canvas.offsetHeight,
-            //new_width = width - width * 0.1;
-        //this.cvs.setViewBox(0, 0, width * 0.9, height * 0.9 , true);
-        //this.cvs.canvas.setAttribute('preserveAspectRatio', 'none');
-        //this.cvs.setSize("100%", "100%");
     },
 
     undo: function() {
