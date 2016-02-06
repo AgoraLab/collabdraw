@@ -9,6 +9,7 @@ enyo.kind({
             color: 'black',
             width: '3px',
         },
+        previousColor: '',
         uid: 'test',
         room: 'one',
         canvasWidth: 800,
@@ -295,22 +296,37 @@ enyo.kind({
     },
 
     drawRectangle: function(inSender, inEvent) {
+        if (this._isWhiteColor(this.curves.color)) {
+            this.curves.color = this.previousColor;
+        }
         this.whiteboard.drawRectangle();
     },
 
     drawSquare: function(inSender, inEvent) {
+        if (this._isWhiteColor(this.curves.color)) {
+            this.curves.color = this.previousColor;
+        }
         this.whiteboard.drawSquare();
     },
 
     drawArrow: function(inSender, inEvent) {
+        if (this._isWhiteColor(this.curves.color)) {
+            this.curves.color = this.previousColor;
+        }
         this.whiteboard.drawArrow();
     },
 
     drawEllipse: function(inSender, inEvent) {
+        if (this._isWhiteColor(this.curves.color)) {
+            this.curves.color = this.previousColor;
+        }
         this.whiteboard.drawEllipse();
     },
 
     drawCircle: function(inSender, inEvent) {
+        if (this._isWhiteColor(this.curves.color)) {
+            this.curves.color = this.previousColor;
+        }
         this.whiteboard.drawCircle();
     },
 
@@ -350,13 +366,23 @@ enyo.kind({
         }
     },
 
+    _isWhiteColor: function(color) {
+        if (!color) {
+            return false;
+        }
+        return color.match(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
+    },
+
     selectEraser: function(inSender, inEvent) {
+        this.previousColor = this.curves.color;
         this.curves.color = '#ffffff';
-        this.curves.width = '10px';
         this.whiteboard.selectPen();
     },
 
     selectPen: function(inSender, inEvent) {
+        if (this._isWhiteColor(this.curves.color)) {
+            this.curves.color = this.previousColor;
+        }
         this.curves.width = '3px';
         this.whiteboard.selectPen();
     },
