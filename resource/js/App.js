@@ -130,30 +130,31 @@ enyo.kind({
                 }]
             }, ],
         }, {
-            kind: "onyx.MenuDecorator",
-            onSelect: "lineOptionSelected",
+            kind: "onyx.PickerDecorator",
             components: [{
                 classes: "fa fa-minus"
             }, {
-                kind: "onyx.Menu",
+                kind: "onyx.Picker",
                 components: [{
                     name: "lineOption1",
-                    style: "height:2px;background-color:#fff;margin:12px 0;padding:0px;"
+                    style: "background-image:url(/resource/images/lines-bg.png);background-repeat:no-repeat;background-position:0 -4px;",
+                    ontap: "setLineWidth1"
                 }, {
                     name: "lineOption2",
-                    style: "height:3px;background-color:#fff;margin:12px 0;padding:1px;"
+                    style: "background-image:url(/resource/images/lines-bg.png);background-repeat:no-repeat;background-position:0 -76px;",
+                    ontap: "setLineWidth2"
                 }, {
                     name: "lineOption3",
-                    style: "height:5px;background-color:#fff;margin:12px 0;padding:2px;"
+                    style: "background-image:url(/resource/images/lines-bg.png);background-repeat:no-repeat;background-position:0 -149px;",
+                    ontap: "setLineWidth3"
                 }, {
                     name: "lineOption4",
-                    style: "height:10px;background-color:#fff;margin:12px 0;padding:3px;"
+                    style: ""
                 }, ]
             }, ]
         }, {
             kind: "onyx.Button",
             classes: "fa fa-text-width",
-            ontap: "addText",
             onTap: "addText"
         }, {
             kind: "onyx.Button",
@@ -355,13 +356,24 @@ enyo.kind({
     },
 
     selectPen: function(inSender, inEvent) {
-        this.curves.color = '#000000';
         this.curves.width = '3px';
         this.whiteboard.selectPen();
     },
 
     addText: function(inSender, inEvent) {
         this.whiteboard.addText();
+    },
+
+    setLineWidth1: function(inSender, inEvent) {
+        this.curves.width = '3px';
+    },
+
+    setLineWidth2: function(inSender, inEvent) {
+        this.curves.width = '6px';
+    },
+
+    setLineWidth3: function(inSender, inEvent) {
+        this.curves.width = '9px';
     },
 
     optionSelected: function(inSender, inEvent) {
