@@ -353,6 +353,7 @@ enyo.kind({
     selectEraser: function(inSender, inEvent) {
         this.curves.color = '#ffffff';
         this.curves.width = '10px';
+        this.whiteboard.selectPen();
     },
 
     selectPen: function(inSender, inEvent) {
