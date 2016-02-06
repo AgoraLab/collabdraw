@@ -149,6 +149,9 @@ enyo.kind({
         for (d in sPath) {
             data = sPath[d];
             if (data == null) continue;
+            if (data.drawingItem) {
+                self.whiteboard.drawingItem = data.drawingItem;
+            }
             if (data.type == 'touchstart') self.whiteboard.startPath(data.oldx, data.oldy, data.lineColor, data.lineWidth, false);
             else if (data.type == 'touchmove') self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
             else if (data.type == 'touchend') self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
@@ -165,6 +168,9 @@ enyo.kind({
         ds = data.datas;
         for (d in ds) {
             if (ds[d] === null) continue;
+            if (ds[d].drawingItem) {
+                 self.whiteboard.drawingItem = ds[d].drawingItem;
+            }
             if (ds[d].type == 'touchstart') self.whiteboard.startPath(ds[d].oldx, ds[d].oldy, ds[d].lineColor, ds[d].lineWidth, false);
             else if (ds[d].type == 'touchmove') self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
             else if (ds[d].type == 'touchend') self.whiteboard.endPath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);

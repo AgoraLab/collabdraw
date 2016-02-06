@@ -106,34 +106,28 @@ enyo.kind({
         this.drawStartX = x;
         this.drawStartY = y;
 
+        if (send) {
+            this.connection.sendPath({
+                oldx: x,
+                oldy: y,
+                type: 'touchstart',
+                lineColor: lc,
+                lineWidth: lw,
+                drawingItem: this.drawingItem
+            });
+        }
+
         switch(this.drawingItem) {
             case 'pen':
-                if (send) {
-                    this.connection.sendPath({
-                        oldx: x,
-                        oldy: y,
-                        type: 'touchstart',
-                        lineColor: lc,
-                        lineWidth: lw,
-                    });
-                }
                 break;
             case 'arrow':
                 this.element  = this.cvs.path("M" + x + " " + y);
-                var arrowEndStyle = "classic-medium-medium";
+                var arrowEndStyle = "open-medium-medium";
 
                 this.element.attr({
                     "stroke": lc,
                     "stroke-width": lw,
                     "arrow-end": arrowEndStyle
-                });
-                this.connection.sendArrow({
-                    startX: x,
-                    startY: y,
-                    type: 'touchstart',
-                    lineColor: lc,
-                    lineWidth: lw,
-                    arrowEnd: arrowEndStyle
                 });
                 break;
             case 'circle':
@@ -170,6 +164,20 @@ enyo.kind({
      * Called when user continues path (without lifting finger)
      */
     continuePath: function(oldx, oldy, x, y, lc, lw, send) {
+
+        if (send) {
+            this.connection.sendPath({
+                oldx: oldx,
+                oldy: oldy,
+                x: x,
+                y: y,
+                type: 'touchmove',
+                lineColor: lc,
+                lineWidth: lw,
+                drawingItem: this.drawingItem
+            });
+        }
+
         switch(this.drawingItem) {
             case 'pen':
                 this.drawAndSendPath('touchmove', oldx, oldy, x, y, lc, lw, send)
@@ -223,6 +231,19 @@ enyo.kind({
      * Called when user lifts finger
      */
     endPath: function(oldx, oldy, x, y, lc, lw, send) {
+
+        if (send) {
+            this.connection.sendPath({
+                oldx: oldx,
+                oldy: oldy,
+                x: x,
+                y: y,
+                type: 'touchend',
+                lineColor: lc,
+                lineWidth: lw,
+            });
+        }
+
         switch(this.drawingItem) {
             case 'pen':
                 this.drawAndSendPath('touchend', oldx, oldy, x, y, lc, lw, send)
@@ -252,17 +273,6 @@ enyo.kind({
         var p = this.cvs.path(path);
         p.attr("stroke", lc);
         p.attr("stroke-width", lw)
-        if (send) {
-            this.connection.sendPath({
-                oldx: oldx,
-                oldy: oldy,
-                x: x,
-                y: y,
-                type: type,
-                lineColor: lc,
-                lineWidth: lw,
-            });
-        }
     },
 
     /**
