@@ -297,35 +297,35 @@ enyo.kind({
 
     drawRectangle: function(inSender, inEvent) {
         if (this._isWhiteColor(this.curves.color)) {
-            this.curves.color = this.previousColor;
+            this.curves.color = this.previousColor || 'black';
         }
         this.whiteboard.drawRectangle();
     },
 
     drawSquare: function(inSender, inEvent) {
         if (this._isWhiteColor(this.curves.color)) {
-            this.curves.color = this.previousColor;
+            this.curves.color = this.previousColor || 'black';
         }
         this.whiteboard.drawSquare();
     },
 
     drawArrow: function(inSender, inEvent) {
         if (this._isWhiteColor(this.curves.color)) {
-            this.curves.color = this.previousColor;
+            this.curves.color = this.previousColor || 'black';
         }
         this.whiteboard.drawArrow();
     },
 
     drawEllipse: function(inSender, inEvent) {
         if (this._isWhiteColor(this.curves.color)) {
-            this.curves.color = this.previousColor;
+            this.curves.color = this.previousColor || 'black';
         }
         this.whiteboard.drawEllipse();
     },
 
     drawCircle: function(inSender, inEvent) {
         if (this._isWhiteColor(this.curves.color)) {
-            this.curves.color = this.previousColor;
+            this.curves.color = this.previousColor || 'black';
         }
         this.whiteboard.drawCircle();
     },
@@ -381,7 +381,7 @@ enyo.kind({
 
     selectPen: function(inSender, inEvent) {
         if (this._isWhiteColor(this.curves.color)) {
-            this.curves.color = this.previousColor;
+            this.curves.color = this.previousColor || 'black';
         }
         this.curves.width = '3px';
         this.whiteboard.selectPen();
