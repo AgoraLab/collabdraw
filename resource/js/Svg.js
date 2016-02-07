@@ -183,7 +183,8 @@ enyo.kind({
                 this.drawPath('touchmove', oldx, oldy, x, y, lc, lw, send)
                 break;
             case 'arrow':
-                this.drawArrow('touchmove', this.drawStartX, this.drawStartY, x, y, lc, lw, send);
+                var path = "M" + this.drawStartX + " " + this.drawStartY + "L" + (x > 0 ? x: 0) + " " + (y > 0 ? y : 0);
+                this.element.attr("path", path);
                 break;
             case 'circle':
                 var width = x - this.drawStartX,
@@ -264,8 +265,6 @@ enyo.kind({
     },
 
     drawArrow: function(type, oldx, oldy, x, y, lc, lw, send) {
-        var path = "M" + oldx + " " + oldy + "L" + (x > 0 ? x: 0) + " " + (y > 0 ? y : 0);
-        this.element.attr("path", path);
     },
 
     drawPath: function(type, oldx, oldy, x, y, lc, lw, send) {
