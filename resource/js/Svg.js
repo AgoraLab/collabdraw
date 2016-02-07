@@ -180,10 +180,10 @@ enyo.kind({
 
         switch(this.drawingItem) {
             case 'pen':
-                this.drawAndSendPath('touchmove', oldx, oldy, x, y, lc, lw, send)
+                this.drawPath('touchmove', oldx, oldy, x, y, lc, lw, send)
                 break;
             case 'arrow':
-                this.drawAndSendArrow('touchmove', this.drawStartX, this.drawStartY, x, y, lc, lw, send);
+                this.drawArrow('touchmove', this.drawStartX, this.drawStartY, x, y, lc, lw, send);
                 break;
             case 'circle':
                 var width = x - this.drawStartX,
@@ -246,7 +246,7 @@ enyo.kind({
 
         switch(this.drawingItem) {
             case 'pen':
-                this.drawAndSendPath('touchend', oldx, oldy, x, y, lc, lw, send)
+                this.drawPath('touchend', oldx, oldy, x, y, lc, lw, send)
                 break;
             case 'arrow':
             case 'circle':
@@ -263,12 +263,12 @@ enyo.kind({
         }
     },
 
-    drawAndSendArrow: function(type, oldx, oldy, x, y, lc, lw, send) {
+    drawArrow: function(type, oldx, oldy, x, y, lc, lw, send) {
         var path = "M" + oldx + " " + oldy + "L" + (x > 0 ? x: 0) + " " + (y > 0 ? y : 0);
         this.element.attr("path", path);
     },
 
-    drawAndSendPath: function(type, oldx, oldy, x, y, lc, lw, send) {
+    drawPath: function(type, oldx, oldy, x, y, lc, lw, send) {
         var path = "M " + oldx + " " + oldy + " L " + x + " " + y + " Z";
         var p = this.cvs.path(path);
         p.attr("stroke", lc);
