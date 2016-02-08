@@ -140,16 +140,16 @@ enyo.kind({
             default:
                 console.log("not supported yet.");
         }
-        //if (send) {
-            //this.connection.sendPath({
-                //oldx: x,
-                //oldy: y,
-                //type: 'touchstart',
-                //lineColor: lc,
-                //lineWidth: lw,
-                //drawingItem: this.drawingItem
-            //});
-        //}
+        if (send) {
+            this.connection.sendPath({
+                oldx: x,
+                oldy: y,
+                type: 'touchstart',
+                lineColor: lc,
+                lineWidth: lw,
+                drawingItem: this.drawingItem
+            });
+        }
     },
 
     /**
@@ -223,25 +223,12 @@ enyo.kind({
                 drawingItem: this.drawingItem
             });
         }
-
     },
 
     /**
      * Called when user lifts finger
      */
     endPath: function(oldx, oldy, x, y, lc, lw, send) {
-
-        if (send) {
-            this.connection.sendPath({
-                oldx: oldx,
-                oldy: oldy,
-                x: x,
-                y: y,
-                type: 'touchend',
-                lineColor: lc,
-                lineWidth: lw,
-            });
-        }
 
         switch(this.drawingItem) {
             case 'pen':
@@ -259,6 +246,18 @@ enyo.kind({
                 break;
             default:
                 console.log("not supported yet.");
+        }
+
+        if (send) {
+            this.connection.sendPath({
+                oldx: oldx,
+                oldy: oldy,
+                x: x,
+                y: y,
+                type: 'touchend',
+                lineColor: lc,
+                lineWidth: lw,
+            });
         }
     },
 
