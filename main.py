@@ -42,8 +42,8 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r'/realtime/', RealtimeHandler),
-            (r'/resource/(.*)', tornado.web.StaticFileHandler,
-             dict(path=config.RESOURCE_DIR)),
+            (r'/resource/(.*)', tornado.web.StaticFileHandler, dict(path=config.RESOURCE_DIR)),
+            (r'/resources/(.*)', tornado.web.StaticFileHandler, dict(path=config.I18N_DIR)),
             (r'/upload', UploadHandler),
             (r'/login.html', LoginHandler),
             (r'/logout.html', LogoutHandler),

@@ -257,6 +257,7 @@ enyo.kind({
                 type: 'touchend',
                 lineColor: lc,
                 lineWidth: lw,
+                drawingItem: this.drawingItem
             });
         }
     },

@@ -10,3 +10,6 @@
 [submodule "collabdraw-heroku-bin"]
 	path = collabdraw-heroku-bin
 	url = https://github.com/anandtrex/collabdraw-heroku-bin.git
+[submodule "resource/lib/enyo-ilib"]
+	path = resource/lib/enyo-ilib
+	url = https://github.com/enyojs/enyo-ilib.git

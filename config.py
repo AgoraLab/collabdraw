@@ -1,7 +1,7 @@
 import os
 
 # App's host and port
-APP_IP_ADDRESS = "192.168.1.134" # Put your websocket endpoint here
+APP_IP_ADDRESS = "127.0.0.1" # Put your websocket endpoint here
 APP_PORT = os.environ.get('PORT', 5000)
 
 # Port in which websocket client should listen
@@ -17,6 +17,7 @@ REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://localhost:6379')
 # Full path of "collabdraw" directory
 ROOT_DIR = "/".join(os.path.realpath(__file__).split('/')[:-1])
 RESOURCE_DIR = os.path.join(ROOT_DIR, 'resource')
+I18N_DIR = os.path.join(ROOT_DIR, 'resources')
 HTML_ROOT = os.path.join(RESOURCE_DIR, 'html')
 
 # Hash salt for storing password in database

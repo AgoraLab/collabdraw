@@ -1,6 +1,7 @@
 enyo.depends(
 	"$lib/layout",
 	"$lib/onyx",
+    "$lib/enyo-ilib",
 	"App.js",
 	"Upload.js",
 	"Svg.js",
