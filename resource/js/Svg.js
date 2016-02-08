@@ -106,29 +106,11 @@ enyo.kind({
         this.drawStartX = x;
         this.drawStartY = y;
 
-        if (send) {
-            this.connection.sendPath({
-                oldx: x,
-                oldy: y,
-                type: 'touchstart',
-                lineColor: lc,
-                lineWidth: lw,
-                drawingItem: this.drawingItem
-            });
-        }
-
         switch(this.drawingItem) {
             case 'pen':
                 break;
             case 'arrow':
                 this.element  = this.cvs.path("M" + x + " " + y);
-                var arrowEndStyle = "open-medium-medium";
-
-                this.element.attr({
-                    "stroke": lc,
-                    "stroke-width": lw,
-                    "arrow-end": arrowEndStyle
-                });
                 break;
             case 'circle':
                 this.element = this.cvs.circle(x, y, 0);
@@ -158,6 +140,16 @@ enyo.kind({
             default:
                 console.log("not supported yet.");
         }
+        //if (send) {
+            //this.connection.sendPath({
+                //oldx: x,
+                //oldy: y,
+                //type: 'touchstart',
+                //lineColor: lc,
+                //lineWidth: lw,
+                //drawingItem: this.drawingItem
+            //});
+        //}
     },
 
     /**
@@ -165,26 +157,18 @@ enyo.kind({
      */
     continuePath: function(oldx, oldy, x, y, lc, lw, send) {
 
-        if (send) {
-            this.connection.sendPath({
-                oldx: oldx,
-                oldy: oldy,
-                x: x,
-                y: y,
-                type: 'touchmove',
-                lineColor: lc,
-                lineWidth: lw,
-                drawingItem: this.drawingItem
-            });
-        }
-
         switch(this.drawingItem) {
             case 'pen':
                 this.drawPath('touchmove', oldx, oldy, x, y, lc, lw, send)
                 break;
             case 'arrow':
-                var path = "M" + this.drawStartX + " " + this.drawStartY + "L" + (x > 0 ? x: 0) + " " + (y > 0 ? y : 0);
+                var path = "M" + this.drawStartX + " " + this.drawStartY + "L" + x + " " + y;
                 this.element.attr("path", path);
+                this.element.attr({
+                    "stroke": lc,
+                    "stroke-width": lw,
+                    "arrow-end": "open-medium-medium"
+                });
                 break;
             case 'circle':
                 var width = x - this.drawStartX,
@@ -226,6 +210,20 @@ enyo.kind({
             default:
                 console.log("not supported yet.");
         }
+
+        if (send) {
+            this.connection.sendPath({
+                oldx: oldx,
+                oldy: oldy,
+                x: x,
+                y: y,
+                type: 'touchmove',
+                lineColor: lc,
+                lineWidth: lw,
+                drawingItem: this.drawingItem
+            });
+        }
+
     },
 
     /**
@@ -262,9 +260,6 @@ enyo.kind({
             default:
                 console.log("not supported yet.");
         }
-    },
-
-    drawArrow: function(type, oldx, oldy, x, y, lc, lw, send) {
     },
 
     drawPath: function(type, oldx, oldy, x, y, lc, lw, send) {
