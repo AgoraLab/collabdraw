@@ -156,12 +156,11 @@ enyo.kind({
         }, {
             kind: "onyx.Button",
             classes: "fa fa-text-width",
-            onTap: "addText"
+            ontap: "addText"
         }, {
             kind: "onyx.Button",
             classes: "fa fa-rotate-left",
             ontap: "undoPath",
-            onTap: "selectUndo"
         }, {
             kind: "onyx.Button",
             classes: "fa fa-rotate-right",
@@ -170,7 +169,6 @@ enyo.kind({
             kind: "onyx.Button",
             classes: "fa fa-search-plus",
             ontap: "zoomInPane",
-            onTap: "selectUndo"
         }, {
             kind: "onyx.Button",
             classes: "fa fa-search-minus",

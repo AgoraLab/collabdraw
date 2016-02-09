@@ -110,10 +110,12 @@ enyo.kind({
             case 'pen':
                 break;
             case 'arrow':
-                this.element  = this.cvs.path("M" + x + " " + y);
+                if (!this.element)
+                    this.element  = this.cvs.path("M" + x + " " + y);
                 break;
             case 'circle':
-                this.element = this.cvs.circle(x, y, 0);
+                if (!this.element)
+                    this.element = this.cvs.circle(x, y, 0);
                 this.element.drag(this.move, this.start, this.up);
                 this.element.attr({
                     "stroke": lc,
@@ -122,7 +124,8 @@ enyo.kind({
                 break;
             case 'square':
             case 'rectangle':
-                this.element = this.cvs.rect(x, y, 0, 0);
+                if (!this.element)
+                    this.element = this.cvs.rect(x, y, 0, 0);
                 this.element.drag(this.move, this.start, this.up);
                 this.element.attr({
                     "stroke": lc,
@@ -130,7 +133,8 @@ enyo.kind({
                 });
                 break;
             case 'ellipse':
-                this.element = this.cvs.ellipse(x, y, 0, 0);
+                if (!this.element)
+                    this.element = this.cvs.ellipse(x, y, 0, 0);
                 this.element.drag(this.move, this.start, this.up);
                 this.element.attr({
                     "stroke": lc,
@@ -239,9 +243,11 @@ enyo.kind({
             case 'square':
             case 'ellipse':
             case 'rectangle':
-                var BBox = this.element.getBBox();
-                if ( BBox.width == 0 && BBox.height == 0 ) {
-                  this.element.remove();
+                if (this.element) {
+                    var BBox = this.element.getBBox();
+                    if ( BBox.width == 0 && BBox.height == 0 ) {
+                        this.element.remove();
+                    }
                 }
                 break;
             default:
@@ -260,6 +266,7 @@ enyo.kind({
                 drawingItem: this.drawingItem
             });
         }
+        this.element = null;
     },
 
     drawPath: function(type, oldx, oldy, x, y, lc, lw, send) {
