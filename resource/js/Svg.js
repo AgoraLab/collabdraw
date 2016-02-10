@@ -34,6 +34,8 @@ enyo.kind({
         this.element = null;
         this.drawStartX = 0;
         this.drawStartY = 0;
+        this.undoStack = [];
+        this.redoStack = [];
     },
 
     /**
@@ -110,8 +112,9 @@ enyo.kind({
             case 'pen':
                 break;
             case 'arrow':
-                if (!this.element)
+                if (!this.element) {
                     this.element  = this.cvs.path("M" + x + " " + y);
+                }
                 break;
             case 'circle':
                 if (!this.element)
@@ -166,50 +169,60 @@ enyo.kind({
                 this.drawPath('touchmove', oldx, oldy, x, y, lc, lw, send)
                 break;
             case 'arrow':
-                var path = "M" + this.drawStartX + " " + this.drawStartY + "L" + x + " " + y;
-                this.element.attr("path", path);
-                this.element.attr({
-                    "stroke": lc,
-                    "stroke-width": lw,
-                    "arrow-end": "open-medium-medium"
-                });
+                if (this.element) {
+                    var path = "M" + this.drawStartX + " " + this.drawStartY + "L" + x + " " + y;
+                    this.element.attr({
+                        "path": path,
+                        "stroke": lc,
+                        "stroke-width": lw,
+                        "arrow-end": "open-medium-medium"
+                    });
+                }
                 break;
             case 'circle':
-                var width = x - this.drawStartX,
-                    height = y - this.drawStartY,
-                    radius = Math.max(Math.abs(width), Math.abs(height));
+                if (this.element) {
+                    var width = x - this.drawStartX,
+                        height = y - this.drawStartY,
+                            radius = Math.max(Math.abs(width), Math.abs(height));
 
-                this.element.attr({
-                        "r": radius
-                });
+                            this.element.attr({
+                                "r": radius
+                            });
+                }
                 break;
             case 'square':
-                var width = x - this.drawStartX,
-                    height = y - this.drawStartY,
-                    lineWidth = Math.max(width, height);
+                if (this.element) {
+                    var width = x - this.drawStartX,
+                        height = y - this.drawStartY,
+                            lineWidth = Math.max(width, height);
 
-                this.element.attr({
-                    "width": lineWidth > 0 ? lineWidth: 0,
-                    "height": lineWidth > 0 ? lineWidth: 0
-                });
+                            this.element.attr({
+                                "width": lineWidth > 0 ? lineWidth: 0,
+                                "height": lineWidth > 0 ? lineWidth: 0
+                            });
+                }
                 break;
             case 'rectangle':
-                var width = x - this.drawStartX,
-                    height = y - this.drawStartY;
+                if (this.element) {
+                    var width = x - this.drawStartX,
+                        height = y - this.drawStartY;
 
-                this.element.attr({
-                    "width": width > 0 ? width : 0,
-                    "height": height > 0 ? height : 0
-                });
+                        this.element.attr({
+                            "width": width > 0 ? width : 0,
+                            "height": height > 0 ? height : 0
+                        });
+                }
                 break;
             case 'ellipse':
-                var width = x - this.drawStartX,
-                    height = y - this.drawStartY;
+                if (this.element) {
+                    var width = x - this.drawStartX,
+                        height = y - this.drawStartY;
 
-                this.element.attr({
-                    "rx": width > 0 ? width : 0,
-                    "ry": height > 0 ? height : 0
-                });
+                        this.element.attr({
+                            "rx": width > 0 ? width : 0,
+                            "ry": height > 0 ? height : 0
+                        });
+                }
                 break;
             default:
                 console.log("not supported yet.");
@@ -252,6 +265,11 @@ enyo.kind({
                 break;
             default:
                 console.log("not supported yet.");
+        }
+
+        if (this.element) {
+            var clone = $.extend({}, this.element);
+            this.undoStack.push(clone)
         }
 
         if (send) {
@@ -398,10 +416,21 @@ enyo.kind({
 
     undo: function() {
         console.log("undo");
+        var toUndo = this.undoStack.pop();
+        if (toUndo) {
+            var clone = $.extend({}, toUndo);
+            this.redoStack.push(clone);
+            toUndo.remove();
+        }
     },
 
     redo: function() {
         console.log("redo");
+        var toRedo = this.redoStack.pop();
+        if (toRedo) {
+            var clone = toRedo.clone();
+            this.undoStack.push(clone);
+        }
     },
 
     appclicked: function(x, y) {
