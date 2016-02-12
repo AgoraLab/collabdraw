@@ -415,7 +415,6 @@ enyo.kind({
     },
 
     undo: function() {
-        console.log("undo");
         var toUndo = this.undoStack.pop();
         if (toUndo) {
             var clone = $.extend({}, toUndo);
@@ -425,7 +424,6 @@ enyo.kind({
     },
 
     redo: function() {
-        console.log("redo");
         var toRedo = this.redoStack.pop();
         if (toRedo) {
             var clone = toRedo.clone();
