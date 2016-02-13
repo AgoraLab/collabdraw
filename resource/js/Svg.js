@@ -110,6 +110,10 @@ enyo.kind({
 
         switch(this.drawingItem) {
             case 'pen':
+                this.undoStack.push({
+                    type: "path-line",
+                    paths: []
+                });
                 break;
             case 'arrow':
                 if (!this.element) {
@@ -166,7 +170,7 @@ enyo.kind({
 
         switch(this.drawingItem) {
             case 'pen':
-                this.drawPath('touchmove', oldx, oldy, x, y, lc, lw, send)
+                this.drawPath(oldx, oldy, x, y, lc, lw)
                 break;
             case 'arrow':
                 if (this.element) {
@@ -249,7 +253,7 @@ enyo.kind({
 
         switch(this.drawingItem) {
             case 'pen':
-                this.drawPath('touchend', oldx, oldy, x, y, lc, lw, send)
+                this.drawPath(oldx, oldy, x, y, lc, lw)
                 break;
             case 'arrow':
             case 'circle':
@@ -287,11 +291,18 @@ enyo.kind({
         this.element = null;
     },
 
-    drawPath: function(type, oldx, oldy, x, y, lc, lw, send) {
+    drawPath: function(oldx, oldy, x, y, lc, lw) {
         var path = "M " + oldx + " " + oldy + " L " + x + " " + y + " Z";
         var p = this.cvs.path(path);
-        p.attr("stroke", lc);
-        p.attr("stroke-width", lw)
+        p.attr({
+            "stroke": lc,
+            "stroke-width": lw
+        });
+        var clone = $.extend({}, p);
+        var lastElement = this.undoStack[this.undoStack.length - 1];
+        if (lastElement.type && lastElement.type === 'path-line') {
+            lastElement.paths.push(clone);
+        }
     },
 
     /**
@@ -417,17 +428,44 @@ enyo.kind({
     undo: function() {
         var toUndo = this.undoStack.pop();
         if (toUndo) {
-            var clone = $.extend({}, toUndo);
-            this.redoStack.push(clone);
-            toUndo.remove();
+            var pathsClone = [],
+                clone;
+            if (toUndo.type === 'path-line') {
+                for (var i = 0, length = toUndo.paths.length; i < length; i++) {
+                    var toRemove = toUndo.paths[i];
+                    clone = $.extend(true, {}, toRemove);
+                    pathsClone.push(clone);
+                    toRemove.remove();
+                }
+                this.redoStack.push({
+                    type: "path-line",
+                    paths: pathsClone
+                })
+            } else {
+                var clone = $.extend(true, {}, toUndo);
+                this.redoStack.push(clone);
+                toUndo.remove();
+            }
         }
     },
 
     redo: function() {
         var toRedo = this.redoStack.pop();
         if (toRedo) {
-            var clone = toRedo.clone();
-            this.undoStack.push(clone);
+            if (toRedo.type === 'path-line') {
+                var pathsClone = [];
+                for (var i = 0, length = toRedo.paths.length; i < length; i++) {
+                    var toAdd = toRedo.paths[i];
+                    pathsClone.push(toAdd.clone());
+                }
+                this.undoStack.push({
+                    type: "path-line",
+                    paths: pathsClone
+                });
+            } else {
+                var clone = toRedo.clone();
+                this.undoStack.push(clone);
+            }
         }
     },
 

@@ -68,7 +68,7 @@ enyo.kind({
                 }, {
                     name: "rectangle",
                     ontap: "drawRectangle",
-                    style: "background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAW0lEQVRIS2NkoDFgpLH5DMPDggIGBgZ/GgXVRlAQ/WdgYHCkkQX7YRbQKi7+j1pAKOpGg4hQCDGMBtFICiIHgp4lT8EBUFkEKq4DyNNPUNcGWpWicJtHLSAYCQCocR7rVnZLSQAAAABJRU5ErkJggg==');background-repeat:no-repeat;background-position: 13px -3px;"
+                    style: "padding: 15px;background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAW0lEQVRIS2NkoDFgpLH5DMPDggIGBgZ/GgXVRlAQ/WdgYHCkkQX7YRbQKi7+j1pAKOpGg4hQCDGMBtFICiIHgp4lT8EBUFkEKq4DyNNPUNcGWpWicJtHLSAYCQCocR7rVnZLSQAAAABJRU5ErkJggg==');background-repeat:no-repeat;background-position: 13px 3px;"
                 }, {
                     name: "square",
                     ontap: "drawSquare",
@@ -84,7 +84,7 @@ enyo.kind({
                 }, {
                     name: "ellipse",
                     ontap: "drawEllipse",
-                    style: "background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABGklEQVRIS82V/RHBQBTEfzqgAyUoISVQASqgBCVQASpAB1QgJaQDVMBs5l7mhOR8ncnNZPLH3du9fR97LSKvVmR8GkOQAFeg7RSf3f8QykCVAgENgT7QAVIgK4F1gR5wAlbADjDi4miZQMATYOCCFPgQVCJSzMh9G2Dhx/gEus3cAw6pf7Y/dar1l+qiyALfus1844t1h2UK9kDB+gW4hVo2EhEofyrY7AfAPoTwMhHo9uqWUDHf5VfxtyJQ+0lBjJUriEmQ/iVF0Yus3EdtUxFEHzQjkVWYn3zSVZVWYWDqXTu0BNYvzIc579jZjS5ZzFSdXWv41AACONbY9cUZpLwsaNdVaVGNROQ/OAILGmNjnsxPCp7HRFdwA4i1QgnwQC9YAAAAAElFTkSuQmCC');background-repeat:no-repeat;background-position:13px -3px;"
+                    style: "padding: 15px;background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABGklEQVRIS82V/RHBQBTEfzqgAyUoISVQASqgBCVQASpAB1QgJaQDVMBs5l7mhOR8ncnNZPLH3du9fR97LSKvVmR8GkOQAFeg7RSf3f8QykCVAgENgT7QAVIgK4F1gR5wAlbADjDi4miZQMATYOCCFPgQVCJSzMh9G2Dhx/gEus3cAw6pf7Y/dar1l+qiyALfus1844t1h2UK9kDB+gW4hVo2EhEofyrY7AfAPoTwMhHo9uqWUDHf5VfxtyJQ+0lBjJUriEmQ/iVF0Yus3EdtUxFEHzQjkVWYn3zSVZVWYWDqXTu0BNYvzIc579jZjS5ZzFSdXWv41AACONbY9cUZpLwsaNdVaVGNROQ/OAILGmNjnsxPCp7HRFdwA4i1QgnwQC9YAAAAAElFTkSuQmCC');background-repeat:no-repeat;background-position:13px 3px;"
                 }]
             }],
         },{
