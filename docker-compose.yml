@@ -1,0 +1,11 @@
+collabdraw-web:
+  build: .
+  ports:
+   - "5000:5000"
+  volumes:
+   - .:/collabdraw
+  command: bash -c "source /collabdraw/venv/bin/activate && python /collabdraw/main.py"
+  links:
+   - redis
+redis:
+  image: redis
