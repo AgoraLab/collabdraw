@@ -10,6 +10,7 @@ import tornado.template as template
 
 from org.collabdraw.handler.websockethandler import RealtimeHandler
 from org.collabdraw.handler.uploadhandler import UploadHandler
+from org.collabdraw.handler.joinhandler import JoinHandler
 from org.collabdraw.handler.loginhandler import LoginHandler
 from org.collabdraw.handler.logouthandler import LogoutHandler
 from org.collabdraw.handler.registerhandler import RegisterHandler
@@ -45,6 +46,7 @@ class Application(tornado.web.Application):
             (r'/resource/(.*)', tornado.web.StaticFileHandler, dict(path=config.RESOURCE_DIR)),
             (r'/resources/(.*)', tornado.web.StaticFileHandler, dict(path=config.I18N_DIR)),
             (r'/upload', UploadHandler),
+            (r'/join', JoinHandler),
             (r'/login.html', LoginHandler),
             (r'/logout.html', LogoutHandler),
             (r'/register.html', RegisterHandler),

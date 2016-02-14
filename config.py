@@ -12,7 +12,7 @@ PUBLIC_LISTEN_PORT = APP_PORT
 PUBSUB_CLIENT_TYPE = 'redis' # only redis supported now
 DB_CLIENT_TYPE = 'redis'  # only redis supported now
 
-REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://localhost:6379')
+REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://redis:6379')
 
 # Full path of "collabdraw" directory
 ROOT_DIR = "/".join(os.path.realpath(__file__).split('/')[:-1])
