@@ -6,6 +6,7 @@ import config
 
 import os
 from base64 import b64encode
+import time
 import tornado.websocket
 import tornado.web
 from pystacia import read
@@ -48,6 +49,9 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.logger.error("Room name not provided. Can't initialize")
                 return
             page_no = data.get('page', '1')
+
+            if self.room_name != '':
+                self.leave_room(room_name, True):
 
             self.init(room_name, page_no)
 
@@ -132,7 +136,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         return ":".join([str(namespace), str(key)] + list(map(str, keys)))
 
     def construct_message(self, event, data={}):
-        m = json.dumps({"event": event, "data": data})
+        m = json.dumps({"event": event, "data": data,"ts":long(round(time.time() * 1000))})
         return m
 
     def broadcast_message(self, message):
