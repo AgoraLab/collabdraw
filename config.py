@@ -1,7 +1,7 @@
 import os
 
 # App's host and port
-APP_IP_ADDRESS = "127.0.0.1" # Put your websocket endpoint here
+APP_IP_ADDRESS = "10.203.112.136" # Put your websocket endpoint here
 APP_PORT = os.environ.get('PORT', 5000)
 
 # Port in which websocket client should listen
@@ -12,7 +12,7 @@ PUBLIC_LISTEN_PORT = APP_PORT
 PUBSUB_CLIENT_TYPE = 'redis' # only redis supported now
 DB_CLIENT_TYPE = 'redis'  # only redis supported now
 
-REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://redis:6379')
+REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://127.0.0.1:6379')
 
 # Full path of "collabdraw" directory
 ROOT_DIR = "/".join(os.path.realpath(__file__).split('/')[:-1])
@@ -29,4 +29,4 @@ SERVER_CERT = os.path.join(os.getcwd(), "server.crt")
 SERVER_KEY = os.path.join(os.getcwd(), "server.key")
 
 # Demo mode disables login requirement
-DEMO_MODE = True
+DEMO_MODE = False

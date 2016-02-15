@@ -7,9 +7,11 @@ import config
 import os
 from base64 import b64encode
 import time
+from datetime import datetime
 import tornado.websocket
 import tornado.web
 from pystacia import read
+from .joinhandler import JoinHandler
 
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..pubsub.pubsubclientfactory import PubSubClientFactory
@@ -25,11 +27,13 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     # @Override
     def open(self):
+        self.verified=False
         self.logger = logging.getLogger('websocket')
         self.logger.info("Open connection")
         self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
         self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE)
         self.send_message(self.construct_message("ready"))
+        self.logger.info("xxxx %s"%self.get_secure_cookie("loginId"))
 
     # @Override
     def on_message(self, message):
@@ -39,8 +43,18 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         data = m.get('data', {})
 
         self.logger.debug("Processing event %s from uid %s @%s" % (event, fromUid, self.request.remote_ip))
+        fromTs=datetime.now()
         if not event:
             self.logger.error("No event specified")
+            return
+
+        if event == "init" :
+            sid = m.get('sid', )
+            if JoinHandler.is_cookie_valid(sid, data.get('room', '')):
+                self.verified=True
+
+        if not self.verified:
+            self.logger.error("sid not verified:%s %s" % (event, data))
             return
 
         if event == "init":
@@ -90,6 +104,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.num_pages += 1
             self.logger.info("num_pages is now %d" % self.num_pages)
             self.init(self.room_name, self.num_pages)
+
+        self.logger.info("%s takes %.4f sec" %(event,(datetime.now() - fromTs).total_seconds()))
 
     # @Override
     def on_close(self):

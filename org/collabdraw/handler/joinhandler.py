@@ -4,6 +4,7 @@ import config
 import json
 import random
 import tornado.web
+import time
 
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..dbclient.mysqlclient import MysqlClient
@@ -48,6 +49,13 @@ class JoinHandler(tornado.web.RequestHandler):
     Will be created by tornado-framework evertime there's a join request
     """
     mysqlClient = None
+    cookies={}
+
+    def is_cookie_valid(sid, room):
+        now=time.time()
+        if sid in JoinHandler.cookies and now < JoinHandler.cookies[sid]['expiredTs'] and room == JoinHandler.cookies[sid]['room'] :
+            return True
+        return False
 
     def initialize(self):
         self.logger = logging.getLogger('websocket')
@@ -108,7 +116,12 @@ class JoinHandler(tornado.web.RequestHandler):
         cname = self.get_argument('cname', '')
         uinfo = self.get_argument('uinfo', '')
         ret = self.onSdkJoinChannelReq(key, cname, uinfo)
+        login_id = key+":"+cname+":"+uinfo
+        self.set_secure_cookie("loginId", login_id)
+        sid=hash(login_id)
+        ret['sid']=sid
         self.finish(ret)
+        JoinHandler.cookies[sid]={'room':cname, 'expiredTs':time.time() + 3600}
 
     def post(self):
         key = self.get_argument('key', '')
