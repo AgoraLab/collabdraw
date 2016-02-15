@@ -1,15 +1,15 @@
-[submodule "resource/enyo"]
-	path = resource/enyo
+[submodule "client/enyo"]
+	path = client/enyo
 	url = https://github.com/enyojs/enyo.git
-[submodule "resource/lib/layout"]
-	path = resource/lib/layout
+[submodule "client/lib/layout"]
+	path = client/lib/layout
 	url = https://github.com/enyojs/layout.git
-[submodule "resource/lib/onyx"]
-	path = resource/lib/onyx
+[submodule "client/lib/onyx"]
+	path = client/lib/onyx
 	url = https://github.com/enyojs/onyx.git
 [submodule "collabdraw-heroku-bin"]
 	path = collabdraw-heroku-bin
 	url = https://github.com/anandtrex/collabdraw-heroku-bin.git
-[submodule "resource/lib/enyo-ilib"]
-	path = resource/lib/enyo-ilib
+[submodule "client/lib/enyo-ilib"]
+	path = client/lib/enyo-ilib
 	url = https://github.com/enyojs/enyo-ilib.git
