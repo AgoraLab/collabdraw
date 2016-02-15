@@ -51,7 +51,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             page_no = data.get('page', '1')
 
             if self.room_name != '':
-                self.leave_room(room_name, True):
+                self.leave_room(room_name, True)
 
             self.init(room_name, page_no)
 
@@ -136,7 +136,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         return ":".join([str(namespace), str(key)] + list(map(str, keys)))
 
     def construct_message(self, event, data={}):
-        m = json.dumps({"event": event, "data": data,"ts":long(round(time.time() * 1000))})
+        m = json.dumps({"event": event, "data": data})
         return m
 
     def broadcast_message(self, message):
