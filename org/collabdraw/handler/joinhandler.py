@@ -41,15 +41,17 @@ VENDOR_STATUS_ACTIVE = 1
 VENDOR_STATUS_SUSPEND = 2
 VENDOR_STATUS_DEPRECATED = 3
 
-# The handler will be created evertime there's a join request
 class JoinHandler(tornado.web.RequestHandler):
     """
     Http request handler for join request.
     Will be created by tornado-framework evertime there's a join request
     """
+    mysqlClient = None
+
     def initialize(self):
         self.logger = logging.getLogger('websocket')
-        self.mysql = MysqlClient()  #TODO: use a shared instance rather than create a new one evertime
+        if JoinHandler.mysqlClient is None:
+            JoinHandler.mysqlClient = MysqlClient()
 
     def onSdkJoinChannelReq(self, key, cname, uinfo):
         self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
@@ -70,16 +72,16 @@ class JoinHandler(tornado.web.RequestHandler):
         return INVALID_VENDOR_KEY, -1
 
     def checkStaticVendorKey(self, staticKeyString):
-        if not staticKeyString in self.mysql.vendorKeys:
+        if not staticKeyString in JoinHandler.mysqlClient.vendorKeys:
             self.logger.warn('invalid login: fail to find static vendor key %s' % staticKeyString)
             return INVALID_VENDOR_KEY, -1
 
-        vid = self.mysql.vendorKeys[staticKeyString]
-        if not vid in self.mysql.vendorInfos:
+        vid = JoinHandler.mysqlClient.vendorKeys[staticKeyString]
+        if not vid in JoinHandler.mysqlClient.vendorInfos:
             self.logger.warn('invalid login: fail to find vendor info for vendor %u' % vid)
             return INTERNAL_ERROR, -1
 
-        vinfo = self.mysql.vendorInfos[vid]
+        vinfo = JoinHandler.mysqlClient.vendorInfos[vid]
         if (len(vinfo['signkey']) > 0):
             self.logger.warn('invalid login: dynamic key is expected for vendor %u' % vid)
             return NO_AUTHORIZED, -1
