@@ -138,15 +138,15 @@ enyo.kind({
                 kind: "onyx.Picker",
                 components: [{
                     name: "lineOption1",
-                    style: "background-image:url(/resource/images/lines-bg.png);background-repeat:no-repeat;background-position:0 -4px;",
+                    style: "background-image:url(../images/lines-bg.png);background-repeat:no-repeat;background-position:0 -4px;",
                     ontap: "setLineWidth1"
                 }, {
                     name: "lineOption2",
-                    style: "background-image:url(/resource/images/lines-bg.png);background-repeat:no-repeat;background-position:0 -76px;",
+                    style: "background-image:url(../images/lines-bg.png);background-repeat:no-repeat;background-position:0 -76px;",
                     ontap: "setLineWidth2"
                 }, {
                     name: "lineOption3",
-                    style: "background-image:url(/resource/images/lines-bg.png);background-repeat:no-repeat;background-position:0 -149px;",
+                    style: "background-image:url(../images/lines-bg.png);background-repeat:no-repeat;background-position:0 -149px;",
                     ontap: "setLineWidth3"
                 }, {
                     name: "lineOption4",
