@@ -38,7 +38,7 @@ function AgoraWhiteBoardApi() {
 
     this.join = function(key, cname, uinfo, onJoin) {
         this.cname = cname;
-        $.get('http://127.0.0.1:5000/join', {key: key, cname: cname, uinfo: uinfo},
+        $.get('http://collabdraw.agoralab.co:5000/join', {key: key, cname: cname, uinfo: uinfo},
     		function (result, status) {
     			if (!result || result.length == 0) {
     				onJoin(-10, 'empty result from agora server', cname, uinfo)
@@ -60,7 +60,7 @@ function AgoraWhiteBoardApi() {
             return;
         }
         var app = new App();
-        app.setAppIpAddress('127.0.0.1');
+        app.setAppIpAddress('collabdraw.agoralab.co');
         app.setAppPort(5000);
         app.setCanvasHeight(this.canvasHeight == -1 ? this.defaultCanvasHeight() : this.canvasHeight);
         app.setCanvasWidth(this.canvasWidth == -1 ? this.defaultCanvasWidth() : this.canvasWidth);
