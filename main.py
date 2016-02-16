@@ -25,6 +25,9 @@ logger.addHandler(ch)
 
 
 class IndexHandler(tornado.web.RequestHandler):
+    def initialize(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        
     def get_current_user(self):
         if not config.DEMO_MODE:
             return self.get_secure_cookie("loginId")

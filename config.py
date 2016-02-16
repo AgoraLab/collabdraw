@@ -1,7 +1,7 @@
 import os
 
 # App's host and port
-APP_IP_ADDRESS = "10.203.112.136" # Put your websocket endpoint here
+APP_IP_ADDRESS = "192.168.1.15" # Put your websocket endpoint here
 APP_PORT = os.environ.get('PORT', 5000)
 
 # Port in which websocket client should listen
