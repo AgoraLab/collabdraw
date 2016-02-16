@@ -28,6 +28,7 @@ function AgoraWhiteBoardApi() {
     this.canvasWidth = -1;
     this.canvasNode = null;
     this.cname = '';
+    this.uid = '';
 
     this.defaultCanvasHeight = function() {
         return this.canvasNode ? $(this.canvasNode).height() : 600;
@@ -41,11 +42,11 @@ function AgoraWhiteBoardApi() {
         $.get('http://collabdraw.agoralab.co:5000/join', {key: key, cname: cname, uinfo: uinfo},
     		function (result, status) {
     			if (!result || result.length == 0) {
-    				onJoin(-10, 'empty result from agora server', cname, uinfo)
+    				onJoin(-10, 'empty result from agora server', cname, uinfo, uid)
     				return;
     			}
                 console.log(JSON.stringify(result));
-                onJoin(result.code, ErrorTable[result['code'].toString()], cname, uinfo);
+                onJoin(result.code, ErrorTable[result['code'].toString()], cname, uinfo, result['uid'].toString());
     		}
     	).fail(function(xhr, textStatus, errorThrown) { console.log("ajax fail");});
     }
@@ -56,7 +57,7 @@ function AgoraWhiteBoardApi() {
     }
 
     this.render = function() {
-        if (!this.canvasNode || (this.cname == '')) {
+        if (!this.canvasNode || (this.cname == '' || this.uid == '')) {
             return;
         }
         var app = new App();
@@ -65,7 +66,8 @@ function AgoraWhiteBoardApi() {
         app.setCanvasHeight(this.canvasHeight == -1 ? this.defaultCanvasHeight() : this.canvasHeight);
         app.setCanvasWidth(this.canvasWidth == -1 ? this.defaultCanvasWidth() : this.canvasWidth);
         app.setRoom(this.cname);
-        console.log('[render] height: ' + app.getCanvasHeight() + ' width: ' + app.getCanvasWidth() + ' room: ' + this.cname);
+        app.setUid(this.uid);
+        console.log('[render] height: ' + app.getCanvasHeight() + ' width: ' + app.getCanvasWidth() + ' room: ' + this.cname + ' uid: ' + this.uid);
         app.renderInto(this.canvasNode);
     }
 }

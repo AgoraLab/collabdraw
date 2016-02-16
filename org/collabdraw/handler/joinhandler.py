@@ -2,6 +2,7 @@ import logging
 import os
 import config
 import json
+import random
 import tornado.web
 
 from ..dbclient.dbclientfactory import DbClientFactory
@@ -57,8 +58,9 @@ class JoinHandler(tornado.web.RequestHandler):
     def onSdkJoinChannelReq(self, key, cname, uinfo):
         self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
         code, vid = self.checkLoginRequest(key, cname)
-        res = {'code': code, 'cname': cname}
-        return res; #json.dumps(res)
+        uid = self.generateUid(key, cname, uinfo)
+        res = {'code': code, 'cname': cname, 'uid': uid}
+        return res;
 
     # return [ErrorCode, VendorID]
     def checkLoginRequest(self, key, cname):
@@ -95,6 +97,11 @@ class JoinHandler(tornado.web.RequestHandler):
 
     def checkDynamicVendorKey(self, key, cname):
         return -100, -1
+
+    def generateUid(self, key, cname, uinfo):
+        # TODO:
+        # I'm not sure if we should generate the consistent uid matched with uinfo if it's not empty
+        return random.randrange(1000000)
 
     def get(self):
         key = self.get_argument('key', '')

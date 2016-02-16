@@ -26,7 +26,7 @@ enyo.kind({
         this.uid = uid;
         this.room = room;
         this.cvs = new ScaleRaphael(name, width, height);
-        this.connection = new Connection(websocketAddress, this, room);
+        this.connection = new Connection(websocketAddress, this, room, uid);
         this.callback = callback;
         this.zoomRatio = 1;
         // Pen drawing by default, user can select circle, ellipse, etc.
@@ -426,6 +426,12 @@ enyo.kind({
     },
 
     undo: function() {
+        this.executeUndo();
+        this.connection.sendPath({type: 'undo'})
+    },
+
+    executeUndo: function() {
+        console.log('executeUndo @' + Date());
         var toUndo = this.undoStack.pop();
         if (toUndo) {
             var pathsClone = [],
@@ -450,6 +456,12 @@ enyo.kind({
     },
 
     redo: function() {
+        this.executeRedo();
+        this.connection.sendPath({type: 'redo'});
+    },
+
+    executeRedo: function() {
+        console.log('executeRedo @' + Date());
         var toRedo = this.redoStack.pop();
         if (toRedo) {
             if (toRedo.type === 'path-line') {

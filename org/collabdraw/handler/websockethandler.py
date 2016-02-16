@@ -34,10 +34,11 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
     # @Override
     def on_message(self, message):
         m = json.loads(message)
+        fromUid = m.get('uid', '').strip()
         event = m.get('event', '').strip()
         data = m.get('data', {})
 
-        self.logger.debug("Processing event %s" % event)
+        self.logger.debug("Processing event %s from uid %s @%s" % (event, fromUid, self.request.remote_ip))
         if not event:
             self.logger.error("No event specified")
             return
@@ -63,11 +64,11 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.paths = []
 
             self.paths.extend(single_path)
-            self.broadcast_message(self.construct_message("draw", {'singlePath': single_path}))
+            self.broadcast_message(self.construct_broadcast_message(fromUid, "draw", {'singlePath': single_path}))
             self.db_client.set(self.construct_key(self.room_name, self.page_no), self.paths)
 
         elif event == "clear":
-            self.broadcast_message(self.construct_message("clear"))
+            self.broadcast_message(self.construct_broadcast_message(fromUid, "clear"))
             self.db_client.delete(self.construct_key(self.room_name, self.page_no))
 
         elif event == "get-image":
@@ -137,6 +138,10 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     def construct_message(self, event, data={}):
         m = json.dumps({"event": event, "data": data})
+        return m
+
+    def construct_broadcast_message(self, fromUid, event, data={}):
+        m = json.dumps({"fromUid": fromUid, "event": event, "data": data})
         return m
 
     def broadcast_message(self, message):

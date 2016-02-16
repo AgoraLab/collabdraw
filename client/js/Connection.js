@@ -10,28 +10,38 @@ enyo.kind({
     room: 'undefined',
     page: 1,
 
-    constructor: function(address, whiteboard, room) {
+    constructor: function(address, whiteboard, room, uid) {
         this.whiteboard = whiteboard;
         //console.log("Connecting to address " + address);
         this.socket = new WebSocket(address);
         this.room = room;
+        this.uid = uid;
         this.page = 1;
-        //console.log("Room is " + room);
 
         _this = this;
         this.socket.onmessage = function(evt) {
             message = JXG.decompress(evt.data);
             message = JSON.parse(message);
+            fromUid = message['fromUid'];
             evnt = message['event'];
             data = message['data'];
+            console.log('receive msg from server. uid ' + fromUid + ' event ' + evnt + ' data ' + JSON.stringify(data));
             switch (evnt) {
             case 'ready':
                 _this.init(_this.uid, _this.room, _this.page);
                 break;
             case 'draw':
+                if (_this.uid == fromUid) {
+                    console.log("ignore message 'draw' from mine. uid " + fromUid);
+                    break;
+                }
                 _this.remoteDraw(_this, data);
                 break;
             case 'draw-many':
+                if (_this.uid == fromUid) {
+                    console.log("ignore message 'draw' from mine. uid " + fromUid);
+                    break;
+                }
                 _this.remoteDrawMany(_this, data);
                 break;
             case 'clear':
@@ -46,6 +56,7 @@ enyo.kind({
 
     sendMessage: function(evt, data) {
         message = JSON.stringify({
+            "uid": this.uid,
             "event": evt,
             "data": data
         });
@@ -86,8 +97,9 @@ enyo.kind({
         this.singlePath.push(data);
         this.currentPathLength++;
 
+        // Send undo or redo immediately. by sunyurun@agora.io
         // Send path every two points or when user removes finger
-        if (this.currentPathLength > 2 || data.type === "touchend") {
+        if (this.currentPathLength > 2 || data.type === "touchend" || data.type == 'undo' || data.type == 'redo') {
             this.sendMessage("draw-click", {
                 "singlePath": this.singlePath
             });
@@ -155,6 +167,9 @@ enyo.kind({
             if (data.type == 'touchstart') self.whiteboard.startPath(data.oldx, data.oldy, data.lineColor, data.lineWidth, false);
             else if (data.type == 'touchmove') self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
             else if (data.type == 'touchend') self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+            else if (data.type == 'undo') self.whiteboard.executeUndo();
+            else if (data.type == 'redo') self.whiteboard.executeRedo();
+            else { console.log("not supported operation: " + data.type); }
         }
     },
 
@@ -174,6 +189,9 @@ enyo.kind({
             if (ds[d].type == 'touchstart') self.whiteboard.startPath(ds[d].oldx, ds[d].oldy, ds[d].lineColor, ds[d].lineWidth, false);
             else if (ds[d].type == 'touchmove') self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
             else if (ds[d].type == 'touchend') self.whiteboard.endPath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
+            else if (ds[d].type == 'undo') self.whiteboard.executeUndo();
+            else if (ds[d].type == 'redo') self.whiteboard.executeRedo();
+            else { console.log("not supported operation: " + data.type); }
         }
         //console.log("Total pages is " + data.npages);
         self.whiteboard.setTotalPages(data.npages);
