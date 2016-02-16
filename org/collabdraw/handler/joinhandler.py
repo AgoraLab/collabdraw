@@ -118,7 +118,7 @@ class JoinHandler(tornado.web.RequestHandler):
         ret = self.onSdkJoinChannelReq(key, cname, uinfo)
         login_id = key+":"+cname+":"+uinfo
         self.set_secure_cookie("loginId", login_id)
-        sid=hash(login_id)
+        sid=str(hash(login_id))
         ret['sid']=sid
         self.finish(ret)
         JoinHandler.cookies[sid]={'room':cname, 'expiredTs':time.time() + 3600}

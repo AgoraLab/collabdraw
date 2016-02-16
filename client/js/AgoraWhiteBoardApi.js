@@ -29,6 +29,7 @@ function AgoraWhiteBoardApi() {
     this.canvasNode = null;
     this.cname = '';
     this.uid = '';
+    this.sid = '';
 
     this.defaultCanvasHeight = function() {
         return this.canvasNode ? $(this.canvasNode).height() : 600;
@@ -46,7 +47,7 @@ function AgoraWhiteBoardApi() {
     				return;
     			}
                 console.log(JSON.stringify(result));
-                onJoin(result.code, ErrorTable[result['code'].toString()], cname, uinfo, result['uid'].toString());
+                onJoin(result.code, ErrorTable[result['code'].toString()], cname, uinfo, result['uid'].toString(), result['sid']);
     		}
     	).fail(function(xhr, textStatus, errorThrown) { console.log("ajax fail");});
     }
@@ -57,7 +58,7 @@ function AgoraWhiteBoardApi() {
     }
 
     this.render = function() {
-        if (!this.canvasNode || (this.cname == '' || this.uid == '')) {
+        if (!this.canvasNode || (this.cname == '' || this.uid == '' || this.sid == '')) {
             return;
         }
         var app = new App();
@@ -67,6 +68,7 @@ function AgoraWhiteBoardApi() {
         app.setCanvasWidth(this.canvasWidth == -1 ? this.defaultCanvasWidth() : this.canvasWidth);
         app.setRoom(this.cname);
         app.setUid(this.uid);
+        app.setSid(this.sid);
         console.log('[render] height: ' + app.getCanvasHeight() + ' width: ' + app.getCanvasWidth() + ' room: ' + this.cname + ' uid: ' + this.uid);
         app.renderInto(this.canvasNode);
     }

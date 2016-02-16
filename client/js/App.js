@@ -11,6 +11,7 @@ enyo.kind({
         },
         previousColor: '',
         uid: 'test',
+        sid: '',
         room: 'one',
         canvasWidth: 800,
         canvasHeight: 550,
@@ -40,7 +41,7 @@ enyo.kind({
                 if (this.hasNode()) {
                     var _this = this;
                     this.owner.$.loadingPopup.show();
-                    this.owner.whiteboard = new WhiteboardSvg(this.node.getAttribute("id"), this.owner.canvasWidth, this.owner.canvasHeight, this.owner.uid, this.owner.room, 1, websocketAddress, function(numPages, currentPage) {
+                    this.owner.whiteboard = new WhiteboardSvg(this.node.getAttribute("id"), this.owner.canvasWidth, this.owner.canvasHeight, this.owner.uid, this.owner.sid, this.owner.room, 1, websocketAddress, function(numPages, currentPage) {
                         _this.owner.$.currentPage.setMax(numPages);
                         _this.owner.$.currentPage.setValue(currentPage);
                         _this.owner.$.loadingPopup.hide();

@@ -49,7 +49,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             return
 
         if event == "init" :
-            sid = m.get('sid', )
+            sid = data.get('sid', '')
             if JoinHandler.is_cookie_valid(sid, data.get('room', '')):
                 self.verified=True
 

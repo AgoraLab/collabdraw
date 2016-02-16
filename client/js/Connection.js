@@ -68,6 +68,7 @@ enyo.kind({
         this.whiteboard.clear(false, false);
         this.sendMessage("init", {
             "room": room,
+            "sid": this.whiteboard.sid,
             "page": currentPage
         });
     },
@@ -85,7 +86,8 @@ enyo.kind({
         this.whiteboard.clear(false, false);
         //console.log("Sending init for room " + room);
         this.sendMessage("init", {
-            "room": this.room
+            "room": this.room,
+            "sid": this.whiteboard.sid
         });
     },
 

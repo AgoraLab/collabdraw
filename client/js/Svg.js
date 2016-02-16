@@ -22,8 +22,9 @@ enyo.kind({
         return this.currentPage;
     },
 
-    constructor: function(name, width, height, uid, room, page, websocketAddress, callback) {
+    constructor: function(name, width, height, uid, sid, room, page, websocketAddress, callback) {
         this.uid = uid;
+        this.sid = sid;
         this.room = room;
         this.cvs = new ScaleRaphael(name, width, height);
         this.connection = new Connection(websocketAddress, this, room, uid);
