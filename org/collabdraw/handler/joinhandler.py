@@ -51,11 +51,11 @@ class JoinHandler(tornado.web.RequestHandler):
     mysqlClient = None
     cookies={}
 
-    def is_cookie_valid(sid, room):
+    def get_cookie(sid):
         now=time.time()
-        if sid in JoinHandler.cookies and now < JoinHandler.cookies[sid]['expiredTs'] and room == JoinHandler.cookies[sid]['room'] :
-            return True
-        return False
+        if sid in JoinHandler.cookies and now < JoinHandler.cookies[sid]['expiredTs']:
+            return  JoinHandler.cookies[sid]
+        return None
 
     def initialize(self):
         self.logger = logging.getLogger('websocket')
@@ -67,8 +67,10 @@ class JoinHandler(tornado.web.RequestHandler):
         self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
         code, vid = self.checkLoginRequest(key, cname)
         uid = self.generateUid(key, cname, uinfo)
-        res = {'code': code, 'cname': cname, 'uid': uid}
-        return res;
+        login_id = key+":"+cname+":"+uinfo
+        sid=str(hash(login_id))
+        res = {'code': code, 'cname': cname, 'uid': uid, 'sid':sid}
+        return res, vid;
 
     # return [ErrorCode, VendorID]
     def checkLoginRequest(self, key, cname):
@@ -115,13 +117,11 @@ class JoinHandler(tornado.web.RequestHandler):
         key = self.get_argument('key', '')
         cname = self.get_argument('cname', '')
         uinfo = self.get_argument('uinfo', '')
-        ret = self.onSdkJoinChannelReq(key, cname, uinfo)
-        login_id = key+":"+cname+":"+uinfo
-        self.set_secure_cookie("loginId", login_id)
-        sid=str(hash(login_id))
-        ret['sid']=sid
+        ret, vid = self.onSdkJoinChannelReq(key, cname, uinfo)
         self.finish(ret)
-        JoinHandler.cookies[sid]={'room':cname, 'expiredTs':time.time() + 3600}
+        if ret['code'] == OK_CODE:
+            self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
+            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + 3600, 'vid':vid, 'sid':ret['sid']}
 
     def post(self):
         key = self.get_argument('key', '')
@@ -129,3 +129,6 @@ class JoinHandler(tornado.web.RequestHandler):
         uinfo = self.get_argument('uinfo', '')
         ret = self.onSdkJoinChannelReq(key, cname, uinfo)
         self.finish(ret)
+        if ret['code'] == OK_CODE:
+            self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
+            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + 3600, 'vid':vid}
