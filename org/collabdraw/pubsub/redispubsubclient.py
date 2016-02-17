@@ -4,7 +4,7 @@ import logging
 import threading
 
 import redis
-
+import json
 import config
 from .pubsubinterface import PubSubInterface
 
@@ -27,9 +27,14 @@ class RedisPubSubClient(PubSubInterface):
         self.t = threading.Thread(target=self._redis_listener, args=(topic, listener, self.pubsub_client))
         self.t.start()
 
+    def numsub(self, topic):
+        value=self.redis_client.execute_command('pubsub', 'numsub', topic)
+        if value and len(value)==2:
+            return value[1]
+        return None
+
     def unsubscribe(self, topic, listener):
         self.logger.debug("Unsubscribing from topic %s" % topic)
-
         if self.t:
             self.pubsub_client.unsubscribe(topic)
             self.t.join(60)

@@ -27,7 +27,7 @@ logger.addHandler(ch)
 class IndexHandler(tornado.web.RequestHandler):
     def initialize(self):
         self.set_header("Access-Control-Allow-Origin", "*")
-        
+
     def get_current_user(self):
         if not config.DEMO_MODE:
             return self.get_secure_cookie("loginId")
@@ -79,4 +79,6 @@ if __name__ == "__main__":
         })
     logger.info("Listening on port %s" % config.APP_PORT)
     http_server.listen(config.APP_PORT)
+    tornado.ioloop.PeriodicCallback(JoinHandler.clear_expired_cookies,10*1000).start()
+    tornado.ioloop.PeriodicCallback(RealtimeHandler.clear_expired_data,10*1000).start()
     tornado.ioloop.IOLoop.instance().start()

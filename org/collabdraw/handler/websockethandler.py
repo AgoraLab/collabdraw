@@ -12,6 +12,7 @@ import tornado.websocket
 import tornado.web
 from pystacia import read
 from .joinhandler import JoinHandler
+from collections import defaultdict
 
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..pubsub.pubsubclientfactory import PubSubClientFactory
@@ -19,19 +20,39 @@ from ..tools.videomaker import make_video
 
 
 class RealtimeHandler(tornado.websocket.WebSocketHandler):
+
+    logger = logging.getLogger('websocket')
+    pubsub_static =PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE)
+    paths_cache = defaultdict(list)
+    images_cache = {}
+
+    def clear_expired_data():
+        RealtimeHandler.logger.info("clear_expired_data")
+        l = []
+        cli= DbClientFactory.getDbClient(config.DB_CLIENT_TYPE).redis_client
+        for k in RealtimeHandler.paths_cache.keys():
+            value= cli.execute_command('pubsub', 'numsub', k)
+            if value and len(value)==2:
+                num=value[1]
+            else:
+                num=None
+            RealtimeHandler.logger.info("monitor %s"%num)
+            if num == 0:
+                l.append(k)
+        for topic in l:
+            del RealtimeHandler.paths_cache[k]
+            if k in RealtimeHandler.images_cache:
+                del RealtimeHandler.images_cache[k]
+
     # @Override
     def open(self):
         self.room_name = ''
-        self.paths = []
-        self.db_client = None
         self.page_no = 1
         self.num_pages = 1
         self.vid=0
         self.verified=False
-        self.logger = logging.getLogger('websocket')
         self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
         self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE)
-
         self.send_message(self.construct_message("ready"))
 
     # @Override
@@ -52,6 +73,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.vid=cookie['vid']
 
         if not self.verified:
+            self.close()
             self.logger.error("sid not verified［ cookie:%s msg:%s ］" % (cookie, data))
             return
 
@@ -70,12 +92,13 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.init(room_name, page_no)
 
         elif event == "draw-click":
-            self.logger.debug("Received draw-click")
-            single_path = data['singlePath']
 
-            self.paths.extend(single_path)
+            single_path = data['singlePath']
+            self.logger.info("Received draw-click %s",single_path)
+            self.paths_cache[self.path_key()].extend(single_path)
             self.broadcast_message(self.construct_broadcast_message(fromUid, "draw", {'singlePath': single_path}))
-            self.db_client.set(self.path_key(), self.paths)
+            # self.db_client.set(self.path_key(), self.paths_cache[self.path_key()])
+            self.db_client.rpush(self.path_key(), single_path)
 
         elif event == "clear":
             self.broadcast_message(self.construct_broadcast_message(fromUid, "clear"))
@@ -115,23 +138,28 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         n_pages = self.db_client.get(self.npages_key())
         if n_pages:
             self.num_pages = int(n_pages)
+
         # First send the image if it exists
         image_url, width, height = self.get_image_data(self.room_name, self.page_no)
         self.send_message(self.construct_message("image", {'url': image_url,
                                                            'width': width, 'height': height}))
         # Then send the paths
-        p = self.db_client.get(self.path_key())
-        if p:
-            self.paths = json.loads(p)
+        # p = self.db_client.get(self.path_key())
+        if self.path_key() in self.paths_cache:
+            path=self.paths_cache[self.path_key()]
+        else:
+            path=self.db_client.lrange(self.path_key(), 0, -1)
+            self.logger.info("xxxx %s"%path)
+            self.paths_cache[self.path_key()] = path
 
         self.send_message(self.construct_message("draw-many",
-                                                 {'datas': self.paths, 'npages': self.num_pages}))
+                                                 {'datas': path, 'npages': self.num_pages}))
 
     def leave_room(self, room_name, clear_paths=True):
         self.logger.info("Leaving room %s" % room_name)
         self.pubsub_client.unsubscribe(self.path_key(), self)
         if clear_paths:
-            self.paths = []
+            self.paths_cache[self.path_key()] = []
 
     def join_room(self, room_name):
         self.logger.info("Joining room %s" % room_name)
@@ -165,11 +193,13 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
     def get_image_data(self, room_name, page_no):
         image_url = os.path.join("files", room_name, str(page_no) + "_image.png")
         image_path = os.path.join(config.ROOT_DIR, image_url)
-        try:
-            image = read(image_path)
-        except IOError as e:
-            self.logger.error("Error %s while reading image at location %s" % (e,
-                                                                               image_path))
-            return '', -1, -1
+        if self.path_key() in self.images_cache:
+            image =  self.images_cache[self.path_key()]
+        else:
+            try:
+                image = read(image_path)
+                self.images_cache[self.path_key()]=image
+            except IOError as e:
+                return '', -1, -1
         width, height = image.size
         return image_url, width, height

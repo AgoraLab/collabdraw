@@ -50,6 +50,12 @@ class JoinHandler(tornado.web.RequestHandler):
     """
     mysqlClient = None
     cookies={}
+    def clear_expired_cookies():
+        now = time.time()
+        l = [sid for sid, v in JoinHandler.cookies.items() if  v['expiredTs'] <= now]
+        logging.getLogger('websocket').info("clear_expired_cookies %s"%l)
+        for sid in l:
+            del JoinHandler.cookies[sid]
 
     def get_cookie(sid):
         now=time.time()
@@ -121,7 +127,7 @@ class JoinHandler(tornado.web.RequestHandler):
         self.finish(ret)
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
-            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + 3600, 'vid':vid, 'sid':ret['sid']}
+            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + 30, 'vid':vid, 'sid':ret['sid']}
 
     def post(self):
         key = self.get_argument('key', '')

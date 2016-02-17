@@ -3,7 +3,7 @@ __author__ = 'anand'
 import logging
 
 import redis
-
+import json
 import config
 from .dbinterface import DbInterface
 
@@ -16,6 +16,15 @@ class RedisDbClient(DbInterface):
 
     def set(self, key, value):
         self.redis_client.set(key, value)
+
+    def rpush(self, key, value):
+        value=self.redis_client.rpush(key, *value)
+
+    def lrange(self, key, start, end):
+        value=self.redis_client.lrange(key, start, end)
+        if value:
+            return [json.loads(v.decode('utf-8').replace("'", '"')) for v in value]
+        return []
 
     def get(self, key):
         value = self.redis_client.get(key)
