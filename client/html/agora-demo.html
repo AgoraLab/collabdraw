@@ -42,11 +42,8 @@
     api.canvasWidth = viewportSize.width;
     api.canvasHeight = viewportSize.height;
     api.canvasNode = document.body;
-    api.join('f4637604af81440596a54254d53ade20', 'PES-2014', 'Demba Ba', function (ec, em, cname, uinfo, uid, sid) {
-        console.log('[onJoin] ec: ' + ec + ' em: ' + em + ' cname: ' + cname + ' uinfo: ' + uinfo + ' uid: ' + uid + ' sid: ' + sid);
-        api.uid = uid;  // response from server
-        api.sid = sid;  // response from server
-        api.render();
+    api.join('f4637604af81440596a54254d53ade20', 'PES-2014', 'Demba Ba', function (ec, em, cname, uinfo) {
+        console.log('[onJoin] ec: ' + ec + ' em: ' + em + ' cname: ' + cname + ' uinfo: ' + uinfo);
     });
 
 </script>

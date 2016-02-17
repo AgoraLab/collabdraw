@@ -101,7 +101,8 @@ enyo.kind({
 
         // Send undo or redo immediately. by sunyurun@agora.io
         // Send path every two points or when user removes finger
-        if (this.currentPathLength > 2 || data.type === "touchend" || data.type == 'undo' || data.type == 'redo') {
+        if (this.currentPathLength > 2 || data.type === "touchend" ||
+            data.type == 'undo' || data.type == 'redo' || data.type == 'addtext' || data.type == 'edittext') {
             this.sendMessage("draw-click", {
                 "singlePath": this.singlePath
             });
@@ -171,6 +172,8 @@ enyo.kind({
             else if (data.type == 'touchend') self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
             else if (data.type == 'undo') self.whiteboard.executeUndo();
             else if (data.type == 'redo') self.whiteboard.executeRedo();
+            else if (data.type == 'addtext') self.whiteboard.executeAddText(data.oldx, data.oldy);
+            else if (data.type == 'edittext') self.whiteboard.executeEditText(data.oldx, data.oldy, data.value);
             else { console.log("not supported operation: " + data.type); }
         }
     },
@@ -193,6 +196,8 @@ enyo.kind({
             else if (ds[d].type == 'touchend') self.whiteboard.endPath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
             else if (ds[d].type == 'undo') self.whiteboard.executeUndo();
             else if (ds[d].type == 'redo') self.whiteboard.executeRedo();
+            else if (ds[d].type == 'addtext') self.whiteboard.executeAddText(ds[d].oldx, ds[d].oldy);
+            else if (ds[d].type == 'edittext') self.whiteboard.executeEditText(ds[d].oldx, ds[d].oldy, ds[d].value);
             else { console.log("not supported operation: " + data.type); }
         }
         //console.log("Total pages is " + data.npages);

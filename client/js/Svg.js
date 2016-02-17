@@ -37,6 +37,7 @@ enyo.kind({
         this.drawStartY = 0;
         this.undoStack = [];
         this.redoStack = [];
+        this.textEdits = {};
     },
 
     /**
@@ -150,7 +151,8 @@ enyo.kind({
                 });
                 break;
             default:
-                console.log("not supported yet.");
+                console.log("startPath: unknown item. ignore");
+                return;
         }
         if (send) {
             this.connection.sendPath({
@@ -230,7 +232,8 @@ enyo.kind({
                 }
                 break;
             default:
-                console.log("not supported yet.");
+                console.log("continuePath: unknown item. ignore");
+                return;
         }
 
         if (send) {
@@ -269,7 +272,8 @@ enyo.kind({
                 }
                 break;
             default:
-                console.log("not supported yet.");
+                console.log("endPath: unknown item. ignore");
+                return;
         }
 
         if (this.element) {
@@ -482,27 +486,52 @@ enyo.kind({
         }
     },
 
+    onTextClicked: function(t) {
+        var input = t.inlineTextEditing.startEditing();  // Retrieve created <input type=text> field
+        var _this = this;
+        input.addEventListener("blur", function(e) {
+            t.inlineTextEditing.stopEditing(); // Stop inline editing after blur on the text field
+            _this.connection.sendPath({
+                type: 'edittext',
+                oldx: t.attrs.x,
+                oldy: t.attrs.y,
+                value: t.inlineTextEditing.input.value
+            });
+        });
+    },
+
     appclicked: function(x, y) {
         if (this.addingText) {
-            var text = this.cvs.text(x, y, 'Adding text here')
-            .attr({'text-anchor': 'start', 'font-size': '25px'})
-            .transform([]);
-            // Initialize text editing for the text element
-            this.cvs.inlineTextEditing(text);
+            var text = this.cvs.text(x, y, 'Adding text here').attr({'text-anchor': 'start', 'font-size': '25px'}).transform([]);
+            this.cvs.inlineTextEditing(text);   // Initialize text editing for the text element
+            text.click(this.onTextClicked.bind(this, text), true);
+            this.addingText = false;    //reset adding text status
 
-            // Start inline editing on click
-            text.click(function(){
-                // Retrieve created <input type=text> field
-                var input = this.inlineTextEditing.startEditing();
-
-                input.addEventListener("blur", function(e){
-                    // Stop inline editing after blur on the text field
-                    text.inlineTextEditing.stopEditing();
-                }, true);
+            this.connection.sendPath({
+                oldx: x,
+                oldy: y,
+                type: 'addtext',
             });
 
-            //reset adding text status
-            this.addingText = false;
+            var id = x.toString() + '-' + y.toString();
+            this.textEdits[id] = text;
+        }
+    },
+
+    executeAddText: function(x, y) {
+        var text = this.cvs.text(x, y, 'Adding text here').attr({'text-anchor': 'start', 'font-size': '25px'}).transform([]);
+        this.cvs.inlineTextEditing(text);   // Initialize text editing for the text element
+        text.click(this.onTextClicked.bind(text), true);
+
+        var id = x.toString() + '-' + y.toString();
+        this.textEdits[id] = text;
+    },
+
+    executeEditText: function(x, y, value) {
+        var id = x.toString() + '-' + y.toString();
+        if (id in this.textEdits) {
+            var t = this.textEdits[id];
+            t.node.textContent = value;
         }
     },
 
