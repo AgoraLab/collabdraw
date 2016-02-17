@@ -78,10 +78,9 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             return
 
         if event == "init":
-            self.logger.info("Initializing with room name %s" % self.room_name)
             room_name = data.get('room', '')
             page_no = data.get('page', '1')
-
+            self.logger.info("Initializing with room name %s" % room_name)
             if not room_name:
                 self.logger.error("Room name not provided. Can't initialize")
                 return
@@ -92,7 +91,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.init(room_name, page_no)
 
         elif event == "draw-click":
-
             single_path = data['singlePath']
             self.logger.info("Received draw-click %s",single_path)
             self.paths_cache[self.path_key()].extend(single_path)
@@ -145,13 +143,12 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                                                            'width': width, 'height': height}))
         # Then send the paths
         # p = self.db_client.get(self.path_key())
-        if self.path_key() in self.paths_cache:
+        if self.path_key() in self.paths_cache and self.paths_cache[self.path_key()] and len(self.paths_cache[self.path_key()])>0:
             path=self.paths_cache[self.path_key()]
         else:
             path=self.db_client.lrange(self.path_key(), 0, -1)
-            self.logger.info("xxxx %s"%path)
             self.paths_cache[self.path_key()] = path
-
+        self.logger.info("xxxxxxx %d"%(len(path)))
         self.send_message(self.construct_message("draw-many",
                                                  {'datas': path, 'npages': self.num_pages}))
 

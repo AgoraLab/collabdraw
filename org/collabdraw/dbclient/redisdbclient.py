@@ -18,7 +18,7 @@ class RedisDbClient(DbInterface):
         self.redis_client.set(key, value)
 
     def rpush(self, key, value):
-        value=self.redis_client.rpush(key, *value)
+        self.redis_client.rpush(key, *value)
 
     def lrange(self, key, start, end):
         value=self.redis_client.lrange(key, start, end)
