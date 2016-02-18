@@ -43,6 +43,8 @@ VENDOR_STATUS_ACTIVE = 1
 VENDOR_STATUS_SUSPEND = 2
 VENDOR_STATUS_DEPRECATED = 3
 
+COOKIE_EXPIRED_SECONDS=3600
+
 class JoinHandler(tornado.web.RequestHandler):
     """
     Http request handler for join request.
@@ -53,7 +55,7 @@ class JoinHandler(tornado.web.RequestHandler):
     def clear_expired_cookies():
         now = time.time()
         l = [sid for sid, v in JoinHandler.cookies.items() if  v['expiredTs'] <= now]
-        logging.getLogger('websocket').info("clear_expired_cookies %s"%l)
+        # logging.getLogger('websocket').debug("clear_expired_cookies %s"%l)
         for sid in l:
             del JoinHandler.cookies[sid]
 
@@ -127,7 +129,7 @@ class JoinHandler(tornado.web.RequestHandler):
         self.finish(ret)
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
-            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + 30, 'vid':vid, 'sid':ret['sid']}
+            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}
 
     def post(self):
         key = self.get_argument('key', '')
@@ -137,4 +139,4 @@ class JoinHandler(tornado.web.RequestHandler):
         self.finish(ret)
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
-            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + 3600, 'vid':vid}
+            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}

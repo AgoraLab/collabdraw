@@ -46,17 +46,17 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r'/realtime/', RealtimeHandler),
-            (r'/resource/(.*)', tornado.web.StaticFileHandler, dict(path=config.RESOURCE_DIR)),
+            (r'/client/(.*)', tornado.web.StaticFileHandler, dict(path=config.RESOURCE_DIR)),
             (r'/resources/(.*)', tornado.web.StaticFileHandler, dict(path=config.I18N_DIR)),
             (r'/upload', UploadHandler),
             (r'/join', JoinHandler),
-            (r'/login.html', LoginHandler),
-            (r'/logout.html', LogoutHandler),
-            (r'/register.html', RegisterHandler),
-            (r'/index.html', IndexHandler),
-            (r'/', IndexHandler),
-            (r'/(.*)', tornado.web.StaticFileHandler,
-             dict(path=config.ROOT_DIR)),
+            # (r'/login.html', LoginHandler),
+            # (r'/logout.html', LogoutHandler),
+            # (r'/register.html', RegisterHandler),
+            # (r'/index.html', IndexHandler),
+            # (r'/', IndexHandler),
+            # (r'/(.*)', tornado.web.StaticFileHandler,
+            #  dict(path=config.ROOT_DIR)),
         ]
 
         settings = dict(
@@ -79,6 +79,6 @@ if __name__ == "__main__":
         })
     logger.info("Listening on port %s" % config.APP_PORT)
     http_server.listen(config.APP_PORT)
-    tornado.ioloop.PeriodicCallback(JoinHandler.clear_expired_cookies,10*1000).start()
-    tornado.ioloop.PeriodicCallback(RealtimeHandler.clear_expired_data,10*1000).start()
+    tornado.ioloop.PeriodicCallback(JoinHandler.clear_expired_cookies,60*1000).start()
+    tornado.ioloop.PeriodicCallback(RealtimeHandler.clear_expired_data,60*1000).start()
     tornado.ioloop.IOLoop.instance().start()

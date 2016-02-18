@@ -15,7 +15,7 @@ class DbClientFactory:
         @rtype : DbInterface
         """
         logger = logging.getLogger('websocket')
-        logger.info("Initializing with db client type %s" % db_client_type_str)
+        logger.debug("Initializing with db client type %s" % db_client_type_str)
         if db_client_type_str == DbClientTypes.redis:
             return RedisDbClient()
         elif db_client_type_str == DbClientTypes.in_memory:

@@ -19,7 +19,7 @@ class UploadHandler(tornado.web.RequestHandler):
         self.room_name = self.get_argument('room', '')
         loader = template.Loader(config.ROOT_DIR)
         return_str = loader.load(os.path.join(config.HTML_ROOT, "upload.html")).generate(room=self.room_name)
-        self.logger.info("Room name is %s" % self.room_name)
+        self.logger.info("UploadHandler Room name is %s" % self.room_name)
         self.finish(return_str)
 
     def post(self):
@@ -52,4 +52,3 @@ class UploadHandler(tornado.web.RequestHandler):
         threading.Thread(target=process_uploaded_file, args=(dir_path, fname, self.room_name)).start()
         response_str = "Upload finished successfully"
         self.finish(return_str % (self.room_name, response_str))
-

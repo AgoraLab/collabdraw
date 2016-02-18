@@ -15,7 +15,7 @@ class PubSubClientFactory:
         @rtype : PubSubInterface
         """
         logger = logging.getLogger('websocket')
-        logger.info("Initializing with pubsub client type %s" % pubsub_client_type_str)
+        logger.debug("Initializing with pubsub client type %s" % pubsub_client_type_str)
         if pubsub_client_type_str == PubSubClientTypes.redis:
             return RedisPubSubClient()
         else:

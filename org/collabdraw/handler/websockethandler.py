@@ -27,7 +27,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
     images_cache = {}
 
     def clear_expired_data():
-        RealtimeHandler.logger.info("clear_expired_data")
+        RealtimeHandler.logger.debug("clear_expired_data")
         l = []
         cli= DbClientFactory.getDbClient(config.DB_CLIENT_TYPE).redis_client
         for k in RealtimeHandler.paths_cache.keys():
@@ -36,13 +36,14 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 num=value[1]
             else:
                 num=None
-            RealtimeHandler.logger.info("monitor %s"%num)
+            # RealtimeHandler.logger.info("monitor %s"%num)
             if num == 0:
                 l.append(k)
+
         for topic in l:
-            del RealtimeHandler.paths_cache[k]
-            if k in RealtimeHandler.images_cache:
-                del RealtimeHandler.images_cache[k]
+            del RealtimeHandler.paths_cache[topic]
+            if topic in RealtimeHandler.images_cache:
+                del RealtimeHandler.images_cache[topic]
 
     # @Override
     def open(self):
@@ -148,7 +149,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         else:
             path=self.db_client.lrange(self.path_key(), 0, -1)
             self.paths_cache[self.path_key()] = path
-        self.logger.info("xxxxxxx %d"%(len(path)))
         self.send_message(self.construct_message("draw-many",
                                                  {'datas': path, 'npages': self.num_pages}))
 

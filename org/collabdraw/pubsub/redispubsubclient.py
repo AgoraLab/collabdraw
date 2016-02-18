@@ -19,7 +19,8 @@ class RedisPubSubClient(PubSubInterface):
     def __init__(self):
         self.logger = logging.getLogger('websocket')
         self.pubsub_client = self.redis_client.pubsub()
-        self.logger.info("Initialized redis pubsub client")
+        self.t=None
+        # self.logger.info("Initialized redis pubsub client")
 
     def subscribe(self, topic, listener):
         self.logger.debug("Subscribing to topic %s" % topic)
@@ -45,7 +46,7 @@ class RedisPubSubClient(PubSubInterface):
         self.redis_client.publish(topic, message)
 
     def _redis_listener(self, topic, listener, pubsub_client):
-        self.logger.info("Starting listener thread for topic %s" % topic)
+        self.logger.debug("Starting listener thread for topic %s" % topic)
         for message in pubsub_client.listen():
             self.logger.debug("Sending message to topic %s" % topic)
             if message['type'] == 'message':
