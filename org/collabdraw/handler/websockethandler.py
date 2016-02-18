@@ -97,7 +97,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.paths_cache[self.path_key()].extend(single_path)
             self.broadcast_message(self.construct_broadcast_message(fromUid, "draw", {'singlePath': single_path}))
             # self.db_client.set(self.path_key(), self.paths_cache[self.path_key()])
-            self.db_client.rpush(self.path_key(), single_path)
+            self.db_client.rpush(self.path_key(), [json.dumps(v) for v in single_path])
 
         elif event == "clear":
             self.broadcast_message(self.construct_broadcast_message(fromUid, "clear"))

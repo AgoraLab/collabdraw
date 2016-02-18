@@ -22,8 +22,9 @@ class RedisDbClient(DbInterface):
 
     def lrange(self, key, start, end):
         value=self.redis_client.lrange(key, start, end)
+        print(value)
         if value:
-            return [json.loads(v.decode('utf-8').replace("'", '"')) for v in value]
+            return [json.loads(v.decode('utf-8')) for v in value]
         return []
 
     def get(self, key):
