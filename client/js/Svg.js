@@ -502,36 +502,33 @@ enyo.kind({
 
     appclicked: function(x, y) {
         if (this.addingText) {
-            var text = this.cvs.text(x, y, 'Adding text here').attr({'text-anchor': 'start', 'font-size': '25px'}).transform([]);
-            this.cvs.inlineTextEditing(text);   // Initialize text editing for the text element
-            text.click(this.onTextClicked.bind(this, text), true);
-            this.addingText = false;    //reset adding text status
-
+            this.executeAddText(x, y);
+            this.addingText = false;
             this.connection.sendPath({
                 oldx: x,
                 oldy: y,
                 type: 'addtext',
             });
-
-            var id = x.toString() + '-' + y.toString();
-            this.textEdits[id] = text;
         }
     },
 
     executeAddText: function(x, y) {
         var text = this.cvs.text(x, y, 'Adding text here').attr({'text-anchor': 'start', 'font-size': '25px'}).transform([]);
         this.cvs.inlineTextEditing(text);   // Initialize text editing for the text element
-        text.click(this.onTextClicked.bind(text), true);
+        text.click(this.onTextClicked.bind(this, text), true);
 
         var id = x.toString() + '-' + y.toString();
         this.textEdits[id] = text;
+
+        var clone = $.extend({}, text);
+        this.undoStack.push(clone);
     },
 
     executeEditText: function(x, y, value) {
         var id = x.toString() + '-' + y.toString();
         if (id in this.textEdits) {
             var t = this.textEdits[id];
-            t.node.textContent = value;
+            t.inlineTextEditing.autoEditing(value);
         }
     },
 

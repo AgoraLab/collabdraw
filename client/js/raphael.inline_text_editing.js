@@ -153,6 +153,13 @@
 				return this.input;
 			},
 
+			autoEditing: function(value) {
+				this.startEditing();
+				this.input.value = value;
+				this._handleKeyDown(null);
+				this.stopEditing();
+			},
+
 			/**
 			 * Apply text modification and remove associated input
 			 */
