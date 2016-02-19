@@ -170,10 +170,11 @@ enyo.kind({
      * Called when user continues path (without lifting finger)
      */
     continuePath: function(oldx, oldy, x, y, lc, lw, send) {
-
+        send = false
         switch(this.drawingItem) {
             case 'pen':
                 this.drawPath(oldx, oldy, x, y, lc, lw)
+                send = true
                 break;
             case 'arrow':
                 if (this.element) {
@@ -254,7 +255,6 @@ enyo.kind({
      * Called when user lifts finger
      */
     endPath: function(oldx, oldy, x, y, lc, lw, send) {
-
         switch(this.drawingItem) {
             case 'pen':
                 this.drawPath(oldx, oldy, x, y, lc, lw)
@@ -264,6 +264,8 @@ enyo.kind({
             case 'square':
             case 'ellipse':
             case 'rectangle':
+
+                this.continuePath(oldx, oldy, x, y, lc, lw, false);
                 if (this.element) {
                     var BBox = this.element.getBBox();
                     if ( BBox.width == 0 && BBox.height == 0 ) {

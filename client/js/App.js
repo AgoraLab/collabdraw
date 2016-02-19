@@ -192,16 +192,20 @@ enyo.kind({
                     name: "createJoinRoom",
                     content: "Create/Join Room",
                     popup: "createJoinRoomPopup",
-                }, {
+                },
+                /*{
                     name: "getVideo",
                     content: "Get Video...",
-                }, {
+                },*/
+                {
                     name: "exportToSvg",
                     content: "Export to SVG",
-                }, {
+                },
+                /*{
                     name: "upload",
                     content: "Upload",
-                }, ]
+                },*/
+                ]
             }, ]
         }, {
             kind: "onyx.Button",
