@@ -182,7 +182,7 @@ enyo.kind({
                 }
                 // it's local drawing
                 this.penCbkCount++;
-                if (this.penCbkCount % 10 == 0) {
+                if (this.penCbkCount % 5 == 0) {
                     this.drawPath2(x, y, lc, lw, send);
                     reallyNeedToSend = true;
                     break;
@@ -250,8 +250,6 @@ enyo.kind({
 
         if (reallyNeedToSend) {
             this.connection.sendPath({
-                oldx: oldx,
-                oldy: oldy,
                 x: x,
                 y: y,
                 type: 'touchmove',
@@ -297,8 +295,6 @@ enyo.kind({
 
         if (send) {
             this.connection.sendPath({
-                oldx: oldx,
-                oldy: oldy,
                 x: x,
                 y: y,
                 type: 'touchend',
@@ -314,10 +310,10 @@ enyo.kind({
         this.penPoints.push([x, y]);
 
         if (this.penPoints.length == 1) {
-            console.log("[" + x + "," + y + "] 1st point of a spline: do nothing");
+            //console.log("[" + x + "," + y + "] 1st point of a spline: do nothing");
             return;
         } else if (this.penPoints.length == 2) {
-            console.log("[" + x + "," + y + "] 2nd point of a spline: create new path and append to svg");
+            //console.log("[" + x + "," + y + "] 2nd point of a spline: create new path and append to svg");
             ++this.penPathID;
             this.d3SVG.append("path")
                 .datum(this.penPoints)
@@ -327,7 +323,7 @@ enyo.kind({
                 .attr("fill", "none")
                 .attr("d", this.penFunction);
         } else {
-            console.log("[" + x + "," + y + "] " + this.penPoints.length + "th point of a spline: continue drawing");
+            //console.log("[" + x + "," + y + "] " + this.penPoints.length + "th point of a spline: continue drawing");
             this.d3SVG.select('#path-' + this.penPathID).
                 attr("d", this.penFunction);
         }
