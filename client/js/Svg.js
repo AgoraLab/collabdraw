@@ -3,7 +3,6 @@
  * interfaces to the Connection class.
  */
 
-
 enyo.kind({
     name: 'WhiteboardSvg',
     kind: null,
@@ -43,7 +42,8 @@ enyo.kind({
         this.textEdits = {};
         this.penPoints = [];
         this.penCbkCount = 0;
-        this.penPathObj = null;
+        this.penFunction = d3.svg.line().interpolate('cardinal');
+        this.penPathID = 10000;
     },
 
     /**
@@ -265,7 +265,6 @@ enyo.kind({
             case 'pen':
                 this.drawPath2(x, y, lc, lw);
                 this.penPoints = [];
-                this.penPathObj = null;
                 this.penCbkCount = 0;
                 break;
             case 'arrow':
@@ -314,14 +313,15 @@ enyo.kind({
             return;
         } else if (this.penPoints.length == 2) {
             console.log("[" + x + "," + y + "] 2nd point of a spline: create new path and append to svg");
-            this.penPathObj = d3.svg.line().interpolate('cardinal');
+            ++this.penPathID;
             this.d3SVG.append("path")
                 .datum(this.penPoints)
                 .attr("class", "line")
-                .attr("d", this.penPathObj);
+                .attr("id", 'path-' + this.penPathID)
+                .attr("d", this.penFunction);
         } else {
             console.log("[" + x + "," + y + "] " + this.penPoints.length + "th point of a spline: continue drawing");
-            this.d3SVG.select("path").attr("d", this.penPathObj(this.penPoints));
+            this.d3SVG.select('#path-' + this.penPathID).attr("d", this.penFunction);
         }
     },
 
