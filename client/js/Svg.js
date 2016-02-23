@@ -321,12 +321,15 @@ enyo.kind({
             ++this.penPathID;
             this.d3SVG.append("path")
                 .datum(this.penPoints)
-                .attr("class", "line")
                 .attr("id", 'path-' + this.penPathID)
+                .attr("stroke", lc)
+                .attr("stroke-width", lw)
+                .attr("fill", "none")
                 .attr("d", this.penFunction);
         } else {
             console.log("[" + x + "," + y + "] " + this.penPoints.length + "th point of a spline: continue drawing");
-            this.d3SVG.select('#path-' + this.penPathID).attr("d", this.penFunction);
+            this.d3SVG.select('#path-' + this.penPathID).
+                attr("d", this.penFunction);
         }
     },
 
