@@ -173,13 +173,18 @@ enyo.kind({
      * Called when user continues path (without lifting finger)
      */
     continuePath: function(oldx, oldy, x, y, lc, lw, send) {
-        send = false;
+        var reallyNeedToSend = false;
         switch(this.drawingItem) {
             case 'pen':
+                if (!send) { // it's from server
+                    this.drawPath2(x, y, lc, lw, send);
+                    break;
+                }
+                // it's local drawing
                 this.penCbkCount++;
                 if (this.penCbkCount % 10 == 0) {
                     this.drawPath2(x, y, lc, lw, send);
-                    send = true;
+                    reallyNeedToSend = true;
                     break;
                 }
             case 'arrow':
@@ -243,7 +248,7 @@ enyo.kind({
                 return;
         }
 
-        if (send) {
+        if (reallyNeedToSend) {
             this.connection.sendPath({
                 oldx: oldx,
                 oldy: oldy,
