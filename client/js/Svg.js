@@ -2,6 +2,7 @@
  * This contains all the local functions to interact with the whiteboard. It also contains
  * interfaces to the Connection class.
  */
+
 enyo.kind({
     name: 'WhiteboardSvg',
     kind: null,
@@ -27,6 +28,7 @@ enyo.kind({
         this.sid = sid;
         this.room = room;
         this.cvs = new ScaleRaphael(name, width, height);
+        this.d3SVG = d3.select(this.cvs.canvas); //this.cvs.canvas;
         this.connection = new Connection(websocketAddress, this, room, uid);
         this.callback = callback;
         this.zoomRatio = 1;
@@ -38,6 +40,10 @@ enyo.kind({
         this.undoStack = [];
         this.redoStack = [];
         this.textEdits = {};
+        this.penPoints = [];
+        this.penCbkCount = 0;
+        this.penFunction = d3.svg.line().interpolate('cardinal');
+        this.penPathID = 10000;
     },
 
     /**
@@ -112,10 +118,7 @@ enyo.kind({
 
         switch(this.drawingItem) {
             case 'pen':
-                this.undoStack.push({
-                    type: "path-line",
-                    paths: []
-                });
+                this.drawPath2(x, y, lc, lw, send);
                 break;
             case 'arrow':
                 if (!this.element) {
@@ -170,12 +173,20 @@ enyo.kind({
      * Called when user continues path (without lifting finger)
      */
     continuePath: function(oldx, oldy, x, y, lc, lw, send) {
-        send = false
+        var reallyNeedToSend = false;
         switch(this.drawingItem) {
             case 'pen':
-                this.drawPath(oldx, oldy, x, y, lc, lw)
-                send = true
-                break;
+                if (!send) { // it's from server
+                    this.drawPath2(x, y, lc, lw, send);
+                    break;
+                }
+                // it's local drawing
+                this.penCbkCount++;
+                if (this.penCbkCount % 10 == 0) {
+                    this.drawPath2(x, y, lc, lw, send);
+                    reallyNeedToSend = true;
+                    break;
+                }
             case 'arrow':
                 if (this.element) {
                     var path = "M" + this.drawStartX + " " + this.drawStartY + "L" + x + " " + y;
@@ -237,7 +248,7 @@ enyo.kind({
                 return;
         }
 
-        if (send) {
+        if (reallyNeedToSend) {
             this.connection.sendPath({
                 oldx: oldx,
                 oldy: oldy,
@@ -257,14 +268,15 @@ enyo.kind({
     endPath: function(oldx, oldy, x, y, lc, lw, send) {
         switch(this.drawingItem) {
             case 'pen':
-                this.drawPath(oldx, oldy, x, y, lc, lw)
+                this.drawPath2(x, y, lc, lw);
+                this.penPoints = [];
+                this.penCbkCount = 0;
                 break;
             case 'arrow':
             case 'circle':
             case 'square':
             case 'ellipse':
             case 'rectangle':
-
                 this.continuePath(oldx, oldy, x, y, lc, lw, false);
                 if (this.element) {
                     var BBox = this.element.getBBox();
@@ -298,17 +310,26 @@ enyo.kind({
         this.element = null;
     },
 
-    drawPath: function(oldx, oldy, x, y, lc, lw) {
-        var path = "M " + oldx + " " + oldy + " L " + x + " " + y + " Z";
-        var p = this.cvs.path(path);
-        p.attr({
-            "stroke": lc,
-            "stroke-width": lw
-        });
-        var clone = $.extend({}, p);
-        var lastElement = this.undoStack[this.undoStack.length - 1];
-        if (lastElement.type && lastElement.type === 'path-line') {
-            lastElement.paths.push(clone);
+    drawPath2: function(x, y, lc, lw) {
+        this.penPoints.push([x, y]);
+
+        if (this.penPoints.length == 1) {
+            console.log("[" + x + "," + y + "] 1st point of a spline: do nothing");
+            return;
+        } else if (this.penPoints.length == 2) {
+            console.log("[" + x + "," + y + "] 2nd point of a spline: create new path and append to svg");
+            ++this.penPathID;
+            this.d3SVG.append("path")
+                .datum(this.penPoints)
+                .attr("id", 'path-' + this.penPathID)
+                .attr("stroke", lc)
+                .attr("stroke-width", lw)
+                .attr("fill", "none")
+                .attr("d", this.penFunction);
+        } else {
+            console.log("[" + x + "," + y + "] " + this.penPoints.length + "th point of a spline: continue drawing");
+            this.d3SVG.select('#path-' + this.penPathID).
+                attr("d", this.penFunction);
         }
     },
 
