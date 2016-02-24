@@ -3,7 +3,7 @@ __author__ = 'yurun'
 import logging
 import pymysql
 
-VENDOR_HOST = '221.228.202.134'
+VENDOR_HOST = '119.9.92.49'
 VENDOR_PORT = 3313
 VENDOR_USER = 'webquery'
 VENDOR_PASSWORD = 'bestvoip'
