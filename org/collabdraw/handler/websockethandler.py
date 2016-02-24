@@ -66,17 +66,17 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         self.logger.debug("Processing event %s from uid %s @%s" % (event, fromUid, self.request.remote_ip))
 
-        if event == "init" :
-            sid = data.get('sid', '')
-            cookie=JoinHandler.get_cookie(sid)
-            if cookie and cookie['room'] == data['room'] and cookie['expiredTs'] >= fromTs:
-                self.verified=True
-                self.vid=cookie['vid']
-
-        if not self.verified:
-            self.close()
-            self.logger.error("sid not verified［ cookie:%s msg:%s ］" % (cookie, data))
-            return
+        # if event == "init" :
+        #     sid = data.get('sid', '')
+        #     cookie=JoinHandler.get_cookie(sid)
+        #     if cookie and cookie['room'] == data['room'] and cookie['expiredTs'] >= fromTs:
+        #         self.verified=True
+        #         self.vid=cookie['vid']
+        #
+        # if not self.verified:
+        #     self.close()
+        #     self.logger.error("sid not verified［ cookie:%s msg:%s ］" % (cookie, data))
+        #     return
 
         if event == "init":
             room_name = data.get('room', '')
@@ -95,12 +95,15 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             single_path = data['singlePath']
             self.logger.info("Received draw-click %s",single_path)
             self.paths_cache[self.path_key()].extend(single_path)
-            self.broadcast_message(self.construct_broadcast_message(fromUid, "draw", {'singlePath': single_path}))
-            # self.db_client.set(self.path_key(), self.paths_cache[self.path_key()])
+            msg={'singlePath': single_path}
+            if 't' in data:
+                msg['t']=data['t']
+            self.broadcast_message(self.construct_broadcast_message(fromUid, "draw",msg))
             self.db_client.rpush(self.path_key(), [json.dumps(v) for v in single_path])
 
         elif event == "clear":
             self.broadcast_message(self.construct_broadcast_message(fromUid, "clear"))
+            self.paths_cache[self.path_key()]=[]
             self.db_client.delete(self.path_key())
 
         elif event == "get-image":
