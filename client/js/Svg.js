@@ -182,7 +182,7 @@ enyo.kind({
                 }
                 // it's local drawing
                 this.penCbkCount++;
-                if (this.penCbkCount % 5 == 0) {
+                if (this.penCbkCount % 8 == 0) {
                     this.drawPath2(x, y, lc, lw, send);
                     reallyNeedToSend = true;
                     break;
