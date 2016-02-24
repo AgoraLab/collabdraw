@@ -448,7 +448,6 @@ enyo.kind({
         var color = inEvent.selected.name;
         this.$.colorPicker.applyStyle("background-color", color);
         this.curves.color = color;
-        // this.curves.width = "3px";
     },
 
     selectClear: function(inSender, inEvent) {
