@@ -267,6 +267,13 @@ enyo.kind({
         switch(this.drawingItem) {
             case 'pen':
                 this.drawPath2(x, y, lc, lw);
+                this.undoStack.push({
+                    type: 'path-line',
+                    pathID: this.currentPathID(),
+                    datum: this.penPoints,
+                    lineColor: lc,
+                    lineWidth: lw
+                });
                 this.penPoints = [];
                 this.penCbkCount = 0;
                 break;
@@ -306,6 +313,10 @@ enyo.kind({
         this.element = null;
     },
 
+    currentPathID: function() {
+        return 'path-' + this.penPathID;
+    },
+
     drawPath2: function(x, y, lc, lw) {
         this.penPoints.push([x, y]);
 
@@ -317,14 +328,14 @@ enyo.kind({
             ++this.penPathID;
             this.d3SVG.append("path")
                 .datum(this.penPoints)
-                .attr("id", 'path-' + this.penPathID)
+                .attr("id", this.currentPathID())
                 .attr("stroke", lc)
                 .attr("stroke-width", lw)
                 .attr("fill", "none")
                 .attr("d", this.penFunction);
         } else {
             //console.log("[" + x + "," + y + "] " + this.penPoints.length + "th point of a spline: continue drawing");
-            this.d3SVG.select('#path-' + this.penPathID).
+            this.d3SVG.select('#' + this.currentPathID()).
                 attr("d", this.penFunction);
         }
     },
@@ -458,19 +469,14 @@ enyo.kind({
         console.log('executeUndo @' + Date());
         var toUndo = this.undoStack.pop();
         if (toUndo) {
-            var pathsClone = [],
-                clone;
             if (toUndo.type === 'path-line') {
-                for (var i = 0, length = toUndo.paths.length; i < length; i++) {
-                    var toRemove = toUndo.paths[i];
-                    clone = $.extend(true, {}, toRemove);
-                    pathsClone.push(clone);
-                    toRemove.remove();
+                var p = document.getElementById(toUndo.pathID);
+                if (p) {
+                    p.parentElement.removeChild(p);
+                    this.redoStack.push(toUndo);
+                } else {
+                    console.log("fail to find the path by id + " + toUndo.pathID + " to execute undo");
                 }
-                this.redoStack.push({
-                    type: "path-line",
-                    paths: pathsClone
-                })
             } else {
                 var clone = $.extend(true, {}, toUndo);
                 this.redoStack.push(clone);
@@ -489,15 +495,14 @@ enyo.kind({
         var toRedo = this.redoStack.pop();
         if (toRedo) {
             if (toRedo.type === 'path-line') {
-                var pathsClone = [];
-                for (var i = 0, length = toRedo.paths.length; i < length; i++) {
-                    var toAdd = toRedo.paths[i];
-                    pathsClone.push(toAdd.clone());
-                }
-                this.undoStack.push({
-                    type: "path-line",
-                    paths: pathsClone
-                });
+                this.d3SVG.append("path")
+                    .datum(toRedo.datum)
+                    .attr("id", toRedo.penPathID)
+                    .attr("stroke", toRedo.lineColor)
+                    .attr("stroke-width", toRedo.lineWidth)
+                    .attr("fill", "none")
+                    .attr("d", this.penFunction);
+                this.undoStack.push(toRedo);
             } else {
                 var clone = toRedo.clone();
                 this.undoStack.push(clone);
