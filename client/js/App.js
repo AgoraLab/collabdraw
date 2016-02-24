@@ -13,6 +13,7 @@ enyo.kind({
             on: false,
             color: 'white',
             width: '9px',
+            backgroundColor: '',
         },
         uid: 'test',
         sid: '',
@@ -56,6 +57,7 @@ enyo.kind({
     }, {
         kind: "onyx.MoreToolbar",
         components: [{
+            name: "eraser",
             kind: "onyx.Button",
             ontap: "selectEraser",
             classes: "fa fa-eraser"
@@ -380,9 +382,12 @@ enyo.kind({
     selectEraser: function(inSender, inEvent) {
         if (! this.eraser.on) {
             this.eraser.on = true;
+            this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
+            this.$.eraser.applyStyle("background-color", "black");
             this.whiteboard.selectPen();
         } else {
             this.eraser.on = false;
+            this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
         }
     },
 
