@@ -430,6 +430,10 @@ enyo.kind({
         this.drawingItem = 'pen';
     },
 
+    selectEraser: function() {
+        this.drawingItem = 'eraser';
+    },
+
     drawRectangle: function() {
         this.drawingItem = 'rectangle';
     },
@@ -524,7 +528,7 @@ enyo.kind({
         });
     },
 
-    appclicked: function(x, y) {
+    appclicked: function(x, y, pageX, pageY) {
         if (this.addingText) {
             this.executeAddText(x, y);
             this.addingText = false;
@@ -533,6 +537,11 @@ enyo.kind({
                 oldy: y,
                 type: 'addtext',
             });
+        } else if (this.drawingItem == 'eraser') {
+            var svgElem = this.cvs.getElementByPoint(pageX, pageY);
+            if (svgElem) {
+                svgElem.remove();
+            }
         }
     },
 

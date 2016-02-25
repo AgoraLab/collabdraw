@@ -24,6 +24,7 @@ enyo.kind({
         appPort: "",
     },
 
+
     components: [{
         kind: "FittableRows",
         fit: true,
@@ -199,18 +200,10 @@ enyo.kind({
                     content: "Create/Join Room",
                     popup: "createJoinRoomPopup",
                 },
-                /*{
-                    name: "getVideo",
-                    content: "Get Video...",
-                },*/
                 {
                     name: "exportToSvg",
                     content: "Export to SVG",
-                },
-                /*{
-                    name: "upload",
-                    content: "Upload",
-                },*/
+                }
                 ]
             }, ]
         }, {
@@ -328,13 +321,14 @@ enyo.kind({
         var canvasBounds = this.$.canvasContainer.getBounds();
         var x = inEvent.pageX - canvasBounds.left;
         var y = inEvent.pageY - canvasBounds.top;
-        this.whiteboard.appclicked(x, y);
+        this.whiteboard.appclicked(x, y, inEvent.pageX, inEvent.pageY);
     },
 
     touchstart: function(inSender, inEvent) {
         var canvasBounds = this.$.canvasContainer.getBounds();
         this.curves.oldx = inEvent.pageX - canvasBounds.left;
         this.curves.oldy = inEvent.pageY - canvasBounds.top;
+
         if (this.eraser.on) {
             this.whiteboard.startPath(this.curves.oldx, this.curves.oldy, this.eraser.color, this.eraser.width, true);
         } else {
@@ -347,6 +341,7 @@ enyo.kind({
             var canvasBounds = this.$.canvasContainer.getBounds();
             x = inEvent.pageX - canvasBounds.left;
             y = inEvent.pageY - canvasBounds.top;
+
             if (this.eraser.on) {
                 this.whiteboard.continuePath(this.curves.oldx, this.curves.oldy, x, y, this.eraser.color, this.eraser.width, true);
             } else {
@@ -362,6 +357,7 @@ enyo.kind({
             var canvasBounds = this.$.canvasContainer.getBounds();
             x = inEvent.pageX - canvasBounds.left;
             y = inEvent.pageY - canvasBounds.top;
+
             if (this.eraser.on) {
                 this.whiteboard.endPath(this.curves.oldx, this.curves.oldy, x, y, this.eraser.color, this.eraser.width, true);
             } else {
@@ -380,15 +376,18 @@ enyo.kind({
     },
 
     selectEraser: function(inSender, inEvent) {
-        if (! this.eraser.on) {
-            this.eraser.on = true;
-            this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
-            this.$.eraser.applyStyle("background-color", "black");
-            this.whiteboard.selectPen();
-        } else {
-            this.eraser.on = false;
-            this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
-        }
+        this.whiteboard.selectEraser();
+
+
+        // if (! this.eraser.on) {
+        //     this.eraser.on = true;
+        //     this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
+        //     this.$.eraser.applyStyle("background-color", "black");
+        //     this.whiteboard.selectPen();
+        // } else {
+        //     this.eraser.on = false;
+        //     this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
+        // }
     },
 
     selectPen: function(inSender, inEvent) {
@@ -517,5 +516,6 @@ enyo.kind({
     gotoPage: function(inSender, inEvent) {
         this.whiteboard.gotoPage(inEvent.selected.content);
     },
+
 
 });

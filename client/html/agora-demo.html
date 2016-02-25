@@ -32,21 +32,12 @@
 </head>
 <body class="enyo-unselectable">
 <script>
-    function viewport() {
-        var e = window
-            , a = 'inner';
-        if (!( 'innerWidth' in window)) {
-            a = 'client';
-            e = document.documentElement || document.body;
-        }
-        return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
-    }
-    var viewportSize = viewport();
+
 
     /* Call AgoraWhiteBoardApi */
     var api = new AgoraWhiteBoardApi();
-    api.canvasWidth = viewportSize.width;
-    api.canvasHeight = viewportSize.height;
+    api.canvasWidth = 658;
+    api.canvasHeight = 658;
     api.canvasNode = document.body;
     api.join('f4637604af81440596a54254d53ade20', 'PES-2017', 'Demba Ba', function (ec, em, cname, uinfo) {
         console.log('[onJoin] ec: ' + ec + ' em: ' + em + ' cname: ' + cname + ' uinfo: ' + uinfo);
