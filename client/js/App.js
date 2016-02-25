@@ -328,12 +328,7 @@ enyo.kind({
         var canvasBounds = this.$.canvasContainer.getBounds();
         this.curves.oldx = inEvent.pageX - canvasBounds.left;
         this.curves.oldy = inEvent.pageY - canvasBounds.top;
-
-        if (this.eraser.on) {
-            this.whiteboard.startPath(this.curves.oldx, this.curves.oldy, this.eraser.color, this.eraser.width, true);
-        } else {
-            this.whiteboard.startPath(this.curves.oldx, this.curves.oldy, this.curves.color, this.curves.width, true);
-        }
+        this.whiteboard.startPath(this.curves.oldx, this.curves.oldy, this.curves.color, this.curves.width, true);
     },
 
     touchmove: function(inSender, inEvent) {
@@ -341,12 +336,7 @@ enyo.kind({
             var canvasBounds = this.$.canvasContainer.getBounds();
             x = inEvent.pageX - canvasBounds.left;
             y = inEvent.pageY - canvasBounds.top;
-
-            if (this.eraser.on) {
-                this.whiteboard.continuePath(this.curves.oldx, this.curves.oldy, x, y, this.eraser.color, this.eraser.width, true);
-            } else {
-                this.whiteboard.continuePath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, true);
-            }
+            this.whiteboard.continuePath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, true);
             this.curves.oldx = x;
             this.curves.oldy = y;
         }
@@ -357,12 +347,7 @@ enyo.kind({
             var canvasBounds = this.$.canvasContainer.getBounds();
             x = inEvent.pageX - canvasBounds.left;
             y = inEvent.pageY - canvasBounds.top;
-
-            if (this.eraser.on) {
-                this.whiteboard.endPath(this.curves.oldx, this.curves.oldy, x, y, this.eraser.color, this.eraser.width, true);
-            } else {
-                this.whiteboard.endPath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, true);
-            }
+            this.whiteboard.endPath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, true);
             this.curves.oldx = -1;
             this.curves.oldy = -1;
         }
@@ -377,17 +362,14 @@ enyo.kind({
 
     selectEraser: function(inSender, inEvent) {
         this.whiteboard.selectEraser();
-
-
-        // if (! this.eraser.on) {
-        //     this.eraser.on = true;
-        //     this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
-        //     this.$.eraser.applyStyle("background-color", "black");
-        //     this.whiteboard.selectPen();
-        // } else {
-        //     this.eraser.on = false;
-        //     this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
-        // }
+        if (! this.eraser.on) {
+             this.eraser.on = true;
+             this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
+             this.$.eraser.applyStyle("background-color", "black");
+        } else {
+             this.eraser.on = false;
+             this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
+        }
     },
 
     selectPen: function(inSender, inEvent) {
@@ -399,27 +381,15 @@ enyo.kind({
     },
 
     setLineWidth1: function(inSender, inEvent) {
-        if (this.eraser.on) {
-            this.eraser.width = '3px';
-        } else {
-            this.curves.width = '3px';
-        }
+        this.curves.width = '3px';
     },
 
     setLineWidth2: function(inSender, inEvent) {
-        if (this.eraser.on) {
-            this.eraser.width = '6px';
-        } else {
-            this.curves.width = '6px';
-        }
+        this.curves.width = '6px';
     },
 
     setLineWidth3: function(inSender, inEvent) {
-        if (this.eraser.on) {
-            this.eraser.width = '9px';
-        } else {
-            this.curves.width = '9px';
-        }
+        this.curves.width = '9px';
     },
 
     optionSelected: function(inSender, inEvent) {

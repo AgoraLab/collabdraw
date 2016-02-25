@@ -542,6 +542,11 @@ enyo.kind({
             if (svgElem) {
                 svgElem.remove();
             }
+
+            var domElem = document.elementFromPoint(pageX, pageY);
+            if (domElem && (domElem.id.indexOf('path-') > -1)) {
+                domElem.remove();
+            }
         }
     },
 
