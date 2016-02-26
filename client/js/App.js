@@ -28,7 +28,7 @@ enyo.kind({
     components: [{
         kind: "FittableRows",
         fit: true,
-        style: "text-align: center; padding: 20px; background-color: #F0F0F0; z-index: 0",
+        style: "text-align: center; padding: 20px; background-color: #d0d0d0; z-index: 0;",
         components: [{
             style: "margin: auto; background-color: #FFFFFF;",
             ontap: "appclicked",
@@ -39,6 +39,8 @@ enyo.kind({
             rendered: function() {
                 this.applyStyle("width", this.owner.canvasWidth + "px");
                 this.applyStyle("height", this.owner.canvasHeight + "px");
+                this.applyStyle("box-shadow", "0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset")
+
                 if (window.location.protocol == 'https:') {
                     var websocketAddress = 'wss://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
                 } else {
