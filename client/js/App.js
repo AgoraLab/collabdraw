@@ -280,41 +280,51 @@ enyo.kind({
 
     zoomInPane: function(inSender, inEvent) {
         this.whiteboard.zoomIn();
+        this.closeEraser();
     },
 
     zoomOutPane: function(inSender, inEvent) {
         this.whiteboard.zoomOut();
+        this.closeEraser();
     },
     undoPath: function(inSender, inEvent) {
         this.whiteboard.undo();
+        this.closeEraser();
     },
 
     redoPath: function(inSender, inEvent) {
         this.whiteboard.redo();
+        this.closeEraser();
     },
 
     cropContent: function(inSender, inEvent) {
         this.whiteboard.cropContent();
+        this.closeEraser();
     },
 
     drawRectangle: function(inSender, inEvent) {
         this.whiteboard.drawRectangle();
+        this.closeEraser();
     },
 
     drawSquare: function(inSender, inEvent) {
         this.whiteboard.drawSquare();
+        this.closeEraser();
     },
 
     drawArrow: function(inSender, inEvent) {
         this.whiteboard.drawArrow();
+        this.closeEraser();
     },
 
     drawEllipse: function(inSender, inEvent) {
         this.whiteboard.drawEllipse();
+        this.closeEraser();
     },
 
     drawCircle: function(inSender, inEvent) {
         this.whiteboard.drawCircle();
+        this.closeEraser();
     },
 
     appclicked: function(inSender, inEvent) {
@@ -360,39 +370,53 @@ enyo.kind({
         return color.match(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
     },
 
-    selectEraser: function(inSender, inEvent) {
+    openEraser: function() {
+        if (this.eraser.on) return;
+
+        this.eraser.on = true;
+        this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
+        this.$.eraser.applyStyle("background-color", "black");
         this.whiteboard.selectEraser();
-        if (! this.eraser.on) {
-             this.eraser.on = true;
-             this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
-             this.$.eraser.applyStyle("background-color", "black");
-        } else {
-             this.eraser.on = false;
-             this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
-        }
+    },
+
+    closeEraser: function() {
+        if (!this.eraser.on) return;
+
+        this.eraser.on = false;
+        this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
+    },
+
+    selectEraser: function(inSender, inEvent) {
+        this.eraser.on ? this.closeEraser() : this.openEraser();
     },
 
     selectPen: function(inSender, inEvent) {
         this.whiteboard.selectPen();
+        this.closeEraser();
     },
 
     addText: function(inSender, inEvent) {
         this.whiteboard.addText();
+        this.closeEraser();
     },
 
     setLineWidth1: function(inSender, inEvent) {
         this.curves.width = '3px';
+        this.closeEraser();
     },
 
     setLineWidth2: function(inSender, inEvent) {
         this.curves.width = '6px';
+        this.closeEraser();
     },
 
     setLineWidth3: function(inSender, inEvent) {
         this.curves.width = '9px';
+        this.closeEraser();
     },
 
     optionSelected: function(inSender, inEvent) {
+        closeEraser();
         var name = inEvent.originator.name;
         switch (name) {
         case "clear":
@@ -414,6 +438,7 @@ enyo.kind({
     },
 
     colorItemSelected: function(inSender, inEvent) {
+        closeEraser();
         var color = inEvent.selected.name;
         this.$.colorPicker.applyStyle("background-color", color);
         this.curves.color = color;
@@ -445,6 +470,7 @@ enyo.kind({
     },
 
     selectNext: function(inSender, inEvent) {
+        closeEraser();
         this.$.loadingPopup.show();
         var result = this.whiteboard.nextPage();
         this.updatePageInfo();
@@ -452,6 +478,7 @@ enyo.kind({
     },
 
     selectPrevious: function(inSender, inEvent) {
+        closeEraser();
         this.$.loadingPopup.show();
         var result = this.whiteboard.prevPage();
         this.updatePageInfo();
@@ -474,16 +501,19 @@ enyo.kind({
     },
 
     selectNewPage: function(inSender, inEvent) {
+        closeEraser();
         this.whiteboard.newPage();
         this.updatePageInfo();
     },
 
     updatePageInfo: function() {
+        closeEraser();
         this.$.currentPage.setMax(this.whiteboard.getNumPages());
         this.$.currentPage.setValue(this.whiteboard.getCurrentPage());
     },
 
     gotoPage: function(inSender, inEvent) {
+        closeEraser();
         this.whiteboard.gotoPage(inEvent.selected.content);
     },
 
