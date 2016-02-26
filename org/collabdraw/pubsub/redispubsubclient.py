@@ -17,7 +17,7 @@ class RedisPubSubClient(PubSubInterface):
     redis_client = redis.from_url(config.REDIS_URL)
 
     def __init__(self):
-        self.logger = logging.getLogger('websocket')
+        self.logger = logging.getLogger('web')
         self.pubsub_client = self.redis_client.pubsub()
         self.t=None
         # self.logger.info("Initialized redis pubsub client")
@@ -50,4 +50,5 @@ class RedisPubSubClient(PubSubInterface):
         for message in pubsub_client.listen():
             self.logger.debug("Sending message to topic %s" % topic)
             if message['type'] == 'message':
-                listener.send_message(message['data'].decode('utf-8'))
+                # listener.send_message(message['data'].decode('utf-8'))
+                listener.send_path_message(message['data'].decode('utf-8'))

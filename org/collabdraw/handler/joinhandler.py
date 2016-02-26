@@ -66,7 +66,7 @@ class JoinHandler(tornado.web.RequestHandler):
         return None
 
     def initialize(self):
-        self.logger = logging.getLogger('websocket')
+        self.logger = logging.getLogger('web')
         self.set_header("Access-Control-Allow-Origin", "*")
         if JoinHandler.mysqlClient is None:
             JoinHandler.mysqlClient = MysqlClient()

@@ -12,7 +12,7 @@ class RedisDbClient(DbInterface):
     redis_client = redis.from_url(config.REDIS_URL)
 
     def __init__(self):
-        self.logger = logging.getLogger('websocket')
+        self.logger = logging.getLogger('web')
 
     def set(self, key, value):
         self.redis_client.set(key, value)
@@ -22,7 +22,6 @@ class RedisDbClient(DbInterface):
 
     def lrange(self, key, start, end):
         value=self.redis_client.lrange(key, start, end)
-        print(value)
         if value:
             return [json.loads(v.decode('utf-8')) for v in value]
         return []

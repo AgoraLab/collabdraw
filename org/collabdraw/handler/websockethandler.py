@@ -20,11 +20,11 @@ from ..tools.videomaker import make_video
 
 
 class RealtimeHandler(tornado.websocket.WebSocketHandler):
-
     logger = logging.getLogger('websocket')
     pubsub_static =PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE)
     paths_cache = defaultdict(list)
     images_cache = {}
+    logger.setLevel(logging.INFO)
 
     def clear_expired_data():
         RealtimeHandler.logger.debug("clear_expired_data")
@@ -56,6 +56,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE)
         self.send_message(self.construct_message("ready"))
 
+
     # @Override
     def on_message(self, message):
         m = json.loads(message)
@@ -65,7 +66,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         fromTs=time.time()
 
         self.logger.debug("Processing event %s from uid %s @%s" % (event, fromUid, self.request.remote_ip))
-
+        # needed when realse
         # if event == "init" :
         #     sid = data.get('sid', '')
         #     cookie=JoinHandler.get_cookie(sid)
@@ -93,12 +94,16 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         elif event == "draw-click":
             single_path = data['singlePath']
-            self.logger.info("Received draw-click %s",single_path)
-            self.paths_cache[self.path_key()].extend(single_path)
-            msg={'singlePath': single_path}
+            self.logger.debug("Received draw-click %s",single_path)
+            path=self.paths_cache[self.path_key()]
+            idx_start=len(path)
+            idx_end=len(path)+len(single_path)
+            path.extend(single_path)
+            # msg={'singlePath': single_path}
+            msg={'path_start':idx_start, 'path_end':idx_end}
             if 't' in data:
                 msg['t']=data['t']
-            self.broadcast_message(self.construct_broadcast_message(fromUid, "draw",msg))
+            self.broadcast_message(self.construct_broadcast_message(fromUid, "draw", msg))
             self.db_client.rpush(self.path_key(), [json.dumps(v) for v in single_path])
 
         elif event == "clear":
@@ -131,7 +136,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     ## Higher lever methods
     def init(self, room_name, page_no):
-        self.logger.info("Initializing %s and %s" % (room_name, page_no))
+        self.logger.debug("Initializing %s and %s" % (room_name, page_no))
 
         self.room_name = room_name
         self.page_no = page_no
@@ -188,6 +193,17 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     def send_message(self, message):
         message = b64encode(compress(bytes(quote(str(message)), 'utf-8'), 9))
+        self.write_message(message)
+
+    def send_path_message(self, m):
+        m=json.loads(m)
+        if m['event'] == 'draw':
+            start,end=m['data']['path_start'],m['data']['path_end']
+            if end <= len(self.paths_cache[self.path_key()]):
+                m['data']={'singlePath':self.paths_cache[self.path_key()][start:end]}
+        elif m['event']=='clear':
+            pass
+        message = b64encode(compress(bytes(quote(str(json.dumps(m))), 'utf-8'), 9))
         self.write_message(message)
 
     def get_image_data(self, room_name, page_no):

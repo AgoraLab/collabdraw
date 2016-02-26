@@ -15,14 +15,10 @@ from org.collabdraw.handler.loginhandler import LoginHandler
 from org.collabdraw.handler.logouthandler import LogoutHandler
 from org.collabdraw.handler.registerhandler import RegisterHandler
 
-logger = logging.getLogger('websocket')
+FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+logging.basicConfig(format=FORMAT)
+logger = logging.getLogger('web')
 logger.setLevel(logging.INFO)
-
-ch = logging.StreamHandler()
-ch.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-ch.setLevel(logging.INFO)
-logger.addHandler(ch)
-
 
 class IndexHandler(tornado.web.RequestHandler):
     def initialize(self):
