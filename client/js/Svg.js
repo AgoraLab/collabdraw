@@ -69,48 +69,48 @@ enyo.kind({
     },
 
     // start, move, and up are the drag functions
-    start: function() {
-        // storing original coordinates
-        this.ox = this.attr("x");
-        this.oy = this.attr("y");
-        this.attr({
-            opacity: 1
-        });
-        if (this.attr("y") < 60 && this.attr("x") < 60) this.attr({
-            fill: "#000"
-        });
-    },
+    //start: function() {
+        //// storing original coordinates
+        //this.ox = this.attr("x");
+        //this.oy = this.attr("y");
+        //this.attr({
+            //opacity: 1
+        //});
+        //if (this.attr("y") < 60 && this.attr("x") < 60) this.attr({
+            //fill: "#000"
+        //});
+    //},
 
-    move: function(dx, dy) {
-        // move will be called with dx and dy
-        if (this.attr("y") > 200 || this.attr("x") > 300) this.attr({
-            x: this.ox + dx,
-            y: this.oy + dy
-        });
-        else {
-            nowX = Math.min(300, this.ox + dx);
-            nowY = Math.min(200, this.oy + dy);
-            nowX = Math.max(0, nowX);
-            nowY = Math.max(0, nowY);
-            this.attr({
-                x: nowX,
-                y: nowY
-            });
-            if (this.attr("fill") != "#000") this.attr({
-                fill: "#000"
-            });
-        }
-    },
+    //move: function(dx, dy) {
+        //// move will be called with dx and dy
+        //if (this.attr("y") > 200 || this.attr("x") > 300) this.attr({
+            //x: this.ox + dx,
+            //y: this.oy + dy
+        //});
+        //else {
+            //nowX = Math.min(300, this.ox + dx);
+            //nowY = Math.min(200, this.oy + dy);
+            //nowX = Math.max(0, nowX);
+            //nowY = Math.max(0, nowY);
+            //this.attr({
+                //x: nowX,
+                //y: nowY
+            //});
+            //if (this.attr("fill") != "#000") this.attr({
+                //fill: "#000"
+            //});
+        //}
+    //},
 
-    up: function() {
-        // restoring state
-        this.attr({
-            opacity: .5
-        });
-        if (this.attr("y") < 60 && this.attr("x") < 60) this.attr({
-            fill: "#AEAEAE"
-        });
-    },
+    //up: function() {
+        //// restoring state
+        //this.attr({
+            //opacity: .5
+        //});
+        //if (this.attr("y") < 60 && this.attr("x") < 60) this.attr({
+            //fill: "#AEAEAE"
+        //});
+    //},
 
     /**
      * Called when user starts a path
@@ -134,7 +134,7 @@ enyo.kind({
             case 'circle':
                 if (!this.element)
                     this.element = this.cvs.circle(x, y, 0);
-                this.element.drag(this.move, this.start, this.up);
+                //this.element.drag(this.move, this.start, this.up);
                 this.element.attr({
                     "stroke": lc,
                     "stroke-width": lw
@@ -144,7 +144,7 @@ enyo.kind({
             case 'rectangle':
                 if (!this.element)
                     this.element = this.cvs.rect(x, y, 0, 0);
-                this.element.drag(this.move, this.start, this.up);
+                //this.element.drag(this.move, this.start, this.up);
                 this.element.attr({
                     "stroke": lc,
                     "stroke-width": lw
@@ -153,7 +153,7 @@ enyo.kind({
             case 'ellipse':
                 if (!this.element)
                     this.element = this.cvs.ellipse(x, y, 0, 0);
-                this.element.drag(this.move, this.start, this.up);
+                //this.element.drag(this.move, this.start, this.up);
                 this.element.attr({
                     "stroke": lc,
                     "stroke-width": lw
