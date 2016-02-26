@@ -47,11 +47,16 @@ enyo.kind({
                 if (this.hasNode()) {
                     var _this = this;
                     this.owner.$.loadingPopup.show();
-                    this.owner.whiteboard = new WhiteboardSvg(this.node.getAttribute("id"), this.owner.canvasWidth, this.owner.canvasHeight, this.owner.uid, this.owner.sid, this.owner.room, 1, websocketAddress, function(numPages, currentPage) {
-                        _this.owner.$.currentPage.setMax(numPages);
-                        _this.owner.$.currentPage.setValue(currentPage);
-                        _this.owner.$.loadingPopup.hide();
-                    });
+                    this.owner.whiteboard = new WhiteboardSvg(
+                        this.node.getAttribute("id"),
+                        this.owner,
+                        1, websocketAddress,
+                        function(numPages, currentPage) {
+                            _this.owner.$.currentPage.setMax(numPages);
+                            _this.owner.$.currentPage.setValue(currentPage);
+                            _this.owner.$.loadingPopup.hide();
+                        }
+                    );
                 }
             },
         }],
@@ -331,7 +336,7 @@ enyo.kind({
         var canvasBounds = this.$.canvasContainer.getBounds();
         var x = inEvent.pageX - canvasBounds.left;
         var y = inEvent.pageY - canvasBounds.top;
-        this.whiteboard.appclicked(x, y, inEvent.pageX, inEvent.pageY);
+        this.whiteboard.appclicked(x, y);
     },
 
     touchstart: function(inSender, inEvent) {
@@ -416,7 +421,7 @@ enyo.kind({
     },
 
     optionSelected: function(inSender, inEvent) {
-        closeEraser();
+        this.closeEraser();
         var name = inEvent.originator.name;
         switch (name) {
         case "clear":
@@ -438,7 +443,7 @@ enyo.kind({
     },
 
     colorItemSelected: function(inSender, inEvent) {
-        closeEraser();
+        this.closeEraser();
         var color = inEvent.selected.name;
         this.$.colorPicker.applyStyle("background-color", color);
         this.curves.color = color;

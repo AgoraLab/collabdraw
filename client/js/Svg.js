@@ -23,13 +23,19 @@ enyo.kind({
         return this.currentPage;
     },
 
-    constructor: function(name, width, height, uid, sid, room, page, websocketAddress, callback) {
-        this.uid = uid;
-        this.sid = sid;
-        this.room = room;
-        this.cvs = new ScaleRaphael(name, width, height);
-        this.d3SVG = d3.select(this.cvs.canvas); //this.cvs.canvas;
-        this.connection = new Connection(websocketAddress, this, room, uid);
+    /**
+     * @class WhiteboardSvg
+     * @param parent: Class canvasContainer
+     * @param callback: called once the page is rendered
+     */
+    constructor: function(name, parent, page, websocketAddress, callback) {
+        this.parent_ = parent;
+        this.uid = parent.uid;
+        this.sid = parent.sid;
+        this.room = parent.room;
+        this.cvs = new ScaleRaphael(name, parent.canvasWidth, parent.canvasHeight);
+        this.d3SVG = d3.select(this.cvs.canvas);
+        this.connection = new Connection(websocketAddress, this, this.room, this.uid);
         this.callback = callback;
         this.zoomRatio = 1;
         // Pen drawing by default, user can select circle, ellipse, etc.
@@ -528,7 +534,26 @@ enyo.kind({
         });
     },
 
-    appclicked: function(x, y, pageX, pageY) {
+    executeRemove: function(x, y) {
+        var pageX = x + this.parent_.$.canvasContainer.getBounds().left;
+        var pageY = y + this.parent_.$.canvasContainer.getBounds().top;
+
+        var svgElem = this.cvs.getElementByPoint(pageX, pageY);
+        if (svgElem) {
+            svgElem.remove();
+            return true;
+        }
+
+        var domElem = document.elementFromPoint(pageX, pageY);
+        if (domElem && (domElem.id.indexOf('path-') > -1)) {
+            domElem.remove();
+            return true;
+        }
+
+        return false;
+    },
+
+    appclicked: function(x, y) {
         if (this.addingText) {
             this.executeAddText(x, y);
             this.addingText = false;
@@ -538,15 +563,12 @@ enyo.kind({
                 type: 'addtext',
             });
         } else if (this.drawingItem == 'eraser') {
-            var svgElem = this.cvs.getElementByPoint(pageX, pageY);
-            if (svgElem) {
-                svgElem.remove();
-            }
-
-            var domElem = document.elementFromPoint(pageX, pageY);
-            if (domElem && (domElem.id.indexOf('path-') > -1)) {
-                domElem.remove();
-            }
+            this.executeRemove(x, y);
+            this.connection.sendPath({
+                oldx: x,
+                oldy: y,
+                type: 'rm'
+            });
         }
     },
 

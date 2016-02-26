@@ -101,8 +101,10 @@ enyo.kind({
 
         // Send undo or redo immediately. by sunyurun@agora.io
         // Send path every two points or when user removes finger
+
         if (this.currentPathLength > 2 || data.type === "touchend" ||
-            data.type == 'undo' || data.type == 'redo' || data.type == 'addtext' || data.type == 'edittext') {
+            data.type == 'undo' || data.type == 'redo' ||
+            data.type == 'addtext' || data.type == 'edittext' || data.type == 'rm') {
             this.sendMessage("draw-click", {
                 "singlePath": this.singlePath
             });
@@ -174,6 +176,7 @@ enyo.kind({
             else if (data.type == 'redo') self.whiteboard.executeRedo();
             else if (data.type == 'addtext') self.whiteboard.executeAddText(data.oldx, data.oldy);
             else if (data.type == 'edittext') self.whiteboard.executeEditText(data.oldx, data.oldy, data.value);
+            else if (data.type == 'rm') self.whiteboard.executeRemove(data.oldx, data.oldy);
             else { console.log("not supported operation: " + data.type); }
         }
     },
@@ -185,6 +188,7 @@ enyo.kind({
      * @param {datas:[points...]} data
      */
     remoteDrawMany: function(self, data) {
+        self.whiteboard.setTotalPages(data.npages);
         ds = data.datas;
         for (d in ds) {
             if (ds[d] === null) continue;
@@ -198,10 +202,11 @@ enyo.kind({
             else if (ds[d].type == 'redo') self.whiteboard.executeRedo();
             else if (ds[d].type == 'addtext') self.whiteboard.executeAddText(ds[d].oldx, ds[d].oldy);
             else if (ds[d].type == 'edittext') self.whiteboard.executeEditText(ds[d].oldx, ds[d].oldy, ds[d].value);
+            else if (ds[d].type == 'rm') self.whiteboard.executeRemove(ds[d].oldx, ds[d].oldy);
             else { console.log("not supported operation: " + data.type); }
         }
         //console.log("Total pages is " + data.npages);
-        self.whiteboard.setTotalPages(data.npages);
+
     },
 
     /**
