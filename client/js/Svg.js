@@ -250,7 +250,7 @@ enyo.kind({
                 }
                 break;
             default:
-                console.log("continuePath: unknown item. ignore");
+                //console.log("continuePath: unknown item. ignore");
                 return;
         }
 

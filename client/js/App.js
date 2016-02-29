@@ -286,52 +286,52 @@ enyo.kind({
     }, ],
 
     zoomInPane: function(inSender, inEvent) {
-        this.whiteboard.zoomIn();
         this.closeEraser();
+        this.whiteboard.zoomIn();
     },
 
     zoomOutPane: function(inSender, inEvent) {
-        this.whiteboard.zoomOut();
         this.closeEraser();
+        this.whiteboard.zoomOut();
     },
     undoPath: function(inSender, inEvent) {
-        this.whiteboard.undo();
         this.closeEraser();
+        this.whiteboard.undo();
     },
 
     redoPath: function(inSender, inEvent) {
-        this.whiteboard.redo();
         this.closeEraser();
+        this.whiteboard.redo();
     },
 
     cropContent: function(inSender, inEvent) {
-        this.whiteboard.cropContent();
         this.closeEraser();
+        this.whiteboard.cropContent();
     },
 
     drawRectangle: function(inSender, inEvent) {
-        this.whiteboard.drawRectangle();
         this.closeEraser();
+        this.whiteboard.drawRectangle();
     },
 
     drawSquare: function(inSender, inEvent) {
-        this.whiteboard.drawSquare();
         this.closeEraser();
+        this.whiteboard.drawSquare();
     },
 
     drawArrow: function(inSender, inEvent) {
-        this.whiteboard.drawArrow();
         this.closeEraser();
+        this.whiteboard.drawArrow();
     },
 
     drawEllipse: function(inSender, inEvent) {
-        this.whiteboard.drawEllipse();
         this.closeEraser();
+        this.whiteboard.drawEllipse();
     },
 
     drawCircle: function(inSender, inEvent) {
-        this.whiteboard.drawCircle();
         this.closeEraser();
+        this.whiteboard.drawCircle();
     },
 
     appclicked: function(inSender, inEvent) {
@@ -390,6 +390,7 @@ enyo.kind({
         if (!this.eraser.on) return;
 
         this.eraser.on = false;
+        this.whiteboard.drawingItem = '';
         this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
     },
 
@@ -398,28 +399,28 @@ enyo.kind({
     },
 
     selectPen: function(inSender, inEvent) {
-        this.whiteboard.selectPen();
         this.closeEraser();
+        this.whiteboard.selectPen();
     },
 
     addText: function(inSender, inEvent) {
-        this.whiteboard.addText();
         this.closeEraser();
+        this.whiteboard.addText();
     },
 
     setLineWidth1: function(inSender, inEvent) {
-        this.curves.width = '3px';
         this.closeEraser();
+        this.curves.width = '3px';
     },
 
     setLineWidth2: function(inSender, inEvent) {
-        this.curves.width = '6px';
         this.closeEraser();
+        this.curves.width = '6px';
     },
 
     setLineWidth3: function(inSender, inEvent) {
-        this.curves.width = '9px';
         this.closeEraser();
+        this.curves.width = '9px';
     },
 
     optionSelected: function(inSender, inEvent) {
@@ -508,19 +509,19 @@ enyo.kind({
     },
 
     selectNewPage: function(inSender, inEvent) {
-        closeEraser();
+        this.closeEraser();
         this.whiteboard.newPage();
         this.updatePageInfo();
     },
 
     updatePageInfo: function() {
-        closeEraser();
+        this.closeEraser();
         this.$.currentPage.setMax(this.whiteboard.getNumPages());
         this.$.currentPage.setValue(this.whiteboard.getCurrentPage());
     },
 
     gotoPage: function(inSender, inEvent) {
-        closeEraser();
+        this.closeEraser();
         this.whiteboard.gotoPage(inEvent.selected.content);
     },
 
