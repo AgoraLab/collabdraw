@@ -13,6 +13,7 @@ from ..tools.uploadprocessor import process_uploaded_file
 class UploadHandler(tornado.web.RequestHandler):
     def initialize(self):
         self.logger = logging.getLogger('websocket')
+        self.set_header("Access-Control-Allow-Origin", "*")
         self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
 
     def get(self):
@@ -35,7 +36,9 @@ class UploadHandler(tornado.web.RequestHandler):
             self.finish(return_str % (self.room_name, response_str))
             return
         self.logger.debug("Room name is %s" % self.room_name)
-        fileinfo = self.request.files['file'][0]
+        self.logger.info("Room name is %s %s" % (type(self.request.files), self.request.files.keys()))
+
+        fileinfo = self.request.files['myfile'][0]
         fname = fileinfo['filename']
         fext = os.path.splitext(fname)[1]
         if fext.lower() != '.pdf':

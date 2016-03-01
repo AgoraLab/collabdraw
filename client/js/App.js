@@ -319,11 +319,12 @@ enyo.kind({
         }
 
         $("#file-upload-root").uploadFile({
-            url:"",
+            url:"http://10.203.112.131:5000/upload", // todo: backend service url
             multiple:false,
             dragDrop:false,
             maxFileCount:1,
-            fileName:"myfile"
+            fileName:"myfile",
+            formData: {room: this.whiteboard.room}
         });
     },
 

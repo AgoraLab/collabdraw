@@ -46,6 +46,7 @@ class Application(tornado.web.Application):
         handlers = [
             (r'/realtime/', RealtimeHandler),
             (r'/client/(.*)', tornado.web.StaticFileHandler, dict(path=config.RESOURCE_DIR)),
+            (r'/files/(.*)', tornado.web.StaticFileHandler, dict(path=config.ROOT_DIR)),
             # (r'/resources/(.*)', tornado.web.StaticFileHandler, dict(path=config.I18N_DIR)),
             (r'/upload', UploadHandler),
             (r'/join', JoinHandler),
@@ -77,7 +78,7 @@ def serverKeepAlive():
     redisClient=DbClientFactory.getDbClient(config.DB_CLIENT_TYPE).redis_client
     now=time.time()+60
     if get_ip_address('eth0'):
-        msg={'expiredTs':now, "addr":"%s:%d"%(get_ip_address('eth0'),config.PUBLIC_LISTEN_PORT)}
+        msg={'expiredTs':now, "addr":"%s:%s"%(get_ip_address('eth0'),config.PUBLIC_LISTEN_PORT)}
         redisClient.hset("edgeServer",msg['addr'], json.dumps(msg))
 
 def onTimer():

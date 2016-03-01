@@ -70,8 +70,8 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 
 if __name__ == '__main__':
     try:
-        DrawClient.room='one'
-        DumpyClient.room='one'
+        DrawClient.room='onee'
+        DumpyClient.room='onee'
         global host
         host=[]
         for i in range(2):

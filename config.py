@@ -17,7 +17,7 @@ REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://127.0.0.1:6379')
 # Full path of "collabdraw" directory
 ROOT_DIR = "/".join(os.path.realpath(__file__).split('/')[:-1])
 RESOURCE_DIR = os.path.join(ROOT_DIR, 'client')
-I18N_DIR = os.path.join(ROOT_DIR, 'resources')
+# I18N_DIR = os.path.join(ROOT_DIR, 'resources')
 HTML_ROOT = os.path.join(RESOURCE_DIR, 'html')
 
 # Hash salt for storing password in database
