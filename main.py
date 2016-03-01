@@ -16,9 +16,7 @@ from org.collabdraw.handler.uploadhandler import UploadHandler
 from org.collabdraw.handler.joinhandler import JoinHandler
 from org.collabdraw.handler.centerhandler import CenterHandler
 from org.collabdraw.dbclient.dbclientfactory import DbClientFactory
-from org.collabdraw.dbclient.mysqlclient import MysqlClient
-
-
+from org.collabdraw.dbclient.mysqlclient import MysqlClientVendor
 
 FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -85,9 +83,9 @@ def serverKeepAlive():
 def onTimer():
     JoinHandler.clear_expired_cookies()
     RealtimeHandler.clear_expired_data()
-    CenterHandler.loadEdgeServer()
-    MysqlClient.loadVendors()
     serverKeepAlive()
+    CenterHandler.loadEdgeServer()
+    MysqlClientVendor.loadVendors()
 
 if __name__ == "__main__":
     if not config.ENABLE_SSL:
@@ -98,8 +96,7 @@ if __name__ == "__main__":
             "keyfile": config.SERVER_KEY,
         })
 
-    serverKeepAlive()
-    CenterHandler.loadEdgeServer()
+    onTimer()
 
     logger.info("Listening on port %s" % config.APP_PORT)
     http_server.listen(config.APP_PORT)

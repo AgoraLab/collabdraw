@@ -1,12 +1,10 @@
 __author__ = 'anand'
 
 import logging
-
 import redis
 import json
 import config
 from .dbinterface import DbInterface
-
 
 class RedisDbClient(DbInterface):
     redis_client = redis.from_url(config.REDIS_URL)

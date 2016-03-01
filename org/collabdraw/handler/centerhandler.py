@@ -7,7 +7,7 @@ import tornado.web
 import time
 
 from ..dbclient.dbclientfactory import DbClientFactory
-from ..dbclient.mysqlclient import MysqlClient
+from ..dbclient.mysqlclient import MysqlClientVendor
 from ..tools.tools import hash_password
 from enum import Enum
 
@@ -50,7 +50,7 @@ class CenterHandler(tornado.web.RequestHandler):
     Http request handler for join request.
     Will be created by tornado-framework evertime there's a join request
     """
-    mysqlClient = None
+    mysqlClient = MysqlClientVendor()
     edgeServers={}
     redisClient=DbClientFactory.getDbClient(config.DB_CLIENT_TYPE).redis_client
 
@@ -74,10 +74,6 @@ class CenterHandler(tornado.web.RequestHandler):
     def initialize(self):
         self.logger = logging.getLogger('web')
         self.set_header("Access-Control-Allow-Origin", "*")
-        if self.mysqlClient is None:
-            self.mysqlClient = MysqlClient()
-            if len(self.mysqlClient.vendorKeys) == 0:
-                MysqlClient.loadVendors()
 
     def onSdkJoinChannelReq(self, key, cname, uinfo=None):
         self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))

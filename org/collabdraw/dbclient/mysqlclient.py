@@ -9,7 +9,7 @@ VENDOR_USER = 'webquery'
 VENDOR_PASSWORD = 'bestvoip'
 VENDOR_DB = 'vendors'
 
-class MysqlClient:
+class MysqlClientVendor:
     vendorKeys = {}
     vendorInfos = {}
     logger = logging.getLogger('websocket')
@@ -21,15 +21,15 @@ class MysqlClient:
         # self.onTimer()
 
     def onTimer():
-        MysqlClient.loadVendors()
+        MysqlClientVendor.loadVendors()
 
     def loadVendors():
         conn = pymysql.connect(host=VENDOR_HOST, port=VENDOR_PORT, user=VENDOR_USER, passwd=VENDOR_PASSWORD, db=VENDOR_DB)
         cur = conn.cursor()
         cur.execute("SELECT vendor_id, name, `key`, signkey, status  FROM vendor_info")
         for (vid, name, key, signkey, status) in cur:
-            MysqlClient.vendorKeys[key] = vid
-            MysqlClient.vendorInfos[vid] = {'vid': vid, 'name': name, 'key': key, 'signkey': signkey, 'status': status}
-        MysqlClient.logger.info('update %u vendor info from mysql' % len(MysqlClient.vendorKeys))
+            MysqlClientVendor.vendorKeys[key] = vid
+            MysqlClientVendor.vendorInfos[vid] = {'vid': vid, 'name': name, 'key': key, 'signkey': signkey, 'status': status}
+        MysqlClientVendor.logger.info('update %u vendor info from mysql' % len(MysqlClientVendor.vendorKeys))
         cur.close()
         conn.close()
