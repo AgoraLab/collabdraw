@@ -41,26 +41,30 @@ function AgoraWhiteBoardApi() {
     this.join = function(key, cname, uinfo, onJoin) {
         this.cname = cname;
         _this = this;
-        $.get('http://collabdraw.agoralab.co:5000/join', {key: key, cname: cname, uinfo: uinfo},
-    		function (result, status) {
-    			if (!result || result.length == 0) {
-    				onJoin(-10, 'empty result from agora server', cname, uinfo, uid)
-    				return;
-    			}
-                console.log(JSON.stringify(result));
-                onJoin(result.code, ErrorTable[result['code'].toString()], cname, uinfo);
-                if (result.code == 0) {
-                    _this.uid = result['uid'].toString();
-                    _this.sid = result['sid'];
-                    _this.render();
-                }
-    		}
-    	).fail(function(xhr, textStatus, errorThrown) { console.log("ajax fail");});
+        $.get('http://collabdraw.agoralab.co:5000/getEdgeServer', {key: key, cname: cname},function (result, status) {
+          if (!result || result.length == 0) {
+            onJoin(-10, 'empty result from center server', cname, uinfo, uid)
+            return;
+          }
+          $.get('http://'+result['server']+'/join', {key: key, cname: cname, uinfo: uinfo},function (result, status) {
+            			if (!result || result.length == 0) {
+            				onJoin(-10, 'empty result from agora server', cname, uinfo, uid)
+            				return;
+            			}
+                  console.log(JSON.stringify(result));
+                  onJoin(result.code, ErrorTable[result['code'].toString()], cname, uinfo);
+                  if (result.code == 0) {
+                      _this.uid = result['uid'].toString();
+                      _this.sid = result['sid'];
+                      _this.render();
+                  }
+      		    }
+      	  ).fail(function(xhr, textStatus, errorThrown) { console.log("ajax fail");});
+        }
+      ).fail(function(xhr, textStatus, errorThrown) { console.log("ajax fail");});
     }
 
     this.quit = function() {
-
-
     }
 
     this.render = function() {

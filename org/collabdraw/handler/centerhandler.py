@@ -45,41 +45,45 @@ VENDOR_STATUS_DEPRECATED = 3
 
 COOKIE_EXPIRED_SECONDS=3600
 
-class JoinHandler(tornado.web.RequestHandler):
+class CenterHandler(tornado.web.RequestHandler):
     """
     Http request handler for join request.
     Will be created by tornado-framework evertime there's a join request
     """
     mysqlClient = None
-    cookies={}
-    def clear_expired_cookies():
-        now = time.time()
-        l = [sid for sid, v in JoinHandler.cookies.items() if  v['expiredTs'] <= now]
-        # logging.getLogger('websocket').debug("clear_expired_cookies %s"%l)
-        for sid in l:
-            del JoinHandler.cookies[sid]
+    edgeServers={}
+    redisClient=DbClientFactory.getDbClient(config.DB_CLIENT_TYPE).redis_client
 
-    def get_cookie(sid):
-        now=time.time()
-        if sid in JoinHandler.cookies and now < JoinHandler.cookies[sid]['expiredTs']:
-            return  JoinHandler.cookies[sid]
+    def loadEdgeServer():
+        servers=CenterHandler.redisClient.hgetall("edgeServer")
+        # print("servers:",servers)
+        if servers:
+            CenterHandler.edgeServers={}
+            now=time.time()
+            for k,v in servers.items():
+                msg=str(v, encoding = "utf-8")
+                msg=json.loads(msg)
+                if now < msg['expiredTs']:
+                    CenterHandler.edgeServers[msg['addr']]=msg
+
+    def getEdgeServer(self, cip):
+        if len(self.edgeServers)>0:
+            return list(self.edgeServers.keys())[random.randrange(len(self.edgeServers.keys()))]
         return None
 
     def initialize(self):
         self.logger = logging.getLogger('web')
         self.set_header("Access-Control-Allow-Origin", "*")
-        if JoinHandler.mysqlClient is None:
-            JoinHandler.mysqlClient = MysqlClient()
+        if self.mysqlClient is None:
+            self.mysqlClient = MysqlClient()
             if len(self.mysqlClient.vendorKeys) == 0:
                 MysqlClient.loadVendors()
 
-    def onSdkJoinChannelReq(self, key, cname, uinfo):
+    def onSdkJoinChannelReq(self, key, cname, uinfo=None):
         self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
         code, vid = self.checkLoginRequest(key, cname)
-        uid = self.generateUid(key, cname, uinfo)
-        login_id = key+":"+cname+":"+uinfo
-        sid=str(hash(login_id))
-        res = {'code': code, 'cname': cname, 'uid': uid, 'sid':sid}
+        addr=self.getEdgeServer('')
+        res = {'code': code, 'cname': cname, 'server':addr}
         return res, vid;
 
     # return [ErrorCode, VendorID]
@@ -95,16 +99,16 @@ class JoinHandler(tornado.web.RequestHandler):
         return INVALID_VENDOR_KEY, -1
 
     def checkStaticVendorKey(self, staticKeyString):
-        if not staticKeyString in JoinHandler.mysqlClient.vendorKeys:
+        if not staticKeyString in self.mysqlClient.vendorKeys:
             self.logger.warn('invalid login: fail to find static vendor key %s' % staticKeyString)
             return INVALID_VENDOR_KEY, -1
 
-        vid = JoinHandler.mysqlClient.vendorKeys[staticKeyString]
-        if not vid in JoinHandler.mysqlClient.vendorInfos:
+        vid = self.mysqlClient.vendorKeys[staticKeyString]
+        if not vid in self.mysqlClient.vendorInfos:
             self.logger.warn('invalid login: fail to find vendor info for vendor %u' % vid)
             return INTERNAL_ERROR, -1
 
-        vinfo = JoinHandler.mysqlClient.vendorInfos[vid]
+        vinfo = self.mysqlClient.vendorInfos[vid]
         if (len(vinfo['signkey']) > 0):
             self.logger.warn('invalid login: dynamic key is expected for vendor %u' % vid)
             return NO_AUTHORIZED, -1
@@ -126,19 +130,11 @@ class JoinHandler(tornado.web.RequestHandler):
     def get(self):
         key = self.get_argument('key', '')
         cname = self.get_argument('cname', '')
-        uinfo = self.get_argument('uinfo', '')
-        ret, vid = self.onSdkJoinChannelReq(key, cname, uinfo)
+        ret, vid = self.onSdkJoinChannelReq(key, cname)
         self.finish(ret)
-        if ret['code'] == OK_CODE:
-            self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
-            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}
 
     def post(self):
         key = self.get_argument('key', '')
         cname = self.get_argument('cname', '')
-        uinfo = self.get_argument('uinfo', '')
-        ret = self.onSdkJoinChannelReq(key, cname, uinfo)
+        ret = self.onSdkJoinChannelReq(key, cname)
         self.finish(ret)
-        if ret['code'] == OK_CODE:
-            self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
-            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}

@@ -157,6 +157,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         else:
             path=self.db_client.lrange(self.path_key(), 0, -1)
             self.paths_cache[self.path_key()] = path
+        self.logger.debug(path)
         self.send_message(self.construct_message("draw-many",
                                                  {'datas': path, 'npages': self.num_pages}))
 

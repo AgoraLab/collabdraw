@@ -17,6 +17,12 @@ class RedisDbClient(DbInterface):
     def set(self, key, value):
         self.redis_client.set(key, value)
 
+    def hset(self, key, value):
+        self.redis_client.hset(key, value)
+
+    def hgetall(self, key):
+        self.redis_client.hgetall(key)
+
     def rpush(self, key, value):
         self.redis_client.rpush(key, *value)
 
