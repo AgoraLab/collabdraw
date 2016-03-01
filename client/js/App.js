@@ -210,9 +210,12 @@ enyo.kind({
                 {
                     name: "exportToSvg",
                     content: "Export to SVG",
-                }
-                ]
+                }]
             }, ]
+        }, {
+            kind: "onyx.Button",
+            classes: "fa fa-upload",
+            ontap: "uploadFileNew"
         }, {
             kind: "onyx.Button",
             classes: "fa fa-arrow-left",
@@ -307,6 +310,21 @@ enyo.kind({
     cropContent: function(inSender, inEvent) {
         this.closeEraser();
         this.whiteboard.cropContent();
+    },
+
+    uploadFileNew: function(inSender,inEvent) {
+        var x = $('#file-upload-root');
+        if (!x || x.length === 0) {
+            $(document.body).append("<div id='file-upload-root'></div>");
+        }
+
+        $("#file-upload-root").uploadFile({
+            url:"",
+            multiple:false,
+            dragDrop:false,
+            maxFileCount:1,
+            fileName:"myfile"
+        });
     },
 
     drawRectangle: function(inSender, inEvent) {
@@ -439,9 +457,6 @@ enyo.kind({
         case "exportToSvg":
             this.selectExportToSvg(inSender, inEvent);
             break;
-        case "upload":
-            this.selectUpload(inSender, inEvent);
-            break;
         }
     },
 
@@ -471,10 +486,6 @@ enyo.kind({
         var svg = document.getElementsByTagName('svg')[0];
         var svg_xml = (new XMLSerializer).serializeToString(svg);
         window.open("data:image/svg+xml;base64," + btoa(svg_xml), "Export");
-    },
-
-    selectUpload: function(inSender, inEvent) {
-        window.location = "./upload?room=" + this.room;
     },
 
     selectNext: function(inSender, inEvent) {

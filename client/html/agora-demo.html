@@ -10,6 +10,7 @@
     <title>CollabDraw</title>
     <link rel="shortcut icon" href="assets/favicon.ico"/>
     <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css" rel="stylesheet">
     <!-- -->
     <meta http-equiv="Content-Type" content="text/html; charset=utf8"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -29,11 +30,12 @@
     <script src="../js/d3.min.js"></script>
     <script src="../js/AgoraWhiteBoardApi.js" type="text/javascript"></script>
 
+    <script src="http://hayageek.github.io/jQuery-Upload-File/4.0.10/jquery.uploadfile.min.js"></script>
+
+
 </head>
 <body class="enyo-unselectable">
 <script>
-
-
     /* Call AgoraWhiteBoardApi */
     var api = new AgoraWhiteBoardApi();
     api.canvasWidth = 658;
@@ -42,7 +44,7 @@
     api.join('f4637604af81440596a54254d53ade20', 'PES-2017', 'Demba Ba', function (ec, em, cname, uinfo) {
         console.log('[onJoin] ec: ' + ec + ' em: ' + em + ' cname: ' + cname + ' uinfo: ' + uinfo);
     });
-
 </script>
+
 </body>
 </html>
