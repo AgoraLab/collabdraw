@@ -493,6 +493,15 @@ enyo.kind({
                     type: 'rm-shape',
                     shape: cloneShape
                 });
+            } else if (toUndo.type === 'rm-path') {     // draw the path back
+                var pathObj = $(toUndo.path.outerHTML);
+                this.d3SVG.append("path")
+                    .attr("id", pathObj.attr('id'))
+                    .attr("stroke", pathObj.attr('stroke'))
+                    .attr("stroke-width", pathObj.attr('stroke-width'))
+                    .attr("fill", "none")
+                    .attr("d", pathObj.attr('d'));
+                this.redoStack.push(toUndo);
             } else {
                 var clone = $.extend(true, {}, toUndo);
                 this.redoStack.push(clone);
@@ -526,6 +535,13 @@ enyo.kind({
                     shape: clone
                 });
                 toRedo.shape.remove();
+            } else if (toRedo.type === 'rm-path') {     // redo to remove the path
+                var p = document.getElementById(toRedo.path.id);
+                if (p) {
+                    var clone = $.extend({}, toRedo.path);
+                    this.undoStack.push({type: 'rm-path', path: clone});
+                    p.parentElement.removeChild(p);
+                }
             } else {
                 var clone = toRedo.clone();
                 this.undoStack.push(clone);
@@ -564,6 +580,11 @@ enyo.kind({
 
         var domElem = document.elementFromPoint(pageX, pageY);
         if (domElem && (domElem.id.indexOf('path-') > -1)) {
+            var clone = $.extend({}, domElem);
+            this.undoStack.push({
+                type: 'rm-path',
+                path: clone
+            });
             domElem.remove();
             return true;
         }
