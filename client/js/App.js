@@ -317,9 +317,9 @@ enyo.kind({
         if (!x || x.length === 0) {
             $(document.body).append("<div id='file-upload-root'></div>");
         }
-
+        var u ='http://' + this.appIpAddress + ':' + this.appPort + '/upload';
         $("#file-upload-root").uploadFile({
-            url:"http://10.203.112.131:5000/upload", // todo: backend service url
+            url: u,
             multiple:false,
             dragDrop:false,
             maxFileCount:1,
