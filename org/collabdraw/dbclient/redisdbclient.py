@@ -16,13 +16,16 @@ class RedisDbClient(DbInterface):
         self.redis_client.set(key, value)
 
     def hset(self, key, value):
-        self.redis_client.hset(key, value)
+        return self.redis_client.hset(key, value)
+
+    def incrby(self, key, value):
+        return self.redis_client.execute_command('incrby',key, value)
 
     def hgetall(self, key):
-        self.redis_client.hgetall(key)
+        return self.redis_client.hgetall(key)
 
     def rpush(self, key, value):
-        self.redis_client.rpush(key, *value)
+        return self.redis_client.rpush(key, *value)
 
     def lrange(self, key, start, end):
         value=self.redis_client.lrange(key, start, end)

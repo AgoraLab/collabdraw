@@ -127,7 +127,7 @@ class JoinHandler(tornado.web.RequestHandler):
         ret, vid = self.onSdkJoinChannelReq(key, cname, uinfo)
         self.finish(ret)
         if ret['code'] == OK_CODE:
-            self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
+            self.set_secure_cookie("loginId", ret['sid'])
             JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}
 
 
@@ -138,5 +138,5 @@ class JoinHandler(tornado.web.RequestHandler):
         ret = self.onSdkJoinChannelReq(key, cname, uinfo)
         self.finish(ret)
         if ret['code'] == OK_CODE:
-            self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
+            self.set_secure_cookie("loginId", ret['sid'])
             JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}

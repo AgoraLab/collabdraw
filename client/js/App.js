@@ -324,7 +324,7 @@ enyo.kind({
             dragDrop:false,
             maxFileCount:1,
             fileName:"myfile",
-            formData: {room: this.whiteboard.room}
+            formData: {room:this.whiteboard.room, sid: this.whiteboard.sid}
         });
     },
 

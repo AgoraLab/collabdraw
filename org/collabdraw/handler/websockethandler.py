@@ -47,7 +47,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.room_name = ''
         self.page_no = 1
-        self.num_pages = 1
+        # self.num_pages = 1
         self.vid=0
         self.verified=False
         self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
@@ -66,12 +66,12 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         self.logger.debug("Processing event %s from uid %s @%s" % (event, fromUid, self.request.remote_ip))
         # needed when realse
-        # if event == "init" :
-        #     sid = data.get('sid', '')
-        #     cookie=JoinHandler.get_cookie(sid)
-        #     if cookie and cookie['room'] == data['room'] and cookie['expiredTs'] >= fromTs:
-        #         self.verified=True
-        #         self.vid=cookie['vid']
+        if event == "init" :
+            sid = data.get('sid', '')
+            cookie=JoinHandler.get_cookie(sid)
+            if cookie and cookie['room'] == data['room'] and cookie['expiredTs'] >= fromTs:
+                self.verified=True
+                self.vid=cookie['vid']
         #
         # if not self.verified:
         #     self.close()
@@ -122,10 +122,10 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             make_video(self.path_key())
 
         elif event == "new-page":
-            self.logger.info("num_pages was %d" % self.num_pages)
-            self.num_pages += 1
-            self.db_client.set(self.npages_key(),str(self.num_pages))
-            self.init(self.room_name, self.num_pages)
+            # self.logger.info("num_pages was %d" % self.num_pages)
+            page_no=self.db_client.incrby(self.npages_key(),1)
+            if page_no:
+                self.init(self.room_name, page_no)
 
         self.logger.info("%s takes %.4f sec" %(event,(time.time() - fromTs)))
 
@@ -142,8 +142,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         self.join_room(self.room_name)
 
         n_pages = self.db_client.get(self.npages_key())
-        if n_pages:
-            self.num_pages = int(n_pages)
+        # if n_pages:
+        #     self.num_pages = int(n_pages)
 
         # First send the image if it exists
         image_url, width, height = self.get_image_data(self.room_name, self.page_no)
@@ -156,19 +156,22 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         else:
             path=self.db_client.lrange(self.path_key(), 0, -1)
             self.paths_cache[self.path_key()] = path
-        self.logger.debug(path)
+        # self.logger.debug(path)
         self.send_message(self.construct_message("draw-many",
-                                                 {'datas': path, 'npages': self.num_pages}))
+                                                 {'datas': path, 'npages':n_pages}))
 
     def leave_room(self, room_name, clear_paths=True):
         self.logger.info("Leaving room %s" % room_name)
         self.pubsub_client.unsubscribe(self.path_key(), self)
+        self.pubsub_client.unsubscribe(self.npages_key(), self)
         if clear_paths:
             self.paths_cache[self.path_key()] = []
 
     def join_room(self, room_name):
         self.logger.info("Joining room %s" % room_name)
         self.pubsub_client.subscribe(self.path_key(), self)
+        self.pubsub_client.subscribe(self.npages_key(), self)
+
 
     ## Messaging related methods
     def construct_key(self, namespace, key, *keys):
@@ -207,7 +210,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         self.write_message(message)
 
     def get_image_data(self, room_name, page_no):
-        image_url = os.path.join("files", room_name, str(page_no) + "_image.png")
+        image_url = os.path.join("files", room_name, "image_%s.png"%(str(page_no)))
         image_path = os.path.join(config.ROOT_DIR, image_url)
         if self.path_key() in self.images_cache:
             image =  self.images_cache[self.path_key()]

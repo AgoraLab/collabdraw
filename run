@@ -6,8 +6,9 @@ export PORT=$port
 pid=`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}'| awk -F/ '{print $1}'`
 if [ "$pid" != "" ] ; then
   echo "start fail : port $port already occupied"
+  echo "kill "+`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}'`
   kill $pid
-  exit
+  # exit
 fi
 # nohup python main.py > output.`date +"%y-%m-%d"`.log 2>&1 &
 nohup python main.py > output.log 2>&1 &
