@@ -39,7 +39,7 @@ enyo.kind({
             rendered: function() {
                 this.applyStyle("width", this.owner.canvasWidth + "px");
                 this.applyStyle("height", this.owner.canvasHeight + "px");
-                this.applyStyle("box-shadow", "0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset")
+                this.applyStyle("box-shadow", "0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1)")
 
                 if (window.location.protocol == 'https:') {
                     var websocketAddress = 'wss://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
