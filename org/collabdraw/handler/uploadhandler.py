@@ -14,14 +14,20 @@ class UploadHandler(tornado.web.RequestHandler):
     def initialize(self):
         self.logger = logging.getLogger('websocket')
         self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Methods", 'OPTIONS, HEAD, GET, POST, DELETE')
+        self.set_header("Access-Control-Allow-Headers", 'Content-Type, Content-Range, Content-Disposition')
         self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
 
     def get(self):
         self.room_name = self.get_argument('room', '')
         loader = template.Loader(config.ROOT_DIR)
-        return_str = loader.load(os.path.join(config.HTML_ROOT, "upload.html")).generate(room=self.room_name)
+        return_str = 'something you wanna get'#loader.load(os.path.join(config.HTML_ROOT, "upload.html")).generate(room=self.room_name)
         self.logger.info("UploadHandler Room name is %s" % self.room_name)
         self.finish(return_str)
+
+    def options(self):
+        self.logger.warn("upload handler options requested")
+        pass
 
     def post(self):
         return_str = "<html><head><meta http-equiv='REFRESH'\
