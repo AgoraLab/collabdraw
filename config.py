@@ -1,7 +1,22 @@
 import os
+import socket
+import fcntl
+import struct
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        return socket.inet_ntoa(fcntl.ioctl(
+            s.fileno(),
+            0x8915,  # SIOCGIFADDR
+            struct.pack('256s', bytes(ifname[:15], encoding='utf-8'))
+        )[20:24])
+    except:
+        return ret
 
 # App's host and port
-APP_IP_ADDRESS = "10.203.112.131" # Put your websocket endpoint here
+APP_IP_ADDRESS = get_ip_address("eth0")
+
 APP_PORT = os.environ.get('PORT', 5000)
 
 # Port in which websocket client should listen
@@ -17,6 +32,7 @@ REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://127.0.0.1:6379')
 # Full path of "collabdraw" directory
 ROOT_DIR = "/".join(os.path.realpath(__file__).split('/')[:-1])
 RESOURCE_DIR = os.path.join(ROOT_DIR, 'client')
+FILES_DIR = os.path.join(ROOT_DIR, 'files')
 # I18N_DIR = os.path.join(ROOT_DIR, 'resources')
 HTML_ROOT = os.path.join(RESOURCE_DIR, 'html')
 
@@ -29,4 +45,4 @@ SERVER_CERT = os.path.join(os.getcwd(), "server.crt")
 SERVER_KEY = os.path.join(os.getcwd(), "server.key")
 
 # Demo mode disables login requirement
-DEMO_MODE = False
+# DEMO_MODE = False

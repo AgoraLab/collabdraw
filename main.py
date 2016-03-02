@@ -46,7 +46,7 @@ class Application(tornado.web.Application):
         handlers = [
             (r'/realtime/', RealtimeHandler),
             (r'/client/(.*)', tornado.web.StaticFileHandler, dict(path=config.RESOURCE_DIR)),
-            (r'/files/(.*)', tornado.web.StaticFileHandler, dict(path=config.ROOT_DIR)),
+            (r'/files/(.*)', tornado.web.StaticFileHandler, dict(path=config.FILES_DIR)),
             # (r'/resources/(.*)', tornado.web.StaticFileHandler, dict(path=config.I18N_DIR)),
             (r'/upload', UploadHandler),
             (r'/join', JoinHandler),
@@ -62,23 +62,12 @@ class Application(tornado.web.Application):
 
         tornado.web.Application.__init__(self, handlers, **settings)
 
-
-def get_ip_address(ifname):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        return socket.inet_ntoa(fcntl.ioctl(
-            s.fileno(),
-            0x8915,  # SIOCGIFADDR
-            struct.pack('256s', bytes(ifname[:15], encoding='utf-8'))
-        )[20:24])
-    except:
-        return ret
-
 def serverKeepAlive():
     redisClient=DbClientFactory.getDbClient(config.DB_CLIENT_TYPE).redis_client
     now=time.time()+60
-    if get_ip_address('eth0'):
-        msg={'expiredTs':now, "addr":"%s:%s"%(get_ip_address('eth0'),config.PUBLIC_LISTEN_PORT)}
+    if config.APP_IP_ADDRESS:
+        msg={'expiredTs':now, "addr":"%s:%s"%(config.APP_IP_ADDRESS,config.PUBLIC_LISTEN_PORT)}
+        logger.info(msg)
         redisClient.hset("edgeServer",msg['addr'], json.dumps(msg))
 
 def onTimer():

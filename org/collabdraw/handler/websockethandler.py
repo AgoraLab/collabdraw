@@ -11,11 +11,7 @@ import tornado.websocket
 import tornado.web
 from pystacia import read
 from .joinhandler import JoinHandler
-<<<<<<< Updated upstream
 from collections import defaultdict
-=======
->>>>>>> Stashed changes
-
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..pubsub.pubsubclientfactory import PubSubClientFactory
 from ..tools.videomaker import make_video
@@ -49,17 +45,11 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     # @Override
     def open(self):
-<<<<<<< Updated upstream
         self.room_name = ''
         self.page_no = 1
         self.num_pages = 1
         self.vid=0
         self.verified=False
-=======
-        self.verified=False
-        self.logger = logging.getLogger('websocket')
-        self.logger.info("Open connection")
->>>>>>> Stashed changes
         self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
         self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE)
         self.send_message(self.construct_message("ready"))
@@ -72,7 +62,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         fromUid = m.get('uid', '').strip()
         event = m.get('event', '').strip()
         data = m.get('data', {})
-<<<<<<< Updated upstream
         fromTs=time.time()
 
         self.logger.debug("Processing event %s from uid %s @%s" % (event, fromUid, self.request.remote_ip))
@@ -88,21 +77,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         #     self.close()
         #     self.logger.error("sid not verified［ cookie:%s msg:%s ］" % (cookie, data))
         #     return
-=======
-        fromTs=datetime.now()
-        self.logger.info("Processing event %s %s" % (event, self))
-        self.logger.info(JoinHandler.cookies)
-        if not event:
-            self.logger.error("No event specified")
-            return
->>>>>>> Stashed changes
-
-        if event == "init" :
-            sid = m.get('sid', )
-            if JoinHandler.is_cookie_valid(sid, data.get('room', '')):
-                self.verified=True
-        if not self.verified:
-            return
 
         if event == "init":
             room_name = data.get('room', '')
