@@ -490,7 +490,7 @@ enyo.kind({
     },
 
     selectNext: function(inSender, inEvent) {
-        closeEraser();
+        this.closeEraser();
         this.$.loadingPopup.show();
         var result = this.whiteboard.nextPage();
         this.updatePageInfo();
@@ -498,7 +498,7 @@ enyo.kind({
     },
 
     selectPrevious: function(inSender, inEvent) {
-        closeEraser();
+        this.closeEraser();
         this.$.loadingPopup.show();
         var result = this.whiteboard.prevPage();
         this.updatePageInfo();

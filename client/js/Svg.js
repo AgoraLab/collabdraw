@@ -487,6 +487,12 @@ enyo.kind({
                 } else {
                     console.log("fail to find the path by id + " + toUndo.pathID + " to execute undo");
                 }
+            } else if (toUndo.type === 'rm-shape') {
+                var cloneShape = toUndo.shape.clone();      // clone to re-draw the shape
+                this.redoStack.push({                       // push the {type: 'rm-shape', shape: clone} to redoStack
+                    type: 'rm-shape',
+                    shape: cloneShape
+                });
             } else {
                 var clone = $.extend(true, {}, toUndo);
                 this.redoStack.push(clone);
@@ -513,6 +519,13 @@ enyo.kind({
                     .attr("fill", "none")
                     .attr("d", this.penFunction);
                 this.undoStack.push(toRedo);
+            } else if (toRedo.type === 'rm-shape') {
+                var clone = $.extend({}, toRedo.shape);
+                this.undoStack.push({
+                    type: 'rm-shape',
+                    shape: clone
+                });
+                toRedo.shape.remove();
             } else {
                 var clone = toRedo.clone();
                 this.undoStack.push(clone);
@@ -540,6 +553,11 @@ enyo.kind({
 
         var svgElem = this.cvs.getElementByPoint(pageX, pageY);
         if (svgElem) {
+            var clone = $.extend({}, svgElem);
+            this.undoStack.push({
+                type: 'rm-shape',
+                shape: clone
+            });
             svgElem.remove();
             return true;
         }
@@ -563,12 +581,16 @@ enyo.kind({
                 type: 'addtext',
             });
         } else if (this.drawingItem == 'eraser') {
-            this.executeRemove(x, y);
-            this.connection.sendPath({
-                oldx: x,
-                oldy: y,
-                type: 'rm'
-            });
+            var removed = this.executeRemove(x, y);
+            if (removed) {
+                this.connection.sendPath({
+                    oldx: x,
+                    oldy: y,
+                    type: 'rm'
+                });
+
+
+            }
         }
     },
 
