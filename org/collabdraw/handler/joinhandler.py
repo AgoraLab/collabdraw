@@ -65,6 +65,7 @@ class JoinHandler(tornado.web.RequestHandler):
             return  JoinHandler.cookies[sid]
         return None
 
+
     def initialize(self):
         self.logger = logging.getLogger('web')
         self.set_header("Access-Control-Allow-Origin", "*")
@@ -128,6 +129,7 @@ class JoinHandler(tornado.web.RequestHandler):
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", key+":"+cname+":"+uinfo)
             JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}
+
 
     def post(self):
         key = self.get_argument('key', '')
