@@ -76,7 +76,7 @@ class UploadHandler(tornado.web.RequestHandler):
         fh.write(fileinfo['body'])
         fh.close()
 
-        db_key = "%s:%s:npages" % (cookie['vid'], self.room_name)
+        db_key = "%s:%s:page_list" % (cookie['vid'], self.room_name)
         # split and convert pdf to png
         if fext.lower() == '.pdf':
             threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname, db_key)).start()

@@ -55,6 +55,11 @@ enyo.kind({
     },
 
     sendMessage: function(evt, data) {
+        data["room"]=  this.whiteboard.room
+        data["page_id"]=  this.whiteboard.getCurrentPageId()
+        // console.log(this.whiteboard.page_list);
+        // console.log( this.whiteboard.currentPage);
+
         message = JSON.stringify({
             "uid": this.uid,
             "event": evt,
@@ -188,7 +193,8 @@ enyo.kind({
      * @param {datas:[points...]} data
      */
     remoteDrawMany: function(self, data) {
-        self.whiteboard.setTotalPages(data.npages);
+        console.log(data);
+        self.whiteboard.setTotalPages(data.pages);
         ds = data.datas;
         for (d in ds) {
             if (ds[d] === null) continue;

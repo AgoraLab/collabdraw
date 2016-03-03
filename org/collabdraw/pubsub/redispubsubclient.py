@@ -6,6 +6,7 @@ import threading
 import redis
 import json
 import config
+import traceback
 from .pubsubinterface import PubSubInterface
 
 
@@ -23,10 +24,11 @@ class RedisPubSubClient(PubSubInterface):
         # self.logger.info("Initialized redis pubsub client")
 
     def subscribe(self, topic, listener):
-        self.logger.debug("Subscribing to topic %s" % topic)
-        self.pubsub_client.subscribe(topic)
-        self.t = threading.Thread(target=self._redis_listener, args=(topic, listener, self.pubsub_client))
-        self.t.start()
+        if not self.t:
+            self.logger.debug("Subscribing to topic %s" % topic)
+            self.pubsub_client.subscribe(topic)
+            self.t = threading.Thread(target=self._redis_listener, args=(topic, listener, self.pubsub_client))
+            self.t.start()
 
     def numsub(self, topic):
         value=self.redis_client.execute_command('pubsub', 'numsub', topic)
@@ -47,8 +49,10 @@ class RedisPubSubClient(PubSubInterface):
 
     def _redis_listener(self, topic, listener, pubsub_client):
         self.logger.debug("Starting listener thread for topic %s" % topic)
-        for message in pubsub_client.listen():
-            self.logger.debug("Sending message to topic %s" % topic)
-            if message['type'] == 'message':
-                # listener.send_message(message['data'].decode('utf-8'))
-                listener.send_path_message(message['data'].decode('utf-8'))
+        try:
+            for message in pubsub_client.listen():
+                self.logger.debug("Sending message to topic %s" % topic)
+                if message['type'] == 'message':
+                    listener.on_broadcast_message(message['data'].decode('utf-8'))
+        except:
+            traceback.print_exc()

@@ -23,6 +23,10 @@ enyo.kind({
         return this.currentPage;
     },
 
+    getCurrentPageId: function() {
+        return this.page_list[this.currentPage-1];
+    },
+
     /**
      * @class WhiteboardSvg
      * @param parent: Class canvasContainer
@@ -38,6 +42,7 @@ enyo.kind({
         this.connection = new Connection(websocketAddress, this, this.room, this.uid);
         this.callback = callback;
         this.zoomRatio = 1;
+        this.page_list=[];
         // Pen drawing by default, user can select circle, ellipse, etc.
         this.drawingItem = 'pen';
         this.element = null;
@@ -406,8 +411,8 @@ enyo.kind({
     },
 
     gotoPage: function(pageNum) {
-        this.connection.init(this.uid, this.room, pageNum);
         this.currentPage = pageNum;
+        this.connection.init(this.uid, this.room, pageNum);
     },
 
     newPage: function() {
@@ -421,7 +426,8 @@ enyo.kind({
     },
 
     setTotalPages: function(pages) {
-        this.totalPages = pages;
+        this.totalPages = pages.length;
+        this.page_list= pages ;
         this.callback(this.totalPages, this.currentPage);
     },
 

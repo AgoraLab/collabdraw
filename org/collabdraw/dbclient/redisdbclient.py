@@ -24,6 +24,9 @@ class RedisDbClient(DbInterface):
     def hgetall(self, key):
         return self.redis_client.hgetall(key)
 
+    def lrem(self, key, count, value):
+        return self.redis_client.execute_command('lrem',key, count, value)
+
     def rpush(self, key, value):
         return self.redis_client.rpush(key, *value)
 
