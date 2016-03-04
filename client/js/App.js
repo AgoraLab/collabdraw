@@ -40,12 +40,25 @@ enyo.kind({
         }, {
             kind: "onyx.Button",
             ontap: "logout",
-            style: "height: 40px; float: right;background-image:url(../images/btn_quit.png);background-repeat:no-repeat;background-color:transparent;"
+            style: "float: right;background-image:url(../images/btn_quit.png);background-repeat:no-repeat;background-color:transparent;"
         }, {
-            name: "upload",
-            kind: "onyx.Button",
-            ontap: "selectNewPage",
-            style: "height: 40px; float:right;background-image:url(../images/btn_new.png);background-repeat:no-repeat;border-right:1px solid #fff;background-color:transparent;"
+            kind: "onyx.PickerDecorator",
+            style: "float:right;margin-top:0;",
+            components: [{
+                name: "optionsPicker",
+                style: "float:right;background-image:url(../images/btn_new.png);background-repeat:no-repeat;background-color:transparent;",
+            }, {
+                kind: "onyx.Picker",
+                components: [{
+                    name: "newPage",
+                    ontap: "uploadFileNew",
+                    style: "padding: 15px;background-image: url(../images/btn_computer.png);background-repeat:no-repeat;background-position: center center;"
+                }, {
+                    name: "upload",
+                    ontap: "selectNewPage",
+                    style: "padding: 15px;background-image: url(../images/btn_newpage.png);background-repeat:no-repeat;background-position: center center;"
+                }]
+            }],
         }],
         rendered: function() {
             this.applyStyle("height", 60 + "px");
@@ -103,6 +116,14 @@ enyo.kind({
             style: "background-image:url(../images/btn_narrow.png);background-repeat:no-repeat;background-color:transparent;",
             ontap: "zoomOutPane"
         }, {
+            kind: "onyx.PickerDecorator",
+            components: [{}, {
+                kind: "onyx.IntegerPicker",
+                name: "currentPage",
+                onSelect: "gotoPage",
+                min: 1,
+            }, ],
+        }, {
             kind: "onyx.Button",
             name: "deletePage",
             ontap: "deletePage",
@@ -152,20 +173,6 @@ enyo.kind({
             //}, ]
         //},
         {
-            kind: "onyx.Button",
-            classes: "fa fa-upload",
-            style: "float: right",
-            ontap: "uploadFileNew"
-        }, {
-            kind: "onyx.PickerDecorator",
-            style: "float: right;",
-            components: [{}, {
-                kind: "onyx.IntegerPicker",
-                name: "currentPage",
-                onSelect: "gotoPage",
-                min: 1,
-            }, ],
-        }, {
             name: "createJoinRoomPopup",
             kind: "onyx.Popup",
             centered: true,
@@ -221,19 +228,27 @@ enyo.kind({
                 }, {
                     name: "square",
                     ontap: "drawSquare",
-                    style: "padding: 15px;background-image: url(../images/icon_circle.png);background-repeat:no-repeat;background-position: center center;"
-                }, {
-                    name: "arrow",
-                    ontap: "drawArrow",
-                    style: "padding: 15px;background-image: url(../images/icon_triangle.png);background-repeat:no-repeat;background-position: center center;",
+                    style: "padding: 15px;background-image: url(../images/icon_square.png);background-repeat:no-repeat;background-position: center center;"
                 }, {
                     name: "circle",
                     ontap: "drawCircle",
+                    style: "padding: 15px;background-image: url(../images/icon_circle.png);background-repeat:no-repeat;background-position: center center;"
+                }, {
+                    name: "triangle",
+                    ontap: "drawTriangle",
+                    style: "padding: 15px;background-image: url(../images/icon_triangle.png);background-repeat:no-repeat;background-position: center center;",
+                }, {
+                    name: "line",
+                    ontap: "drawLine",
                     style: "padding: 15px;background-image: url(../images/icon_line.png);background-repeat:no-repeat;background-position: center center;",
+                }, {
+                    name: "arrow",
+                    ontap: "drawArrow",
+                    style: "padding: 15px;background-image: url(../images/icon_arrow.png);background-repeat:no-repeat;background-position: center center;",
                 }, {
                     name: "ellipse",
                     ontap: "drawEllipse",
-                    style: "padding: 15px;background-image: url(../images/icon_arrow.png);background-repeat:no-repeat;background-position: center center;",
+                    style: "padding: 15px;background-image: url(../images/icon_oval.png);background-repeat:no-repeat;background-position: center center;",
                 }]
             }],
         }, {
@@ -254,32 +269,32 @@ enyo.kind({
             ontap: "selectPen",
         }, {
             kind: "onyx.PickerDecorator",
-            style: "float:right",
+            style: "float:right;width:50px;",
             components: [{
-                classes: "fa fa-minus"
+                style: "width: 40px;float:right;background:url(../images/icon_line_1_white.png),url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center;background-color:transparent;",
             }, {
                 kind: "onyx.Picker",
                 components: [{
                     name: "icon_line_1",
-                    style: "background-image:url(../images/icon_line_1.png);background-repeat:no-repeat;background-position:center center;",
+                    style: "background-image:url(../images/icon_line_1.png);background-repeat:no-repeat;background-position:center center;height:15px;",
                     ontap: "setLineWidth1"
                 }, {
                     name: "icon_line_2",
-                    style: "background-image:url(../images/icon_line_2.png);background-repeat:no-repeat;background-position:center center;",
+                    style: "background-image:url(../images/icon_line_2.png);background-repeat:no-repeat;background-position:center center;height:15px;",
                     ontap: "setLineWidth2"
                 }, {
                     name: "icon_line_3",
-                    style: "background-image:url(../images/icon_line_3.png);background-repeat:no-repeat;background-position:center center;",
+                    style: "background-image:url(../images/icon_line_3.png);background-repeat:no-repeat;background-position:center center;height:15px;",
                     ontap: "setLineWidth3"
                 }, {
                     name: "icon_line_6",
-                    style: "background-image:url(../images/icon_line_6.png);background-repeat:no-repeat;background-position:center center;",
+                    style: "background-image:url(../images/icon_line_6.png);background-repeat:no-repeat;background-position:center center;height:15px;",
                 }, {
                     name: "icon_line_8",
-                    style: "background-image:url(../images/icon_line_8.png);background-repeat:no-repeat;background-position:center center;",
+                    style: "background-image:url(../images/icon_line_8.png);background-repeat:no-repeat;background-position:center center;height:15px;",
                 }, {
                     name: "icon_line_10",
-                    style: "background-image:url(../images/icon_line_10.png);background-repeat:no-repeat;background-position:center center;",
+                    style: "background-image:url(../images/icon_line_10.png);background-repeat:no-repeat;background-position:center center;height:15px;",
                 }]
             }, ]
         }, {
