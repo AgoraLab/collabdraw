@@ -413,7 +413,7 @@ enyo.kind({
     appclicked: function(inSender, inEvent) {
         var canvasBounds = this.$.canvasContainer.getBounds();
         var x = inEvent.pageX - canvasBounds.left;
-        var y = inEvent.pageY - canvasBounds.top - 60;
+        var y = inEvent.pageY - canvasBounds.top;
         this.whiteboard.appclicked(x, y);
     },
 
