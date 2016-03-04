@@ -317,12 +317,15 @@ enyo.kind({
                 }, {
                     name: "icon_line_6",
                     style: "background-image:url(../images/icon_line_6.png);background-repeat:no-repeat;background-position:center center;height:15px;",
+                    ontap: "setLineWidth6"
                 }, {
                     name: "icon_line_8",
                     style: "background-image:url(../images/icon_line_8.png);background-repeat:no-repeat;background-position:center center;height:15px;",
+                    ontap: "setLineWidth8"
                 }, {
                     name: "icon_line_10",
                     style: "background-image:url(../images/icon_line_10.png);background-repeat:no-repeat;background-position:center center;height:15px;",
+                    ontap: "setLineWidth10"
                 }]
             }, ]
         }, {
@@ -518,17 +521,32 @@ enyo.kind({
 
     setLineWidth1: function(inSender, inEvent) {
         this.closeEraser();
-        this.curves.width = '3px';
+        this.curves.width = '1px';
     },
 
     setLineWidth2: function(inSender, inEvent) {
         this.closeEraser();
-        this.curves.width = '6px';
+        this.curves.width = '2px';
     },
 
     setLineWidth3: function(inSender, inEvent) {
         this.closeEraser();
-        this.curves.width = '9px';
+        this.curves.width = '3px';
+    },
+
+    setLineWidth6: function(inSender, inEvent) {
+        this.closeEraser();
+        this.curves.width = '6px';
+    },
+
+    setLineWidth8: function(inSender, inEvent) {
+        this.closeEraser();
+        this.curves.width = '8px';
+    },
+
+    setLineWidth10: function(inSender, inEvent) {
+        this.closeEraser();
+        this.curves.width = '10px';
     },
 
     optionSelected: function(inSender, inEvent) {
