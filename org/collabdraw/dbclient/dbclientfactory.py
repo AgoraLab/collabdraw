@@ -6,6 +6,7 @@ from .dbclienttypes import DbClientTypes
 from .dbinterface import DbInterface
 
 class DbClientFactory:
+
     @staticmethod
     def getDbClient(db_client_type_str):
         """

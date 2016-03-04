@@ -12,7 +12,7 @@ def get_ip_address(ifname):
             struct.pack('256s', bytes(ifname[:15], encoding='utf-8'))
         )[20:24])
     except:
-        return ret
+        return None
 
 # App's host and port
 APP_IP_ADDRESS = get_ip_address("eth0")

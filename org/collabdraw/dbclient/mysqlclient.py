@@ -12,7 +12,7 @@ VENDOR_DB = 'vendors'
 class MysqlClientVendor:
     vendorKeys = {}
     vendorInfos = {}
-    logger = logging.getLogger('websocket')
+    logger = logging.getLogger('web')
 
     def __init__(self):
         pass
@@ -30,6 +30,6 @@ class MysqlClientVendor:
         for (vid, name, key, signkey, status) in cur:
             MysqlClientVendor.vendorKeys[key] = vid
             MysqlClientVendor.vendorInfos[vid] = {'vid': vid, 'name': name, 'key': key, 'signkey': signkey, 'status': status}
-        MysqlClientVendor.logger.info('update %u vendor info from mysql' % len(MysqlClientVendor.vendorKeys))
+        MysqlClientVendor.logger.debug('update %u vendor info from mysql' % len(MysqlClientVendor.vendorKeys))
         cur.close()
         conn.close()

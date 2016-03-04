@@ -67,7 +67,7 @@ def serverKeepAlive():
     now=time.time()+60
     if config.APP_IP_ADDRESS:
         msg={'expiredTs':now, "addr":"%s:%s"%(config.APP_IP_ADDRESS,config.PUBLIC_LISTEN_PORT)}
-        logger.info(msg)
+        # logger.info(msg)
         redisClient.hset("edgeServer",msg['addr'], json.dumps(msg))
 
 def onTimer():
