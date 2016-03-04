@@ -103,11 +103,13 @@ enyo.kind({
     }, {
         kind: "onyx.MoreToolbar",
         components: [{
-            name: "preview",
+            name: "createJoinRoom",
             kind: "onyx.Button",
-            ontap: "previewPages",
+            ontap: "optionSelected",
+            popup: "previewPagesPopup",
             style: "background-image:url(../images/btn_thumbnails.png);background-repeat:no-repeat;background-color:transparent;"
-        }, {
+        },
+        {
             kind: "onyx.Button",
             ontap: "zoomInPane",
             style: "background-image:url(../images/btn_enlarge.png);background-repeat:no-repeat;background-color:transparent;"
@@ -204,6 +206,32 @@ enyo.kind({
                 ontap: "selectCreateJoinRoomPopupOk",
                 popup: "lightPopup",
                 style: "margin-left: 10px",
+            }],
+        }, {
+            name: "previewPagesPopup",
+            kind: "onyx.Popup",
+            centered: false,
+            modal: false,
+            floating: true,
+            style: "height:135px; padding: 0 20px 5px 20px;background-color: rgba(0,0,0,0.5);bottom:68px;left:0;right:0;",
+            components: [{
+                style: "display:inline-block;float:left",
+                content: "<div style='width:20px;height:120px;background-image:url(../images/btn_left.png);background-position:center center;background-repeat:no-repeat;margin:10px;'></div>",
+                allowHtml: true,
+                ontap: "selectPrevious",
+            }, {
+                style: "display:inline-block;float:left;",
+                content: "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page1</div>"
+                + "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page2</div>"
+                + "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page3</div>"
+                + "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page4</div>"
+                + "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page5</div>",
+                allowHtml: true,
+            }, {
+                style: "display:inline-block;float:right;",
+                content: "<div style='width:20px;height:120px;background-image:url(../images/btn_right.png);background-repeat:no-repeat;background-position:center center;margin:10px;'></div>",
+                allowHtml: true,
+                ontap: "selectNext",
             }],
         }, {
             kind: "onyx.Button",
