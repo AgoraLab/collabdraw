@@ -44,7 +44,7 @@ enyo.kind({
         }, {
             name: "upload",
             kind: "onyx.Button",
-            ontap: "previewPages",
+            ontap: "selectNewPage",
             style: "height: 40px; float:right;background-image:url(../images/btn_new.png);background-repeat:no-repeat;border-right:1px solid #fff;background-color:transparent;"
         }],
         rendered: function() {
@@ -113,44 +113,6 @@ enyo.kind({
             ontap: "selectClear",
             style: "float:right;background-image:url(../images/btn_clear.png);background-repeat:no-repeat;background-color:transparent;",
         }, {
-            kind: "onyx.PickerDecorator",
-            style: "float:right",
-            components: [{
-                name: "penPicker",
-                classes: "fa fa-pencil"
-            }, {
-                kind: "onyx.Picker",
-                components: [{
-                    name: "pen",
-                    ontap: "selectPen",
-                    classes: "fa fa-pencil"
-                }, {
-                    name: "rectangle",
-                    ontap: "drawRectangle",
-                    style: "padding: 15px;background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAW0lEQVRIS2NkoDFgpLH5DMPDggIGBgZ/GgXVRlAQ/WdgYHCkkQX7YRbQKi7+j1pAKOpGg4hQCDGMBtFICiIHgp4lT8EBUFkEKq4DyNNPUNcGWpWicJtHLSAYCQCocR7rVnZLSQAAAABJRU5ErkJggg==');background-repeat:no-repeat;background-position: 13px 3px;"
-                }, {
-                    name: "square",
-                    ontap: "drawSquare",
-                    classes: "fa fa-square-o"
-                }, {
-                    name: "arrow",
-                    ontap: "drawArrow",
-                    classes: "fa fa-arrow-right"
-                }, {
-                    name: "circle",
-                    ontap: "drawCircle",
-                    classes: "fa fa-circle-o"
-                }, {
-                    name: "ellipse",
-                    ontap: "drawEllipse",
-                    style: "padding: 15px;background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABGklEQVRIS82V/RHBQBTEfzqgAyUoISVQASqgBCVQASpAB1QgJaQDVMBs5l7mhOR8ncnNZPLH3du9fR97LSKvVmR8GkOQAFeg7RSf3f8QykCVAgENgT7QAVIgK4F1gR5wAlbADjDi4miZQMATYOCCFPgQVCJSzMh9G2Dhx/gEus3cAw6pf7Y/dar1l+qiyALfus1844t1h2UK9kDB+gW4hVo2EhEofyrY7AfAPoTwMhHo9uqWUDHf5VfxtyJQ+0lBjJUriEmQ/iVF0Yus3EdtUxFEHzQjkVWYn3zSVZVWYWDqXTu0BNYvzIc579jZjS5ZzFSdXWv41AACONbY9cUZpLwsaNdVaVGNROQ/OAILGmNjnsxPCp7HRFdwA4i1QgnwQC9YAAAAAElFTkSuQmCC');background-repeat:no-repeat;background-position:13px 3px;"
-                }]
-            }],
-        }, {
-            kind: "onyx.Button",
-            ontap: "addText",
-            style: "float:right;background-image:url(../images/btn_word.png);background-repeat:no-repeat;background-color:transparent;",
-        }, {
             name: "eraser",
             kind: "onyx.Button",
             ontap: "selectEraser",
@@ -195,11 +157,6 @@ enyo.kind({
             style: "float: right",
             ontap: "uploadFileNew"
         }, {
-            kind: "onyx.Button",
-            classes: "fa fa-file-o",
-            ontap: "selectNewPage",
-            style: "float: right;",
-        }, {
             kind: "onyx.PickerDecorator",
             style: "float: right;",
             components: [{}, {
@@ -241,6 +198,60 @@ enyo.kind({
                 popup: "lightPopup",
                 style: "margin-left: 10px",
             }],
+        }, {
+            kind: "onyx.Button",
+            ontap: "doSelect",
+            style: "float:right;background-image:url(../images/btn_choose.png);background-repeat:no-repeat;background-color:transparent;",
+        }, {
+            kind: "onyx.Button",
+            ontap: "selectLaserPen",
+            style: "float:right;background-image:url(../images/btn_laser.png);background-repeat:no-repeat;background-color:transparent;",
+        }, {
+            kind: "onyx.PickerDecorator",
+            style: "float:right",
+            components: [{
+                name: "penPicker",
+                style: "width:48px;background:url(../images/btn_graph.png), url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center; background-color:transparent;",
+            }, {
+                kind: "onyx.Picker",
+                components: [{
+                    name: "rectangle",
+                    ontap: "drawRectangle",
+                    style: "padding: 15px;background-image: url(../images/icon_rectangle.png);background-repeat:no-repeat;background-position: center center;"
+                }, {
+                    name: "square",
+                    ontap: "drawSquare",
+                    style: "padding: 15px;background-image: url(../images/icon_circle.png);background-repeat:no-repeat;background-position: center center;"
+                }, {
+                    name: "arrow",
+                    ontap: "drawArrow",
+                    style: "padding: 15px;background-image: url(../images/icon_triangle.png);background-repeat:no-repeat;background-position: center center;",
+                }, {
+                    name: "circle",
+                    ontap: "drawCircle",
+                    style: "padding: 15px;background-image: url(../images/icon_line.png);background-repeat:no-repeat;background-position: center center;",
+                }, {
+                    name: "ellipse",
+                    ontap: "drawEllipse",
+                    style: "padding: 15px;background-image: url(../images/icon_arrow.png);background-repeat:no-repeat;background-position: center center;",
+                }]
+            }],
+        }, {
+            kind: "onyx.Button",
+            ontap: "addImage",
+            style: "float:right;background-image:url(../images/btn_img.png);background-repeat:no-repeat;background-color:transparent;",
+        }, {
+            kind: "onyx.Button",
+            ontap: "addText",
+            style: "float:right;background-image:url(../images/btn_word.png);background-repeat:no-repeat;background-color:transparent;",
+        }, {
+            kind: "onyx.Button",
+            style: "float: right; background-image:url(../images/btn_fluorescence_light.png);background-repeat:no-repeat;background-color:transparent;",
+            ontap: "selectFluorescent",
+        }, {
+            kind: "onyx.Button",
+            style: "float: right; background-image:url(../images/btn_pencil.png);background-repeat:no-repeat;background-color:transparent;",
+            ontap: "selectPen",
         }, {
             kind: "onyx.PickerDecorator",
             style: "float:right",
@@ -446,6 +457,10 @@ enyo.kind({
 
     selectEraser: function(inSender, inEvent) {
         this.eraser.on ? this.closeEraser() : this.openEraser();
+    },
+
+    selectFluorescent: function(inSender, inEvent) {
+        // TODO FIXME
     },
 
     selectPen: function(inSender, inEvent) {

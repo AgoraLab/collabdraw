@@ -49,7 +49,7 @@ function AgoraWhiteBoardApi() {
             var ip = result['server'].substring(0, result['server'].indexOf(':'));
             var port = result['server'].substring(result['server'].indexOf(':')+1);
 
-            $.get('http://'+result['server']+'/join', {key: key, cname: cname, uinfo: uinfo},function (result, status) {
+            $.get('http://'+ip + ':' + port + '/join', {key: key, cname: cname, uinfo: uinfo},function (result, status) {
                 if (!result || result.length == 0) {
                 	onJoin(-10, 'empty result from agora server', cname, uinfo, uid)
                 	return;
