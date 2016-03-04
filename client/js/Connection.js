@@ -50,6 +50,9 @@ enyo.kind({
             case 'image':
                 _this.remoteImage(_this, data);
                 break;
+            case 'pages':
+                _this.remotePages(_this, data);
+                break;
             }
         }
     },
@@ -232,6 +235,13 @@ enyo.kind({
             console.log("Image url is " + data.url);
             self.whiteboard.loadImage('http://collabdraw.agoralab.co:5000/'+data.url, data.width, data.height);
         }
+    },
+
+    remotePages: function(self, data) {
+        console.log("receive cmd 'pages' from server. data " + data);
+        var npages = data['npages'];
+        // TODO update total pages in UI
+        self.whiteboard.setTotalPages(npages);
     },
 
 });
