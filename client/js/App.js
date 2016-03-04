@@ -576,7 +576,10 @@ enyo.kind({
     },
 
     selectClear: function(inSender, inEvent) {
-        this.whiteboard.clear(true);
+        var yes = confirm("Do you want to clear this page?")
+        if (yes) {
+            this.whiteboard.clear(true);
+        }
     },
 
     selectCreateJoinRoom: function(inSender, inEvent) {
