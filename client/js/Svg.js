@@ -133,6 +133,8 @@ enyo.kind({
                 this.drawPath2(x, y, lc, lw, send);
                 break;
             case 'arrow':
+            case 'line':
+            case 'triangle':
                 if (!this.element) {
                     this.element  = this.cvs.path("M" + x + " " + y);
                 }
@@ -207,6 +209,29 @@ enyo.kind({
                         "stroke": lc,
                         "stroke-width": lw,
                         "arrow-end": "open-medium-medium"
+                    });
+                }
+                break;
+
+            case "line":
+                if (this.element) {
+                    var path = "M" + this.drawStartX + " " + this.drawStartY + "L" + x + " " + y;
+                    this.element.attr({
+                        "path": path,
+                        "stroke": lc,
+                        "stroke-width": lw,
+                    });
+                }
+                break;
+            case 'triangle':
+                if (this.element) {
+                    var otherX = x - this.drawStartX;
+                    var path = "M" + this.drawStartX + " " + this.drawStartY + "L" + x + " " + y + "L"
+                        + String(this.drawStartX - otherX) + " " + y + "Z";
+                    this.element.attr({
+                        "path": path,
+                        "stroke": lc,
+                        "stroke-width": lw,
                     });
                 }
                 break;
@@ -290,6 +315,8 @@ enyo.kind({
                 this.penCbkCount = 0;
                 break;
             case 'arrow':
+            case 'triangle':
+            case 'line':
             case 'circle':
             case 'square':
             case 'ellipse':
@@ -457,6 +484,14 @@ enyo.kind({
 
     drawArrow: function() {
         this.drawingItem = 'arrow';
+    },
+
+    drawTriangle: function() {
+        this.drawingItem = 'triangle';
+    },
+
+    drawLine: function() {
+        this.drawingItem = 'line';
     },
 
     drawEllipse: function() {

@@ -432,6 +432,18 @@ enyo.kind({
         this.whiteboard.drawSquare();
     },
 
+    drawLine: function(inSender, inEvent) {
+        this.closeEraser();
+        this.cancelSelect();
+        this.whiteboard.drawLine();
+    },
+
+    drawTriangle: function(inSender, inEvent) {
+        this.closeEraser();
+        this.cancelSelect();
+        this.whiteboard.drawTriangle();
+    },
+
     drawArrow: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
