@@ -130,10 +130,10 @@ enyo.kind({
 
         switch(this.drawingItem) {
             case 'pen':
-                this.drawPath2(x, y, lc, lw, send, 1);
+                this.drawPath2(x, y, lc, lw, 1);
                 break;
             case 'highlighter':
-                this.drawPath2(x, y, lc, lw, send, 0.5);
+                this.drawPath2(x, y, lc, lw, 0.5);
                 break;
             case 'arrow':
             case 'line':
@@ -194,13 +194,13 @@ enyo.kind({
         switch(this.drawingItem) {
             case 'pen':
                 if (!send) { // it's from server
-                    this.drawPath2(x, y, lc, lw, send, 1);
+                    this.drawPath2(x, y, lc, lw, 1);
                     break;
                 }
                 // it's local drawing
                 this.penCbkCount++;
                 if (this.penCbkCount % 8 == 0) {
-                    this.drawPath2(x, y, lc, lw, send, 1);
+                    this.drawPath2(x, y, lc, lw, 1);
                     reallyNeedToSend = true;
                     break;
                 }
@@ -208,13 +208,13 @@ enyo.kind({
 
             case "highlighter":
                 if (!send) { // it's from server
-                    this.drawPath2(x, y, lc, lw, send, 0.5);
+                    this.drawPath2(x, y, lc, lw, 0.5);
                     break;
                 }
                 // it's local drawing
                 this.penCbkCount++;
                 if (this.penCbkCount % 8 == 0) {
-                    this.drawPath2(x, y, lc, lw, send, 0.5);
+                    this.drawPath2(x, y, lc, lw, 0.5);
                     reallyNeedToSend = true;
                     break;
                 }
@@ -323,7 +323,7 @@ enyo.kind({
     endPath: function(oldx, oldy, x, y, lc, lw, send) {
         switch(this.drawingItem) {
             case 'pen':
-                this.drawPath2(x, y, lc, lw, false, 1);
+                this.drawPath2(x, y, lc, lw, 1);
                 this.undoStack.push({
                     type: 'path-line',
                     pathID: this.currentPathID(),
@@ -335,7 +335,7 @@ enyo.kind({
                 this.penCbkCount = 0;
                 break;
             case 'highlighter':
-                this.drawPath2(x, y, lc, lw, false, 0.5);
+                this.drawPath2(x, y, lc, lw, 0.5);
                 this.undoStack.push({
                     type: 'path-line',
                     pathID: this.currentPathID(),
@@ -388,12 +388,9 @@ enyo.kind({
         return 'path-' + this.penPathID;
     },
 
-    drawPath2: function(x, y, lc, lw, send, opacity) {
+    drawPath2: function(x, y, lc, lw, opacity) {
         var pathOpacity = opacity || 1;
 
-        console.log("Opacity: " + opacity);
-        console.log("Path Opacity: " + pathOpacity);
-        console.log("this.drawingItem: " + this.drawingItem);
         this.penPoints.push([x, y]);
 
         if (this.penPoints.length == 1) {
