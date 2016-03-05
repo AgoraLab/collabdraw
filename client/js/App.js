@@ -620,7 +620,8 @@ enyo.kind({
                     content: "<div>Page preview goes here...</div>",
                     allowHtml: true,
                     ontap: "gotoPage",
-                    index: index
+                    // page index starts with 1
+                    index: index + 1
                 });
             }
             this.pagePreviewNum = totalPages;
