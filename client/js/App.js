@@ -385,18 +385,22 @@ enyo.kind({
         this.closeEraser();
         this.whiteboard.zoomOut();
     },
+
     undoPath: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.undo();
     },
 
     redoPath: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.redo();
     },
 
     cropContent: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.cropContent();
     },
 
@@ -418,26 +422,31 @@ enyo.kind({
 
     drawRectangle: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.drawRectangle();
     },
 
     drawSquare: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.drawSquare();
     },
 
     drawArrow: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.drawArrow();
     },
 
     drawEllipse: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.drawEllipse();
     },
 
     drawCircle: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.drawCircle();
     },
 
@@ -502,55 +511,67 @@ enyo.kind({
     },
 
     selectEraser: function(inSender, inEvent) {
+        this.cancelSelect();
         this.eraser.on ? this.closeEraser() : this.openEraser();
     },
 
     selectFluorescent: function(inSender, inEvent) {
+        this.closeEraser();
+        this.cancelSelect();
         // TODO FIXME
     },
 
     selectPen: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.selectPen();
     },
 
     addText: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.addText();
     },
 
     setLineWidth1: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.curves.width = '1px';
     },
 
     setLineWidth2: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.curves.width = '2px';
     },
 
     setLineWidth3: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.curves.width = '3px';
     },
 
     setLineWidth6: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.curves.width = '6px';
     },
 
     setLineWidth8: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.curves.width = '8px';
     },
 
     setLineWidth10: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.curves.width = '10px';
     },
 
     optionSelected: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         var name = inEvent.originator.name;
         switch (name) {
         case "clear":
@@ -570,12 +591,14 @@ enyo.kind({
 
     colorItemSelected: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         var color = inEvent.selected.name;
         this.$.colorPicker.applyStyle("background-color", color);
         this.curves.color = color;
     },
 
     selectClear: function(inSender, inEvent) {
+        this.cancelSelect();
         var yes = confirm("Do you want to clear this page?")
         if (yes) {
             this.whiteboard.clear(true);
@@ -601,6 +624,7 @@ enyo.kind({
 
     selectNext: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.$.loadingPopup.show();
         var result = this.whiteboard.nextPage();
         this.updatePageInfo();
@@ -608,6 +632,7 @@ enyo.kind({
     },
 
     selectPrevious: function(inSender, inEvent) {
+        this.cancelSelect();
         this.closeEraser();
         this.$.loadingPopup.show();
         var result = this.whiteboard.prevPage();
@@ -632,18 +657,30 @@ enyo.kind({
 
     selectNewPage: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.newPage();
         this.updatePageInfo();
     },
 
     updatePageInfo: function() {
         this.closeEraser();
+        this.cancelSelect();
         this.$.currentPage.setMax(this.whiteboard.getNumPages());
         this.$.currentPage.setValue(this.whiteboard.getCurrentPage());
     },
 
     gotoPage: function(inSender, inEvent) {
         this.closeEraser();
+        this.cancelSelect();
         this.whiteboard.gotoPage(inEvent.selected.content);
     },
+
+    doSelect: function(inSender, inEvent) {
+        this.closeEraser();
+        this.whiteboard.doSelect();
+    },
+
+    cancelSelect: function() {
+        this.whiteboard.cancelSelect();
+    }
 });

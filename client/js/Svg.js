@@ -55,6 +55,7 @@ enyo.kind({
         this.penCbkCount = 0;
         this.penFunction = d3.svg.line().interpolate('cardinal');
         this.penPathID = 10000;
+        this.currentSelected = null;
     },
 
     /**
@@ -598,6 +599,21 @@ enyo.kind({
         return false;
     },
 
+    doSelect: function() {
+        this.drawingItem = '';
+        this.doingSelect = true;
+    },
+
+    cancelSelect: function() {
+        if (this.currentSelected) {
+            if (this.currentSelected.svg) {
+                this.currentSelected.element.attr("opacity", 1);
+            } else {
+                $(this.currentSelected.element).css({opacity: 1});
+            }
+        }
+    },
+
     appclicked: function(x, y) {
         if (this.addingText) {
             this.executeAddText(x, y);
@@ -615,8 +631,33 @@ enyo.kind({
                     oldy: y,
                     type: 'rm'
                 });
+            }
+        } else if (this.doingSelect) {
+            var pageX = x + this.parent_.$.canvasContainer.getBounds().left;
+            var pageY = y + this.parent_.$.canvasContainer.getBounds().top;
 
+            var svgElem = this.cvs.getElementByPoint(pageX, pageY);
+            if (svgElem) {
+                // cancel previous selection
+                this.cancelSelect();
 
+                this.currentSelected = {
+                    svg: true,
+                    element: svgElem
+                };
+                svgElem.attr("opacity", "0.5");
+            }
+
+            var domElem = document.elementFromPoint(pageX, pageY);
+            if (domElem && (domElem.id.indexOf('path-') > -1)) {
+                // cancel previous selection
+                this.cancelSelect();
+
+                this.currentSelected = {
+                    svg: false,
+                    element: domElem
+                };
+                $(domElem).css({opacity: 0.5});
             }
         }
     },
