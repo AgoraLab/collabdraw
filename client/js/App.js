@@ -96,8 +96,8 @@ enyo.kind({
                         this.owner,
                         1, websocketAddress,
                         function(numPages, currentPage) {
-                            _this.owner.$.currentPage.setMax(numPages);
-                            _this.owner.$.currentPage.setValue(currentPage);
+                            //_this.owner.$.currentPage.setMax(numPages);
+                            //_this.owner.$.currentPage.setValue(currentPage);
                             _this.owner.$.loadingPopup.hide();
                         }
                     );
@@ -121,15 +121,17 @@ enyo.kind({
             kind: "onyx.Button",
             style: "background-image:url(../images/btn_narrow.png);background-repeat:no-repeat;background-color:transparent;",
             ontap: "zoomOutPane"
-        }, {
-            kind: "onyx.PickerDecorator",
-            components: [{}, {
-                kind: "onyx.IntegerPicker",
-                name: "currentPage",
-                onSelect: "gotoPage",
-                min: 1,
-            }, ],
-        }, {
+        },
+        //{
+            //kind: "onyx.PickerDecorator",
+            //components: [{}, {
+                //kind: "onyx.IntegerPicker",
+                //name: "currentPage",
+                //onSelect: "gotoPage",
+                //min: 1,
+            //}, ],
+        //},
+        {
             kind: "onyx.Button",
             name: "deletePage",
             ontap: "deletePage",
@@ -614,9 +616,11 @@ enyo.kind({
             for (index = 0; index < totalPages; index += 1) {
                 this.createComponent({
                     container: this.$.previewPagesPopup,
-                    style: "display:inline-block;float:left;",
-                    content: "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page preview goes here...</div>",
+                    style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;background-color:#fff;margin:10px;color:#000;",
+                    content: "<div>Page preview goes here...</div>",
                     allowHtml: true,
+                    ontap: "gotoPage",
+                    index: index
                 });
             }
             this.pagePreviewNum = totalPages;
@@ -697,14 +701,15 @@ enyo.kind({
     updatePageInfo: function() {
         this.closeEraser();
         this.cancelSelect();
-        this.$.currentPage.setMax(this.whiteboard.getNumPages());
-        this.$.currentPage.setValue(this.whiteboard.getCurrentPage());
+        //this.$.currentPage.setMax(this.whiteboard.getNumPages());
+        //this.$.currentPage.setValue(this.whiteboard.getCurrentPage());
     },
 
     gotoPage: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
-        this.whiteboard.gotoPage(inEvent.selected.content);
+        //this.whiteboard.gotoPage(inEvent.selected.content);
+        this.whiteboard.gotoPage(inSender.index);
     },
 
     doSelect: function(inSender, inEvent) {
