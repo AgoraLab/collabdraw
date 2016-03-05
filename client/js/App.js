@@ -22,6 +22,7 @@ enyo.kind({
         canvasHeight: 550,
         appIpAddress: "",
         appPort: "",
+        pagePreviewNum: 0,
     },
 
     components: [{
@@ -61,6 +62,7 @@ enyo.kind({
             }],
         }],
         rendered: function() {
+            this.inherited(arguments);
             this.applyStyle("height", 60 + "px");
         }
     }, {
@@ -75,6 +77,8 @@ enyo.kind({
             ondragfinish: "touchend",
             name: "canvasContainer",
             rendered: function() {
+                this.inherited(arguments);
+
                 this.applyStyle("width", this.owner.canvasWidth + "px");
                 this.applyStyle("height", this.owner.canvasHeight + "px");
                 this.applyStyle("box-shadow", "0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1)")
@@ -103,9 +107,9 @@ enyo.kind({
     }, {
         kind: "onyx.MoreToolbar",
         components: [{
-            name: "createJoinRoom",
+            name: "previewPages",
             kind: "onyx.Button",
-            ontap: "optionSelected",
+            ontap: "selectPreviewPages",
             popup: "previewPagesPopup",
             style: "background-image:url(../images/btn_thumbnails.png);background-repeat:no-repeat;background-color:transparent;"
         },
@@ -219,14 +223,6 @@ enyo.kind({
                 content: "<div style='width:20px;height:120px;background-image:url(../images/btn_left.png);background-position:center center;background-repeat:no-repeat;margin:10px;'></div>",
                 allowHtml: true,
                 ontap: "selectPrevious",
-            }, {
-                style: "display:inline-block;float:left;",
-                content: "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page1</div>"
-                + "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page2</div>"
-                + "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page3</div>"
-                + "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page4</div>"
-                + "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page5</div>",
-                allowHtml: true,
             }, {
                 style: "display:inline-block;float:right;",
                 content: "<div style='width:20px;height:120px;background-image:url(../images/btn_right.png);background-repeat:no-repeat;background-position:center center;margin:10px;'></div>",
@@ -607,6 +603,30 @@ enyo.kind({
         var color = inEvent.selected.name;
         this.$.colorPicker.applyStyle("background-color", color);
         this.curves.color = color;
+    },
+
+    selectPreviewPages: function(inSender, inEvent) {
+
+        var totalPages = this.whiteboard.getNumPages(),
+            index;
+        // Minus left and right arrows
+        if (this.pagePreviewNum !== totalPages) {
+            for (index = 0; index < totalPages; index += 1) {
+                this.createComponent({
+                    container: this.$.previewPagesPopup,
+                    style: "display:inline-block;float:left;",
+                    content: "<div style='display:inline-block;width:120px;height:120px;background-color:#fff;margin:10px;color:#000;'>Page preview goes here...</div>",
+                    allowHtml: true,
+                });
+            }
+            this.pagePreviewNum = totalPages;
+            this.$.previewPagesPopup.render();
+        }
+
+        var p = this.$[inEvent.originator.popup];
+        if (p) {
+            p.show();
+        }
     },
 
     selectClear: function(inSender, inEvent) {
