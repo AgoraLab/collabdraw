@@ -692,6 +692,12 @@ enyo.kind({
         this.whiteboard.doSelect();
     },
 
+    selectLaserPen: function(inSender, inEvent) {
+        this.closeEraser();
+        this.whiteboard.drawingItem = '';
+        this.whiteboard.drawLaser();
+    },
+
     cancelSelect: function() {
         this.whiteboard.cancelSelect();
     }

@@ -474,6 +474,29 @@ enyo.kind({
         this.drawingItem = 'eraser';
     },
 
+    drawLaser: function() {
+        var canvasBounds = this.parent_.$.canvasContainer.getBounds();
+        var x = canvasBounds.left + canvasBounds.width / 2;
+        var y = canvasBounds.top + canvasBounds.height / 2;
+        var laserElement = this.cvs.circle(x, y, 8);
+        laserElement.attr({
+            fill: "red"
+        });
+        laserElement.drag(function(x, y, dx, dy, e) {
+            this.attr({
+                cx: dx,
+                // We have a 60px header bar
+                cy: dy - 60
+            });
+        },
+        function(x, y, e) {
+            this.attr("fill", "red");
+        },
+        function(e) {
+            this.attr("fill", "red");
+        });
+    },
+
     drawRectangle: function() {
         this.drawingItem = 'rectangle';
     },
