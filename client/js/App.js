@@ -288,7 +288,7 @@ enyo.kind({
         }, {
             kind: "onyx.Button",
             style: "float: right; background-image:url(../images/btn_fluorescence_light.png);background-repeat:no-repeat;background-color:transparent;",
-            ontap: "selectFluorescent",
+            ontap: "selectHighlighter",
         }, {
             kind: "onyx.Button",
             style: "float: right; background-image:url(../images/btn_pencil.png);background-repeat:no-repeat;background-color:transparent;",
@@ -525,10 +525,10 @@ enyo.kind({
         this.eraser.on ? this.closeEraser() : this.openEraser();
     },
 
-    selectFluorescent: function(inSender, inEvent) {
+    selectHighlighter: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
-        // TODO FIXME
+        this.whiteboard.selectHighlighter();
     },
 
     selectPen: function(inSender, inEvent) {
