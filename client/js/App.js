@@ -507,8 +507,9 @@ enyo.kind({
         if (this.eraser.on) return;
 
         this.eraser.on = true;
-        this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
-        this.$.eraser.applyStyle("background-color", "black");
+        //this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
+        this.eraser.backgroundColor = "transparent";
+        this.$.eraser.applyStyle("background-color", "rgba(255,255,255,0.3)");
         this.whiteboard.selectEraser();
     },
 
