@@ -47,18 +47,18 @@ enyo.kind({
             style: "float:right;margin-top:0;",
             components: [{
                 name: "optionsPicker",
-                style: "float:right;background-image:url(../images/btn_new.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "float:right;background-image:url(../images/btn_new.png);background-repeat:no-repeat;background-color:transparent;width:50px;",
             }, {
                 kind: "onyx.Picker",
                 components: [{
-                    name: "newPage",
-                    ontap: "uploadFileNew",
-                    style: "padding: 15px;background-image: url(../images/btn_computer.png);background-repeat:no-repeat;background-position: center center;"
-                }, {
                     name: "upload",
+                    ontap: "uploadFileNew",
+                    style: "padding: 15px;background-image: url(../images/btn_computer.png);background-repeat:no-repeat;background-position: center center;",
+                }, {
+                    name: "newPage",
                     ontap: "selectNewPage",
                     style: "padding: 15px;background-image: url(../images/btn_newpage.png);background-repeat:no-repeat;background-position: center center;"
-                }]
+                }],
             }],
         }],
         rendered: function() {
@@ -405,7 +405,7 @@ enyo.kind({
     uploadFileNew: function(inSender,inEvent) {
         var x = $('#file-upload-root');
         if (!x || x.length === 0) {
-            $(document.body).append("<div id='file-upload-root'></div>");
+            $(document.body).append("<span id='file-upload-root' style='z-index:-1000;position:relative;'></span>");
         }
         var u ='http://' + this.appIpAddress + ':' + this.appPort + '/upload';
         $("#file-upload-root").uploadFile({
@@ -416,6 +416,9 @@ enyo.kind({
             fileName:"myfile",
             formData: {room:this.whiteboard.room, sid: this.whiteboard.sid}
         });
+        setTimeout(function() {
+            $("input[id^='ajax-upload-id']").trigger("click");
+        }, 1000);
     },
 
     drawRectangle: function(inSender, inEvent) {
