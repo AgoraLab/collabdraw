@@ -403,6 +403,9 @@ enyo.kind({
     },
 
     uploadFileNew: function(inSender,inEvent) {
+        // cleanup the divs left over
+        $(".ajax-file-upload-container").remove();
+
         var x = $('#file-upload-root');
         if (!x || x.length === 0) {
             $(document.body).append("<span id='file-upload-root' style='z-index:-1000;position:relative;'></span>");
