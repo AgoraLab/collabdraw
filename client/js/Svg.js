@@ -359,6 +359,20 @@ enyo.kind({
                     if ( BBox.width == 0 && BBox.height == 0 ) {
                         this.element.remove();
                     }
+
+                    //this.element.hover(
+                        //// When the mouse comes over the object //
+                        //// Stock the created "glow" object in myCircle.g
+                        //function() {
+                            //this.g = this.glow({
+                                //width: 5
+                            //});
+                        //},
+                        //// When the mouse goes away //
+                        //// this.g was already created. Destroy it!
+                        //function() {
+                            //this.g.remove();
+                        //});
                 }
                 break;
             default:
@@ -704,7 +718,9 @@ enyo.kind({
     cancelSelect: function() {
         if (this.currentSelected) {
             if (this.currentSelected.svg) {
-                this.currentSelected.element.attr("opacity", 1);
+
+                this.currentSelected.element.g.remove();
+                //this.currentSelected.element.attr("opacity", 1);
             } else {
                 $(this.currentSelected.element).css({opacity: 1});
             }
@@ -742,7 +758,12 @@ enyo.kind({
                     svg: true,
                     element: svgElem
                 };
-                svgElem.attr("opacity", "0.5");
+                //svgElem.attr("opacity", "0.5");
+                //if (!svgElem.g) {
+                    svgElem.g = svgElem.glow({
+                        width: 5
+                    });
+                //}
             }
 
             var domElem = document.elementFromPoint(pageX, pageY);
