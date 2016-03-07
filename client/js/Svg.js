@@ -535,8 +535,8 @@ enyo.kind({
 
     drawLaser: function() {
         var canvasBounds = this.parent_.$.canvasContainer.getBounds();
-        var x = canvasBounds.left + canvasBounds.width / 2;
-        var y = canvasBounds.top + canvasBounds.height / 2;
+        var x = canvasBounds.width / 2;
+        var y = canvasBounds.height / 2;
         if (!this.laserPen) {
             this.laserPen = this.cvs.circle(x, y, 8);
             this.laserPen.attr({
