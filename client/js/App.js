@@ -40,27 +40,43 @@ enyo.kind({
             content: "Channel1",
             style: "text-transform: uppercase;letter-spacing:0.1em;"
         }, {
-            kind: "onyx.Button",
-            ontap: "logout",
-            style: "float: right;background-image:url(../images/btn_quit.png);background-repeat:no-repeat;background-color:transparent;"
-        }, {
-            kind: "onyx.PickerDecorator",
-            style: "float:right;margin-top:0;",
+            kind: "onyx.TooltipDecorator",
+            style: "float: right;",
             components: [{
-                name: "optionsPicker",
-                style: "float:right;background-image:url(../images/btn_new.png);background-repeat:no-repeat;background-color:transparent;width:50px;",
+                kind: "onyx.Button",
+                ontap: "logout",
+                style: "float: right;background-image:url(../images/btn_quit.png);background-repeat:no-repeat;background-color:transparent;"
             }, {
-                kind: "onyx.Picker",
+                kind:'onyx.Tooltip',
+                classes:'above',
+                content:'Logout'
+            }]
+        }, {
+            kind: "onyx.TooltipDecorator",
+            style: "float:right;",
+            components: [{
+                kind: "onyx.PickerDecorator",
+                style: "float:right;margin-top:0;",
                 components: [{
-                    name: "upload",
-                    ontap: "uploadFileNew",
-                    style: "padding: 15px;background-image: url(../images/btn_computer.png);background-repeat:no-repeat;background-position: center center;",
+                    name: "optionsPicker",
+                    style: "float:right;background-image:url(../images/btn_new.png);background-repeat:no-repeat;background-color:transparent;width:50px;",
                 }, {
-                    name: "newPage",
-                    ontap: "selectNewPage",
-                    style: "padding: 15px;background-image: url(../images/btn_newpage.png);background-repeat:no-repeat;background-position: center center;"
+                    kind: "onyx.Picker",
+                    components: [{
+                        name: "upload",
+                        ontap: "uploadFileNew",
+                        style: "padding: 15px;background-image: url(../images/btn_computer.png);background-repeat:no-repeat;background-position: center center;",
+                    }, {
+                        name: "newPage",
+                        ontap: "selectNewPage",
+                        style: "padding: 15px;background-image: url(../images/btn_newpage.png);background-repeat:no-repeat;background-position: center center;"
+                    }],
                 }],
-            }],
+            }, {
+                kind:'onyx.Tooltip',
+                classes:'above',
+                content:'Add New'
+            }]
         }],
         rendered: function() {
             this.inherited(arguments);
@@ -108,20 +124,43 @@ enyo.kind({
     }, {
         kind: "onyx.MoreToolbar",
         components: [{
-            name: "previewPages",
-            kind: "onyx.Button",
-            ontap: "selectPreviewPages",
-            popup: "previewPagesPopup",
-            style: "background-image:url(../images/btn_thumbnails.png);background-repeat:no-repeat;background-color:transparent;"
-        },
-        {
-            kind: "onyx.Button",
-            ontap: "zoomInPane",
-            style: "background-image:url(../images/btn_enlarge.png);background-repeat:no-repeat;background-color:transparent;"
+            kind: "onyx.TooltipDecorator",
+            style: "",
+            components: [{
+                name: "previewPages",
+                kind: "onyx.Button",
+                ontap: "selectPreviewPages",
+                popup: "previewPagesPopup",
+                style: "background-image:url(../images/btn_thumbnails.png);background-repeat:no-repeat;background-color:transparent;"
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Preview Pages",
+                classes: "above"
+            }]
         }, {
-            kind: "onyx.Button",
-            style: "background-image:url(../images/btn_narrow.png);background-repeat:no-repeat;background-color:transparent;",
-            ontap: "zoomOutPane"
+            kind: "onyx.TooltipDecorator",
+            style: "",
+            components: [{
+                kind: "onyx.Button",
+                ontap: "zoomInPane",
+                style: "background-image:url(../images/btn_enlarge.png);background-repeat:no-repeat;background-color:transparent;"
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Zoom In",
+                classes: "above"
+            }],
+        }, {
+            kind: "onyx.TooltipDecorator",
+            style: "",
+            components: [{
+                kind: "onyx.Button",
+                style: "background-image:url(../images/btn_narrow.png);background-repeat:no-repeat;background-color:transparent;",
+                ontap: "zoomOutPane"
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Zoon Out",
+                classes: "above"
+            }]
         },
         //{
             //kind: "onyx.PickerDecorator",
@@ -133,28 +172,68 @@ enyo.kind({
             //}, ],
         //},
         {
-            kind: "onyx.Button",
-            name: "deletePage",
-            ontap: "deletePage",
-            style: "float:right;background-image:url(../images/btn_del.png);background-repeat:no-repeat;background-color:transparent;",
+            kind: "onyx.TooltipDecorator",
+            style: "float: right",
+            components:[{
+                kind: "onyx.Button",
+                name: "deletePage",
+                ontap: "deletePage",
+                style: "float:right;background-image:url(../images/btn_del.png);background-repeat:no-repeat;background-color:transparent;",
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Delete Page",
+                classes: "above"
+            }]
         }, {
-            kind: "onyx.Button",
-            name: "clear",
-            ontap: "selectClear",
-            style: "float:right;background-image:url(../images/btn_clear.png);background-repeat:no-repeat;background-color:transparent;",
+            kind: "onyx.TooltipDecorator",
+            style: "float: right",
+            components: [{
+                kind: "onyx.Button",
+                name: "clear",
+                ontap: "selectClear",
+                style: "float:right;background-image:url(../images/btn_clear.png);background-repeat:no-repeat;background-color:transparent;",
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Clear page",
+                classes: "above"
+            }],
         }, {
-            name: "eraser",
-            kind: "onyx.Button",
-            ontap: "selectEraser",
-            style: "float: right;background-image:url(../images/btn_eraser.png);background-repeat:no-repeat;background-color:transparent;",
+            kind: "onyx.TooltipDecorator",
+            style: "float: right",
+            components: [{
+                name: "eraser",
+                kind: "onyx.Button",
+                ontap: "selectEraser",
+                style: "float: right;background-image:url(../images/btn_eraser.png);background-repeat:no-repeat;background-color:transparent;",
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Eraser",
+                classes: "above"
+            }]
         }, {
-            kind: "onyx.Button",
-            ontap: "undoPath",
-            style: "float: right;background-image:url(../images/btn_undo.png);background-repeat:no-repeat;background-color:transparent;",
+            kind: "onyx.TooltipDecorator",
+            style: "float:right;",
+            components: [{
+                kind: "onyx.Button",
+                ontap: "undoPath",
+                style: "float: right;background-image:url(../images/btn_undo.png);background-repeat:no-repeat;background-color:transparent;",
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Undo",
+                classes: "above"
+            }]
         }, {
-            kind: "onyx.Button",
-            ontap: "redoPath",
-            style: "float: right;background-image:url(../images/btn_redo.png);background-repeat:no-repeat;background-color:transparent;",
+            kind: "onyx.TooltipDecorator",
+            style: "float: right",
+            components: [{
+                kind: "onyx.Button",
+                ontap: "redoPath",
+                style: "float: right;background-image:url(../images/btn_redo.png);background-repeat:no-repeat;background-color:transparent;",
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Redo",
+                classes: "above"
+            }],
         },
         //{
             //kind: "onyx.Button",
@@ -181,40 +260,41 @@ enyo.kind({
                 //}]
             //}, ]
         //},
+        //{
+            //name: "createJoinRoomPopup",
+            //kind: "onyx.Popup",
+            //centered: true,
+            //modal: true,
+            //floating: true,
+            //style: "width: 300px; height: 200px; padding: 0 20px 5px 20px",
+            //components: [{
+                //content: "<h3>Enter Room name</h3>",
+                //allowHtml: true,
+            //}, {
+                //content: "If your room doesn't exist already in your account, it will be created",
+            //}, {
+                //kind: "onyx.InputDecorator",
+                //style: "margin: 10px 10px 10px 0; width: 250px",
+                //alwaysLooksFocused: true,
+                //components: [{
+                    //kind: "onyx.Input",
+                    //name: "roomName",
+                //}]
+            //}, {
+                //tag: "br"
+            //}, {
+                //kind: "onyx.Button",
+                //content: "Cancel",
+                //ontap: "selectCreateJoinRoomPopupCancel",
+            //}, {
+                //kind: "onyx.Button",
+                //content: "OK",
+                //ontap: "selectCreateJoinRoomPopupOk",
+                //popup: "lightPopup",
+                //style: "margin-left: 10px",
+            //}],
+        //},
         {
-            name: "createJoinRoomPopup",
-            kind: "onyx.Popup",
-            centered: true,
-            modal: true,
-            floating: true,
-            style: "width: 300px; height: 200px; padding: 0 20px 5px 20px",
-            components: [{
-                content: "<h3>Enter Room name</h3>",
-                allowHtml: true,
-            }, {
-                content: "If your room doesn't exist already in your account, it will be created",
-            }, {
-                kind: "onyx.InputDecorator",
-                style: "margin: 10px 10px 10px 0; width: 250px",
-                alwaysLooksFocused: true,
-                components: [{
-                    kind: "onyx.Input",
-                    name: "roomName",
-                }]
-            }, {
-                tag: "br"
-            }, {
-                kind: "onyx.Button",
-                content: "Cancel",
-                ontap: "selectCreateJoinRoomPopupCancel",
-            }, {
-                kind: "onyx.Button",
-                content: "OK",
-                ontap: "selectCreateJoinRoomPopupOk",
-                popup: "lightPopup",
-                style: "margin-left: 10px",
-            }],
-        }, {
             name: "previewPagesPopup",
             kind: "onyx.Popup",
             centered: false,
@@ -233,135 +313,207 @@ enyo.kind({
                 ontap: "selectNext",
             }],
         }, {
-            kind: "onyx.Button",
-            ontap: "doSelect",
-            style: "float:right;background-image:url(../images/btn_choose.png);background-repeat:no-repeat;background-color:transparent;",
-        }, {
-            kind: "onyx.Button",
-            ontap: "selectLaserPen",
-            style: "float:right;background-image:url(../images/btn_laser.png);background-repeat:no-repeat;background-color:transparent;",
-        }, {
-            kind: "onyx.PickerDecorator",
-            style: "float:right",
+            kind: "onyx.TooltipDecorator",
+            style: "float: right",
             components: [{
-                name: "penPicker",
-                style: "width:48px;background:url(../images/btn_graph.png), url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center; background-color:transparent;",
+                kind: "onyx.Button",
+                ontap: "doSelect",
+                style: "float:right;background-image:url(../images/btn_choose.png);background-repeat:no-repeat;background-color:transparent;",
             }, {
-                kind: "onyx.Picker",
-                components: [{
-                    name: "rectangle",
-                    ontap: "drawRectangle",
-                    style: "padding: 15px;background-image: url(../images/icon_rectangle.png);background-repeat:no-repeat;background-position: center center;"
-                }, {
-                    name: "square",
-                    ontap: "drawSquare",
-                    style: "padding: 15px;background-image: url(../images/icon_square.png);background-repeat:no-repeat;background-position: center center;"
-                }, {
-                    name: "circle",
-                    ontap: "drawCircle",
-                    style: "padding: 15px;background-image: url(../images/icon_circle.png);background-repeat:no-repeat;background-position: center center;"
-                }, {
-                    name: "triangle",
-                    ontap: "drawTriangle",
-                    style: "padding: 15px;background-image: url(../images/icon_triangle.png);background-repeat:no-repeat;background-position: center center;",
-                }, {
-                    name: "line",
-                    ontap: "drawLine",
-                    style: "padding: 15px;background-image: url(../images/icon_line.png);background-repeat:no-repeat;background-position: center center;",
-                }, {
-                    name: "arrow",
-                    ontap: "drawArrow",
-                    style: "padding: 15px;background-image: url(../images/icon_arrow.png);background-repeat:no-repeat;background-position: center center;",
-                }, {
-                    name: "ellipse",
-                    ontap: "drawEllipse",
-                    style: "padding: 15px;background-image: url(../images/icon_oval.png);background-repeat:no-repeat;background-position: center center;",
-                }]
+                kind: "onyx.Tooltip",
+                content: "Select",
+                classes: "above"
             }],
         }, {
-            kind: "onyx.Button",
-            ontap: "addImage",
-            style: "float:right;background-image:url(../images/btn_img.png);background-repeat:no-repeat;background-color:transparent;",
-        }, {
-            kind: "onyx.Button",
-            ontap: "addText",
-            style: "float:right;background-image:url(../images/btn_word.png);background-repeat:no-repeat;background-color:transparent;",
-        }, {
-            kind: "onyx.Button",
-            style: "float: right; background-image:url(../images/btn_fluorescence_light.png);background-repeat:no-repeat;background-color:transparent;",
-            ontap: "selectHighlighter",
-        }, {
-            kind: "onyx.Button",
-            style: "float: right; background-image:url(../images/btn_pencil.png);background-repeat:no-repeat;background-color:transparent;",
-            ontap: "selectPen",
-        }, {
-            kind: "onyx.PickerDecorator",
-            style: "float:right;width:50px;",
+            kind: "onyx.TooltipDecorator",
+            style: "float: right",
             components: [{
-                style: "width: 40px;float:right;background:url(../images/icon_line_1_white.png),url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center;background-color:transparent;",
+                kind: "onyx.Button",
+                ontap: "selectLaserPen",
+                style: "float:right;background-image:url(../images/btn_laser.png);background-repeat:no-repeat;background-color:transparent;",
             }, {
-                kind: "onyx.Picker",
+                kind: "onyx.Tooltip",
+                content: "Laser",
+                classes: "above"
+            }]
+        }, {
+            kind: "onyx.TooltipDecorator",
+            style: "float: right;",
+            components: [{
+                kind: "onyx.PickerDecorator",
+                style: "float:right",
                 components: [{
-                    name: "icon_line_1",
-                    style: "background-image:url(../images/icon_line_1.png);background-repeat:no-repeat;background-position:center center;height:15px;",
-                    ontap: "setLineWidth1"
+                    name: "penPicker",
+                    style: "width:48px;background:url(../images/btn_graph.png), url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center; background-color:transparent;",
                 }, {
-                    name: "icon_line_2",
-                    style: "background-image:url(../images/icon_line_2.png);background-repeat:no-repeat;background-position:center center;height:15px;",
-                    ontap: "setLineWidth2"
+                    kind: "onyx.Picker",
+                    components: [{
+                        name: "rectangle",
+                        ontap: "drawRectangle",
+                        style: "padding: 15px;background-image: url(../images/icon_rectangle.png);background-repeat:no-repeat;background-position: center center;"
+                    }, {
+                        name: "square",
+                        ontap: "drawSquare",
+                        style: "padding: 15px;background-image: url(../images/icon_square.png);background-repeat:no-repeat;background-position: center center;"
+                    }, {
+                        name: "circle",
+                        ontap: "drawCircle",
+                        style: "padding: 15px;background-image: url(../images/icon_circle.png);background-repeat:no-repeat;background-position: center center;"
+                    }, {
+                        name: "triangle",
+                        ontap: "drawTriangle",
+                        style: "padding: 15px;background-image: url(../images/icon_triangle.png);background-repeat:no-repeat;background-position: center center;",
+                    }, {
+                        name: "line",
+                        ontap: "drawLine",
+                        style: "padding: 15px;background-image: url(../images/icon_line.png);background-repeat:no-repeat;background-position: center center;",
+                    }, {
+                        name: "arrow",
+                        ontap: "drawArrow",
+                        style: "padding: 15px;background-image: url(../images/icon_arrow.png);background-repeat:no-repeat;background-position: center center;",
+                    }, {
+                        name: "ellipse",
+                        ontap: "drawEllipse",
+                        style: "padding: 15px;background-image: url(../images/icon_oval.png);background-repeat:no-repeat;background-position: center center;",
+                    }],
+                }],
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Shapes",
+                classes: "above"
+            }]
+        }, {
+            kind: "onyx.TooltipDecorator",
+            style: "float: right",
+            components: [{
+                kind: "onyx.Button",
+                ontap: "addImage",
+                style: "float:right;background-image:url(../images/btn_img.png);background-repeat:no-repeat;background-color:transparent;",
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Add Image",
+                classes: "above"
+            }]
+        }, {
+            kind: "onyx.TooltipDecorator",
+            style: "float: right;",
+            components: [{
+                kind: "onyx.Button",
+                ontap: "addText",
+                style: "float:right;background-image:url(../images/btn_word.png);background-repeat:no-repeat;background-color:transparent;",
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Add Text",
+                classes: "above"
+            }]
+        }, {
+            kind: "onyx.TooltipDecorator",
+            style: "float:right;",
+            components: [{
+                kind: "onyx.Button",
+                style: "float: right; background-image:url(../images/btn_fluorescence_light.png);background-repeat:no-repeat;background-color:transparent;",
+                ontap: "selectHighlighter",
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Highlighter",
+                classes: "above"
+            }]
+        }, {
+            kind: "onyx.TooltipDecorator",
+            style: "float: right",
+            components: [{
+                kind: "onyx.Button",
+                style: "float: right; background-image:url(../images/btn_pencil.png);background-repeat:no-repeat;background-color:transparent;",
+                ontap: "selectPen",
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Pen",
+                classes: "above"
+            }]
+        }, {
+            kind: "onyx.TooltipDecorator",
+            style: "float: right;",
+            components: [{
+                kind: "onyx.PickerDecorator",
+                style: "float:right;width:50px;",
+                components: [{
+                    style: "width: 40px;float:right;background:url(../images/icon_line_1_white.png),url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center;background-color:transparent;",
                 }, {
-                    name: "icon_line_3",
-                    style: "background-image:url(../images/icon_line_3.png);background-repeat:no-repeat;background-position:center center;height:15px;",
-                    ontap: "setLineWidth3"
-                }, {
-                    name: "icon_line_6",
-                    style: "background-image:url(../images/icon_line_6.png);background-repeat:no-repeat;background-position:center center;height:15px;",
-                    ontap: "setLineWidth6"
-                }, {
-                    name: "icon_line_8",
-                    style: "background-image:url(../images/icon_line_8.png);background-repeat:no-repeat;background-position:center center;height:15px;",
-                    ontap: "setLineWidth8"
-                }, {
-                    name: "icon_line_10",
-                    style: "background-image:url(../images/icon_line_10.png);background-repeat:no-repeat;background-position:center center;height:15px;",
-                    ontap: "setLineWidth10"
+                    kind: "onyx.Picker",
+                    components: [{
+                        name: "icon_line_1",
+                        style: "background-image:url(../images/icon_line_1.png);background-repeat:no-repeat;background-position:center center;height:15px;",
+                        ontap: "setLineWidth1"
+                    }, {
+                        name: "icon_line_2",
+                        style: "background-image:url(../images/icon_line_2.png);background-repeat:no-repeat;background-position:center center;height:15px;",
+                        ontap: "setLineWidth2"
+                    }, {
+                        name: "icon_line_3",
+                        style: "background-image:url(../images/icon_line_3.png);background-repeat:no-repeat;background-position:center center;height:15px;",
+                        ontap: "setLineWidth3"
+                    }, {
+                        name: "icon_line_6",
+                        style: "background-image:url(../images/icon_line_6.png);background-repeat:no-repeat;background-position:center center;height:15px;",
+                        ontap: "setLineWidth6"
+                    }, {
+                        name: "icon_line_8",
+                        style: "background-image:url(../images/icon_line_8.png);background-repeat:no-repeat;background-position:center center;height:15px;",
+                        ontap: "setLineWidth8"
+                    }, {
+                        name: "icon_line_10",
+                        style: "background-image:url(../images/icon_line_10.png);background-repeat:no-repeat;background-position:center center;height:15px;",
+                        ontap: "setLineWidth10"
+                    }]
                 }]
-            }, ]
-        }, {
-            kind: "onyx.PickerDecorator",
-            style: "float:right;border:1px solid #FFF;",
-            components: [{
-                name: "colorPicker",
-                style: "background-color: black;",
             }, {
-                kind: "onyx.Picker",
-                onChange: "colorItemSelected",
+                kind: "onyx.Tooltip",
+                content: "Line Width",
+                classes: "above"
+            }]
+        }, {
+            kind: "onyx.TooltipDecorator",
+            style: "float: right",
+            components: [{
+                kind: "onyx.PickerDecorator",
+                style: "float:right;border:1px solid #FFF;",
                 components: [{
-                    name: "red",
-                    style: "background-color: red;",
-                }, {
-                    name: "orange",
-                    style: "background-color: orange;",
-                }, {
-                    name: "yellow",
-                    style: "background-color: yellow;",
-                }, {
-                    name: "blue",
-                    style: "background-color: blue;",
-                }, {
-                    name: "cyan",
-                    style: "background-color: cyan;",
-                }, {
-                    name: "green",
-                    style: "background-color: green;",
-                }, {
-                    name: "black",
+                    name: "colorPicker",
                     style: "background-color: black;",
                 }, {
-                    name: "purple",
-                    style: "background-color: purple;",
-                }]
-            }, ],
+                    kind: "onyx.Picker",
+                    onChange: "colorItemSelected",
+                    components: [{
+                        name: "red",
+                        style: "background-color: red;",
+                    }, {
+                        name: "orange",
+                        style: "background-color: orange;",
+                    }, {
+                        name: "yellow",
+                        style: "background-color: yellow;",
+                    }, {
+                        name: "blue",
+                        style: "background-color: blue;",
+                    }, {
+                        name: "cyan",
+                        style: "background-color: cyan;",
+                    }, {
+                        name: "green",
+                        style: "background-color: green;",
+                    }, {
+                        name: "black",
+                        style: "background-color: black;",
+                    }, {
+                        name: "purple",
+                        style: "background-color: purple;",
+                    }]
+                }, ],
+            }, {
+                kind: "onyx.Tooltip",
+                content: "Color",
+                classes: "above"
+            }]
         }, {
             name: "loadingPopup",
             kind: "onyx.Popup",
