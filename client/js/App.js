@@ -442,7 +442,8 @@ enyo.kind({
                 kind: "onyx.PickerDecorator",
                 style: "float:right;width:50px;",
                 components: [{
-                    style: "width: 40px;float:right;background:url(../images/icon_line_1_white.png),url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center;background-color:transparent;",
+                    name: "lineWidthPicker",
+                    style: "width: 40px;background:url(../images/icon_line_1_white.png),url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center;background-color:transparent;",
                 }, {
                     kind: "onyx.Picker",
                     components: [{
@@ -726,39 +727,37 @@ enyo.kind({
     },
 
     setLineWidth1: function(inSender, inEvent) {
-        this.closeEraser();
-        this.cancelSelect();
-        this.curves.width = '1px';
+        this.setLineWidthN(1);
     },
 
     setLineWidth2: function(inSender, inEvent) {
-        this.closeEraser();
-        this.cancelSelect();
-        this.curves.width = '2px';
+        this.setLineWidthN(2);
     },
 
     setLineWidth3: function(inSender, inEvent) {
-        this.closeEraser();
-        this.cancelSelect();
-        this.curves.width = '3px';
+        this.setLineWidthN(3);
     },
 
     setLineWidth6: function(inSender, inEvent) {
-        this.closeEraser();
-        this.cancelSelect();
-        this.curves.width = '6px';
+        this.setLineWidthN(6);
     },
 
     setLineWidth8: function(inSender, inEvent) {
-        this.closeEraser();
-        this.cancelSelect();
-        this.curves.width = '8px';
+        this.setLineWidthN(8);
     },
 
     setLineWidth10: function(inSender, inEvent) {
+        this.setLineWidthN(10);
+    },
+
+    setLineWidthN: function(width) {
         this.closeEraser();
         this.cancelSelect();
-        this.curves.width = '10px';
+        this.curves.width = String(width) + 'px';
+        this.$.lineWidthPicker.applyStyle("background", "url(../images/icon_line_" + width + "_white.png),url(../images/icon_more.png)");
+        this.$.lineWidthPicker.applyStyle("background-repeat", "no-repeat no-repeat");
+        this.$.lineWidthPicker.applyStyle("background-position", "left center, right center");
+        this.$.lineWidthPicker.applyStyle("background-color", "transparent");
     },
 
     optionSelected: function(inSender, inEvent) {
