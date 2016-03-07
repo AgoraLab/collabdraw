@@ -23,6 +23,7 @@ enyo.kind({
         appIpAddress: "",
         appPort: "",
         pagePreviewNum: 0,
+        pagePreviewContainer: [],
     },
 
     components: [{
@@ -620,8 +621,13 @@ enyo.kind({
             index;
         // Minus left and right arrows
         if (this.pagePreviewNum !== totalPages) {
+            for (index = 0; index < this.pagePreviewContainer.length; index += 1) {
+                this.pagePreviewContainer[index].destroy();
+            }
+            this.pagePreviewContainer = [];
+
             for (index = 0; index < totalPages; index += 1) {
-                this.createComponent({
+                var comp = this.createComponent({
                     container: this.$.previewPagesPopup,
                     style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;background-color:#fff;margin:10px;color:#000;",
                     content: "<div>Page preview goes here...</div>",
@@ -630,6 +636,7 @@ enyo.kind({
                     // page index starts with 1
                     index: index + 1
                 });
+                this.pagePreviewContainer.push(comp);
             }
             this.pagePreviewNum = totalPages;
             this.$.previewPagesPopup.render();
