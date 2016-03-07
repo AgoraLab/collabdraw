@@ -626,7 +626,7 @@ enyo.kind({
             }
             this.pagePreviewContainer = [];
 
-            for (index = 0; index < totalPages; index += 1) {
+            for (index = 0; index < Math.min(6, totalPages); index += 1) {
                 var comp = this.createComponent({
                     container: this.$.previewPagesPopup,
                     style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;background-color:#fff;margin:10px;color:#000;",
