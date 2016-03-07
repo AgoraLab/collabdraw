@@ -56,6 +56,7 @@ enyo.kind({
         this.penFunction = d3.svg.line().interpolate('cardinal');
         this.penPathID = 10000;
         this.currentSelected = null;
+        this.laserPen = null;
     },
 
     /**
@@ -527,27 +528,35 @@ enyo.kind({
         this.drawingItem = 'eraser';
     },
 
+    removeLaser: function() {
+        this.laserPen.remove();
+        this.laserPen = null;
+    },
+
     drawLaser: function() {
         var canvasBounds = this.parent_.$.canvasContainer.getBounds();
         var x = canvasBounds.left + canvasBounds.width / 2;
         var y = canvasBounds.top + canvasBounds.height / 2;
-        var laserElement = this.cvs.circle(x, y, 8);
-        laserElement.attr({
-            fill: "red"
-        });
-        laserElement.drag(function(x, y, dx, dy, e) {
-            this.attr({
-                cx: dx,
-                // We have a 60px header bar
-                cy: dy - 60
+        if (!this.laserPen) {
+            this.laserPen = this.cvs.circle(x, y, 8);
+            this.laserPen.attr({
+                fill: "red",
+                opacity: "0.5"
             });
-        },
-        function(x, y, e) {
-            this.attr("fill", "red");
-        },
-        function(e) {
-            this.attr("fill", "red");
-        });
+            this.laserPen.drag(function(x, y, dx, dy, e) {
+                this.attr({
+                    cx: dx - canvasBounds.left,
+                    // We have a 60px header bar
+                    cy: dy - 60
+                });
+            },
+            function(x, y, e) {
+                this.attr("fill", "red");
+            },
+            function(e) {
+                this.attr("fill", "red");
+            });
+        }
     },
 
     drawRectangle: function() {
@@ -718,8 +727,10 @@ enyo.kind({
     cancelSelect: function() {
         if (this.currentSelected) {
             if (this.currentSelected.svg) {
-
-                this.currentSelected.element.g.remove();
+                var g = this.currentSelected.element.g;
+                if (g) {
+                    g.remove();
+                }
                 //this.currentSelected.element.attr("opacity", 1);
             } else {
                 $(this.currentSelected.element).css({opacity: 1});
@@ -751,19 +762,22 @@ enyo.kind({
 
             var svgElem = this.cvs.getElementByPoint(pageX, pageY);
             if (svgElem) {
-                // cancel previous selection
-                this.cancelSelect();
+                // Do not glow laser pen
+                if (svgElem !== this.laserPen) {
+                    // cancel previous selection
+                    this.cancelSelect();
 
-                this.currentSelected = {
-                    svg: true,
-                    element: svgElem
-                };
-                //svgElem.attr("opacity", "0.5");
-                //if (!svgElem.g) {
+                    this.currentSelected = {
+                        svg: true,
+                        element: svgElem
+                    };
+                    //svgElem.attr("opacity", "0.5");
+                    //if (!svgElem.g) {
                     svgElem.g = svgElem.glow({
                         width: 5
                     });
-                //}
+                    //}
+                }
             }
 
             var domElem = document.elementFromPoint(pageX, pageY);

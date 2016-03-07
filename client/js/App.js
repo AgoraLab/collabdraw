@@ -15,6 +15,10 @@ enyo.kind({
             width: '9px',
             backgroundColor: '',
         },
+        laser: {
+            on: false,
+            previousDrawingItem: 'pen'
+        },
         uid: 'test',
         sid: '',
         room: 'one',
@@ -329,6 +333,7 @@ enyo.kind({
             style: "float: right",
             components: [{
                 kind: "onyx.Button",
+                name: "laserPen",
                 ontap: "selectLaserPen",
                 style: "float:right;background-image:url(../images/btn_laser.png);background-repeat:no-repeat;background-color:transparent;",
             }, {
@@ -685,6 +690,23 @@ enyo.kind({
         this.eraser.on ? this.closeEraser() : this.openEraser();
     },
 
+    selectLaserPen: function(inSender, inEvent) {
+        this.closeEraser();
+        if (this.laser.on) {
+            this.laser.on = false;
+            this.whiteboard.drawingItem = this.laser.previousDrawingItem;
+            this.whiteboard.removeLaser();
+            this.$.laserPen.applyStyle("background-color", "transparent");
+        } else {
+            this.laser.on = true;
+            this.laser.previousDrawingItem = this.whiteboard.drawingItem;
+            this.whiteboard.drawingItem = '';
+            this.whiteboard.drawLaser();
+            this.$.laserPen.applyStyle("background-color", "rgba(255,255,255,0.3)");
+        }
+    },
+
+
     selectHighlighter: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
@@ -882,12 +904,6 @@ enyo.kind({
     doSelect: function(inSender, inEvent) {
         this.closeEraser();
         this.whiteboard.doSelect();
-    },
-
-    selectLaserPen: function(inSender, inEvent) {
-        this.closeEraser();
-        this.whiteboard.drawingItem = '';
-        this.whiteboard.drawLaser();
     },
 
     cancelSelect: function() {
