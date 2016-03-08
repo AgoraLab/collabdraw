@@ -126,6 +126,9 @@ enyo.kind({
      * @param {Object} send
      */
     startPath: function(x, y, lc, lw, send) {
+        // calculate x and y after being zoomed.
+        x += x * (1 - this.zoomRatio);
+        y += y * (1 - this.zoomRatio);
         this.drawStartX = x;
         this.drawStartY = y;
 
@@ -191,6 +194,8 @@ enyo.kind({
      * Called when user continues path (without lifting finger)
      */
     continuePath: function(oldx, oldy, x, y, lc, lw, send) {
+        x += x * (1 - this.zoomRatio);
+        y += y * (1 - this.zoomRatio);
         var reallyNeedToSend = false;
         switch(this.drawingItem) {
             case 'pen':
@@ -322,6 +327,8 @@ enyo.kind({
      * Called when user lifts finger
      */
     endPath: function(oldx, oldy, x, y, lc, lw, send) {
+        x += x * (1 - this.zoomRatio);
+        y += y * (1 - this.zoomRatio);
         switch(this.drawingItem) {
             case 'pen':
                 this.drawPath2(x, y, lc, lw, 1);
