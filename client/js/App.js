@@ -354,6 +354,7 @@ enyo.kind({
                     style: "width:48px;background:url(../images/btn_graph.png), url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center; background-color:transparent;",
                 }, {
                     kind: "onyx.Picker",
+                    maxHeight: "400px",
                     components: [{
                         name: "rectangle",
                         ontap: "drawRectangle",
@@ -448,6 +449,7 @@ enyo.kind({
                     style: "width: 40px;background:url(../images/icon_line_1_white.png),url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center;background-color:transparent;",
                 }, {
                     kind: "onyx.Picker",
+                    maxHeight: "400px",
                     components: [{
                         name: "icon_line_1",
                         style: "background-image:url(../images/icon_line_1.png);background-repeat:no-repeat;background-position:center center;height:15px;",
@@ -485,36 +487,39 @@ enyo.kind({
             components: [{
                 kind: "onyx.PickerDecorator",
                 style: "float:right;border:1px solid #FFF;",
+                name: "colorPickerWrapper",
                 components: [{
                     name: "colorPicker",
-                    style: "background-color: black;",
+                    style: "background-color: black;height:36px;",
                 }, {
                     kind: "onyx.Picker",
+                    name: "colorItemSelectedHolder",
                     onChange: "colorItemSelected",
+                    maxHeight: "400px",
                     components: [{
                         name: "red",
-                        style: "background-color: red;",
+                        style: "background-color: red;height:16px;width:60px;",
                     }, {
                         name: "orange",
-                        style: "background-color: orange;",
+                        style: "background-color: orange;height:16px;width:60px;",
                     }, {
                         name: "yellow",
-                        style: "background-color: yellow;",
+                        style: "background-color: yellow;height:16px;width:60px;",
                     }, {
                         name: "blue",
-                        style: "background-color: blue;",
+                        style: "background-color: blue;height:16px;width:60px;",
                     }, {
                         name: "cyan",
-                        style: "background-color: cyan;",
+                        style: "background-color: cyan;height:16px;width:60px;",
                     }, {
                         name: "green",
-                        style: "background-color: green;",
+                        style: "background-color: green;height:16px;width:60px;",
                     }, {
                         name: "black",
-                        style: "background-color: black;",
+                        style: "background-color: black;height:16px;width:60px;",
                     }, {
                         name: "purple",
-                        style: "background-color: purple;",
+                        style: "background-color: purple;height:16px;width:60px;",
                     }]
                 }, ],
             }, {
