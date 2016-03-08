@@ -103,6 +103,8 @@ enyo.kind({
                 this.applyStyle("width", this.owner.canvasWidth + "px");
                 this.applyStyle("height", this.owner.canvasHeight + "px");
                 this.applyStyle("box-shadow", "0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1)")
+                this.applyStyle("cursor", "auto");
+                this.applyStyle("cursor", "url(../images/mouse.png) 4 4, auto");
 
                 if (window.location.protocol == 'https:') {
                     var websocketAddress = 'wss://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
@@ -675,6 +677,8 @@ enyo.kind({
         //this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
         this.eraser.backgroundColor = "transparent";
         this.$.eraser.applyStyle("background-color", "rgba(255,255,255,0.3)");
+        this.$.canvasContainer.applyStyle("cursor", "auto");
+        this.$.canvasContainer.applyStyle("cursor", "url(../images/mouse_eraser.png) 4 4, auto");
         this.whiteboard.selectEraser();
     },
 
@@ -684,6 +688,8 @@ enyo.kind({
         this.eraser.on = false;
         this.whiteboard.drawingItem = '';
         this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
+        this.$.canvasContainer.applyStyle("cursor", "auto");
+        this.$.canvasContainer.applyStyle("cursor", "url(../images/mouse.png) 4 4, auto");
     },
 
     selectEraser: function(inSender, inEvent) {
