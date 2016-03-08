@@ -17,6 +17,7 @@ enyo.kind({
         this.room = room;
         this.uid = uid;
         this.page = 1;
+        this.touchMove=undefined;
 
         _this = this;
         this.socket.onmessage = function(evt) {
@@ -104,8 +105,23 @@ enyo.kind({
      * @param {x, y, type, lineColor, lineWidth} a point on the path
      */
     sendPath: function(data) {
-        this.singlePath.push(data);
-        this.currentPathLength++;
+        if(data.type == 'touchend' && this.touchMove ){
+          this.singlePath.push(this.touchMove);
+          this.touchMove=undefined;
+        }
+        // console.log("1111",data.type);
+        if(data.type == 'touchmove'){
+          if(!this.touchMove){
+            this.touchMove = data;
+            this.touchMove.path=[];
+          }
+          this.touchMove.path.push([data.x,data.y]);
+        }else{
+          this.singlePath.push(data);
+          this.currentPathLength++;
+        }
+        // console.log("22222",this.currentPathLength, this.touchMove);
+        // this.singlePath.push(data);
 
         // Send undo or redo immediately. by sunyurun@agora.io
         // Send path every two points or when user removes finger
@@ -113,6 +129,7 @@ enyo.kind({
         if (this.currentPathLength > 2 || data.type === "touchend" ||
             data.type == 'undo' || data.type == 'redo' ||
             data.type == 'addtext' || data.type == 'edittext' || data.type == 'rm') {
+            // console.log("33333", this.singlePath);
             this.sendMessage("draw-click", {
                 "singlePath": this.singlePath
             });
@@ -177,8 +194,19 @@ enyo.kind({
             if (data.drawingItem) {
                 self.whiteboard.drawingItem = data.drawingItem;
             }
+            // console.log("xxxxx1111", ds[d]);
             if (data.type == 'touchstart') self.whiteboard.startPath(data.oldx, data.oldy, data.lineColor, data.lineWidth, false);
-            else if (data.type == 'touchmove') self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+            // else if (data.type == 'touchmove') self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+            else if (data.type == 'touchmove'){
+              if(data.path){
+                // console.log("xxxxx", data.path);
+                for(i in data.path){
+                    self.whiteboard.continuePath(data.oldx, data.oldy, data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
+                }
+              }else{
+                self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+              }
+            }
             else if (data.type == 'touchend') self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
             else if (data.type == 'undo') self.whiteboard.executeUndo();
             else if (data.type == 'redo') self.whiteboard.executeRedo();
@@ -205,7 +233,16 @@ enyo.kind({
                  self.whiteboard.drawingItem = ds[d].drawingItem;
             }
             if (ds[d].type == 'touchstart') self.whiteboard.startPath(ds[d].oldx, ds[d].oldy, ds[d].lineColor, ds[d].lineWidth, false);
-            else if (ds[d].type == 'touchmove') self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
+            // else if (ds[d].type == 'touchmove') self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
+            else if (ds[d].type == 'touchmove'){
+              if(ds[d].path){
+                for(i in ds[d].path){
+                    self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].path[i][0], ds[d].path[i][1], ds[d].lineColor, ds[d].lineWidth, false);
+                }
+              }else{
+                self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
+              }
+            }
             else if (ds[d].type == 'touchend') self.whiteboard.endPath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
             else if (ds[d].type == 'undo') self.whiteboard.executeUndo();
             else if (ds[d].type == 'redo') self.whiteboard.executeRedo();

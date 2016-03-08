@@ -45,5 +45,5 @@ class RedisDbClient(DbInterface):
         return []
 
     def delete(self, key):
-        self.exe_(self.redis_client.delete, key, *value)
+        self.exe_(self.redis_client.delete, key)
         # self.redis_client.delete(key)

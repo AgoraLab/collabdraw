@@ -120,7 +120,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             path=self.get_page_path_data()
             idx_start=len(path)
             idx_end=len(path)+len(single_path)
-
+            self.logger.info(single_path)
             ret=self.db_client.rpush(self.page_path_key(), [json.dumps(v) for v in single_path])
             if not ret:
                 return self.on_db_error()
@@ -245,7 +245,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     def on_broadcast_message(self, m):
         # m=json.loads(m)
-        self.logger.info("xxxxxxx  %s"%m)
+        # self.logger.info("xxxxxxx  %s"%m)
         if m['event'] == 'draw':
             if m['data']['page_id'] != self.page_id:
                 return
