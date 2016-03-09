@@ -13,5 +13,6 @@
 }
 
 .ajax-file-upload-container {
-    display: none;
+    /*display: none;*/
+    position: relative;
 }

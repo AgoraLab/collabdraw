@@ -587,12 +587,29 @@ enyo.kind({
         }
         var u ='http://' + this.appIpAddress + ':' + this.appPort + '/upload';
         $("#file-upload-root").uploadFile({
-            url: u,
-            multiple:false,
-            dragDrop:false,
-            maxFileCount:1,
-            fileName:"myfile",
-            formData: {room:this.whiteboard.room, sid: this.whiteboard.sid}
+            url          : u,
+            multiple     : false,
+            dragDrop     : false,
+            maxFileCount : 1,
+            fileName     : "myfile",
+            formData: {
+                room : this.whiteboard.room,
+                sid  : this.whiteboard.sid
+            },
+            onSuccess: function(files, data, xhr, pd) {
+                setTimeout(function() {
+                    $(".ajax-file-upload-container").empty();
+                }, 3000);
+            },
+            afterUploadAll: function(obj) {
+                // TODO
+            },
+            onError: function(files, status, errMsg, pd) {
+                // TODO
+            },
+            onCancel: function(files, pd) {
+                // TODO
+            }
         });
         setTimeout(function() {
             $("input[id^='ajax-upload-id']").trigger("click");
