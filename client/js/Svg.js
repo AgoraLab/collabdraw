@@ -33,30 +33,29 @@ enyo.kind({
      * @param callback: called once the page is rendered
      */
     constructor: function(name, parent, page, websocketAddress, callback) {
-        this.parent_ = parent;
-        this.uid = parent.uid;
-        this.sid = parent.sid;
-        this.room = parent.room;
-        this.cvs = new ScaleRaphael(name, parent.canvasWidth, parent.canvasHeight);
-        this.d3SVG = d3.select(this.cvs.canvas);
-        this.connection = new Connection(websocketAddress, this, this.room, this.uid);
-        this.callback = callback;
-        this.zoomRatio = 1;
-        this.page_list=[];
-        // Pen drawing by default, user can select circle, ellipse, etc.
-        this.drawingItem = 'pen';
-        this.element = null;
-        this.drawStartX = 0;
-        this.drawStartY = 0;
-        this.undoStack = [];
-        this.redoStack = [];
-        this.textEdits = {};
-        this.penPoints = [];
-        this.penCbkCount = 0;
-        this.penFunction = d3.svg.line().interpolate('cardinal');
-        this.penPathID = 10000;
+        this.parent_         = parent;
+        this.uid             = parent.uid;
+        this.sid             = parent.sid;
+        this.room            = parent.room;
+        this.cvs             = new ScaleRaphael(name, parent.canvasWidth, parent.canvasHeight);
+        this.d3SVG           = d3.select(this.cvs.canvas);
+        this.connection      = new Connection(websocketAddress, this, this.room, this.uid);
+        this.callback        = callback;
+        this.zoomRatio       = 1;
+        this.page_list       = [];
+        this.drawingItem     = 'pen';
+        this.element         = null;
+        this.drawStartX      = 0;
+        this.drawStartY      = 0;
+        this.undoStack       = [];
+        this.redoStack       = [];
+        this.textEdits       = {};
+        this.penPoints       = [];
+        this.penCbkCount     = 0;
+        this.penFunction     = d3.svg.line().interpolate('cardinal');
+        this.penPathID       = 10000;
         this.currentSelected = null;
-        this.laserPen = null;
+        this.laserPen        = null;
     },
 
     /**
@@ -416,10 +415,8 @@ enyo.kind({
         this.penPoints.push([x, y]);
 
         if (this.penPoints.length == 1) {
-            //console.log("[" + x + "," + y + "] 1st point of a spline: do nothing");
             return;
         } else if (this.penPoints.length == 2) {
-            //console.log("[" + x + "," + y + "] 2nd point of a spline: create new path and append to svg");
             ++this.penPathID;
             this.d3SVG.append("path")
                 .datum(this.penPoints)
@@ -430,7 +427,6 @@ enyo.kind({
                 .attr("opacity", pathOpacity)
                 .attr("d", this.penFunction);
         } else {
-            //console.log("[" + x + "," + y + "] " + this.penPoints.length + "th point of a spline: continue drawing");
             this.d3SVG.select('#' + this.currentPathID()).
                 attr("d", this.penFunction);
         }
@@ -709,6 +705,7 @@ enyo.kind({
                 shape: clone
             });
             svgElem.remove();
+            this.cancelSelect();
             return true;
         }
 
@@ -720,6 +717,7 @@ enyo.kind({
                 path: clone
             });
             domElem.remove();
+            this.cancelSelect();
             return true;
         }
 
@@ -731,18 +729,19 @@ enyo.kind({
         this.doingSelect = true;
     },
 
+    hasSelectElement: function() {
+        return !!this.currentSelected;
+    },
+
     cancelSelect: function() {
         if (this.currentSelected) {
-            if (this.currentSelected.svg) {
-                var g = this.currentSelected.element.g;
-                if (g) {
-                    g.remove();
+            var outerRect = this.currentSelected.outerRect,
+                index, length;
+                for (index = 0, length = outerRect.length; index < length; index += 1) {
+                    outerRect[index].remove();
                 }
-                //this.currentSelected.element.attr("opacity", 1);
-            } else {
-                $(this.currentSelected.element).css({opacity: 1});
-            }
         }
+        this.currentSelected = null;
     },
 
     appclicked: function(x, y) {
@@ -774,16 +773,11 @@ enyo.kind({
                     // cancel previous selection
                     this.cancelSelect();
 
+                    var result = this.drawOuterLineOnSelected(svgElem);
                     this.currentSelected = {
-                        svg: true,
-                        element: svgElem
+                        element: svgElem,
+                        outerRect: result
                     };
-                    //svgElem.attr("opacity", "0.5");
-                    //if (!svgElem.g) {
-                    svgElem.g = svgElem.glow({
-                        width: 5
-                    });
-                    //}
                 }
             }
 
@@ -792,13 +786,91 @@ enyo.kind({
                 // cancel previous selection
                 this.cancelSelect();
 
+                var result = this.drawOuterLineOnSelected(domElem);
                 this.currentSelected = {
-                    svg: false,
-                    element: domElem
+                    element: svgElem,
+                    outerRect: result
                 };
-                $(domElem).css({opacity: 0.5});
             }
         }
+    },
+
+    drawOuterLineOnSelected: function(svgElem) {
+        var result = [];
+        var bbBox = svgElem.getBBox();
+        var outerRect = this.cvs.rect(bbBox.x - 2, bbBox.y - 2, bbBox.width + 4, bbBox.height + 4);
+        outerRect.attr({
+            "stroke-dasharray": ["--"],
+            "stroke": "rgb(0, 158, 235)",
+            "stroke-width": 1
+        });
+        result.push(outerRect);
+
+        var cornerRect1 = this.cvs.rect(bbBox.x - 5, bbBox.y - 5, 8, 8);
+        cornerRect1.attr({
+            "stroke": "rgb(0, 158, 235)",
+            "stroke-width": 1,
+            "fill": "rgb(0, 158, 235)"
+        });
+        result.push(cornerRect1);
+
+        var cornerRect2 = this.cvs.rect(bbBox.x - 5 + bbBox.width, bbBox.y - 5, 8, 8);
+        cornerRect2.attr({
+            "stroke": "rgb(0, 158, 235)",
+            "stroke-width": 1,
+            "fill": "rgb(0, 158, 235)"
+        });
+        result.push(cornerRect2);
+
+        var cornerRect3 = this.cvs.rect(bbBox.x - 5, bbBox.y - 5 + bbBox.height, 8, 8);
+        cornerRect3.attr({
+            "stroke": "rgb(0, 158, 235)",
+            "stroke-width": 1,
+            "fill": "rgb(0, 158, 235)"
+        });
+        result.push(cornerRect3);
+
+        var cornerRect4 = this.cvs.rect(bbBox.x - 5 + bbBox.width, bbBox.y - 5 + bbBox.height, 8, 8);
+        cornerRect4.attr({
+            "stroke": "rgb(0, 158, 235)",
+            "stroke-width": 1,
+            "fill": "rgb(0, 158, 235)"
+        });
+        result.push(cornerRect4);
+
+        var cornerRect5 = this.cvs.rect(bbBox.x - 5 + bbBox.width/2, bbBox.y - 5 + bbBox.height, 8, 8);
+        cornerRect5.attr({
+            "stroke": "rgb(0, 158, 235)",
+            "stroke-width": 1,
+            "fill": "rgb(0, 158, 235)"
+        });
+        result.push(cornerRect5);
+
+        var cornerRect6 = this.cvs.rect(bbBox.x - 5 + bbBox.width/2, bbBox.y - 5, 8, 8);
+        cornerRect6.attr({
+            "stroke": "rgb(0, 158, 235)",
+            "stroke-width": 1,
+            "fill": "rgb(0, 158, 235)"
+        });
+        result.push(cornerRect6);
+
+        var cornerRect7 = this.cvs.rect(bbBox.x - 5, bbBox.y - 5 + bbBox.height/2, 8, 8);
+        cornerRect7.attr({
+            "stroke": "rgb(0, 158, 235)",
+            "stroke-width": 1,
+            "fill": "rgb(0, 158, 235)"
+        });
+        result.push(cornerRect7);
+
+        var cornerRect8 = this.cvs.rect(bbBox.x - 5 + bbBox.width, bbBox.y - 5 + bbBox.height/2, 8, 8);
+        cornerRect8.attr({
+            "stroke": "rgb(0, 158, 235)",
+            "stroke-width": 1,
+            "fill": "rgb(0, 158, 235)"
+        });
+        result.push(cornerRect8);
+
+        return result;
     },
 
     executeAddText: function(x, y) {

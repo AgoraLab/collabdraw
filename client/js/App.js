@@ -13,7 +13,7 @@ enyo.kind({
             on: false,
             color: 'white',
             width: '9px',
-            backgroundColor: '',
+            previousDrawingItem: 'pen',
         },
         laser: {
             on: false,
@@ -602,43 +602,71 @@ enyo.kind({
     drawRectangle: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
+        this.closeHighlighter();
+        this.cancelEditingText();
+        this.closePen();
         this.whiteboard.drawRectangle();
+        this.highlightPenPicker();
     },
 
     drawSquare: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
+        this.closeHighlighter();
+        this.cancelEditingText();
+        this.closePen();
         this.whiteboard.drawSquare();
+        this.highlightPenPicker();
     },
 
     drawLine: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
+        this.closeHighlighter();
+        this.cancelEditingText();
+        this.closePen();
         this.whiteboard.drawLine();
+        this.highlightPenPicker();
     },
 
     drawTriangle: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
+        this.closeHighlighter();
+        this.cancelEditingText();
+        this.closePen();
         this.whiteboard.drawTriangle();
+        this.highlightPenPicker();
     },
 
     drawArrow: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
+        this.closeHighlighter();
+        this.cancelEditingText();
+        this.closePen();
         this.whiteboard.drawArrow();
+        this.highlightPenPicker();
     },
 
     drawEllipse: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
+        this.closeHighlighter();
+        this.cancelEditingText();
+        this.closePen();
         this.whiteboard.drawEllipse();
+        this.highlightPenPicker();
     },
 
     drawCircle: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
+        this.closeHighlighter();
+        this.cancelEditingText();
+        this.closePen();
         this.whiteboard.drawCircle();
+        this.highlightPenPicker();
     },
 
     appclicked: function(inSender, inEvent) {
@@ -646,6 +674,10 @@ enyo.kind({
         var x = inEvent.pageX - canvasBounds.left;
         var y = inEvent.pageY - canvasBounds.top;
         this.whiteboard.appclicked(x, y);
+        // Enable eraser if there is at least one elements been selected.
+        if (this.whiteboard.hasSelectElement()) {
+            this.highlightEraser();
+        }
     },
 
     touchstart: function(inSender, inEvent) {
@@ -685,6 +717,10 @@ enyo.kind({
     },
 
     openEraser: function() {
+        // Cannot enable eraser with no element been selected.
+        if (!this.whiteboard.hasSelectElement()) {
+            return;
+        }
         if (this.eraser.on) return;
 
         this.eraser.on = true;
@@ -692,6 +728,7 @@ enyo.kind({
         this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser.png)");
         this.$.canvasContainer.applyStyle("cursor", "auto");
         this.$.canvasContainer.applyStyle("cursor", "url(../images/mouse_eraser.png) 4 4, auto");
+        this.eraser.previousDrawingItem = this.whiteboard.drawingItem;
         this.whiteboard.selectEraser();
     },
 
@@ -703,13 +740,15 @@ enyo.kind({
         this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser_gray.png)");
         this.$.canvasContainer.applyStyle("cursor", "auto");
         this.$.canvasContainer.applyStyle("cursor", "url(../images/mouse.png) 4 4, auto");
+        this.whiteboard.drawingItem = this.eraser.previousDrawingItem;
     },
 
     selectEraser: function(inSender, inEvent) {
+
         this.closePen();
         this.closeHighlighter();
-        this.cancelSelect();
         this.cancelEditingText();
+        this.dimPenPicker();
         this.eraser.on ? this.closeEraser() : this.openEraser();
     },
 
@@ -753,6 +792,7 @@ enyo.kind({
         this.cancelSelect();
         this.closePen();
         this.cancelEditingText();
+        this.dimPenPicker();
         this.highlighter.on ? this.closeHighlighter() : this.openHighlighter();
     },
 
@@ -761,6 +801,7 @@ enyo.kind({
 
         this.pen.on = true;
         this.$.pencilButton.applyStyle("background-image", "url(../images/btn_pencil.png)");
+        this.pen.previousDrawingItem = this.whiteboard.drawingItem;
         this.whiteboard.selectPen();
     },
 
@@ -777,6 +818,7 @@ enyo.kind({
         this.cancelSelect();
         this.closeHighlighter();
         this.cancelEditingText();
+        this.dimPenPicker();
         this.pen.on ? this.closePen() : this.openPen();
     },
 
@@ -785,6 +827,7 @@ enyo.kind({
         this.cancelSelect();
         this.closePen();
         this.closeHighlighter();
+        this.dimPenPicker();
 
         this.textEditing.on ? this.cancelEditingText() : this.startEditingText();
     },
@@ -859,10 +902,6 @@ enyo.kind({
         }
     },
 
-    cancelSelectedItems: function() {
-
-    },
-
     colorItemSelected: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
@@ -879,8 +918,12 @@ enyo.kind({
         this.$.clear.applyStyle("background-image", "url(../images/btn_clear_gray.png)");
     },
 
-    eraserMouseOver: function(inSender, inEvent) {
+    highlightEraser: function() {
         this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser.png)");
+    },
+
+    eraserMouseOver: function(inSender, inEvent) {
+        this.highlightEraser();
     },
 
     eraserMouseOut: function(inSender, inEvent) {
@@ -933,18 +976,26 @@ enyo.kind({
         }
     },
 
-    penPickerMouseOver: function(inSender, inEvent) {
+    highlightPenPicker: function() {
         this.$.penPicker.applyStyle("background", "url(../images/btn_graph.png), url(../images/icon_more.png)");
         this.$.penPicker.applyStyle("background-repeat", "no-repeat no-repeat");
         this.$.penPicker.applyStyle("background-position", "left center, right center");
         this.$.penPicker.applyStyle("background-color", "transparent");
     },
 
-    penPickerMouseOut: function(inSender, inEvent) {
+    penPickerMouseOver: function(inSender, inEvent) {
+        this.highlightPenPicker()
+    },
+
+    dimPenPicker: function() {
         this.$.penPicker.applyStyle("background", "url(../images/btn_graph_gray.png), url(../images/icon_more_gray.png)");
         this.$.penPicker.applyStyle("background-repeat", "no-repeat no-repeat");
         this.$.penPicker.applyStyle("background-position", "left center, right center");
         this.$.penPicker.applyStyle("background-color", "transparent");
+    },
+
+    penPickerMouseOut: function(inSender, inEvent) {
+        this.dimPenPicker();
     },
 
     addTextButtonMouseOver: function(inSender, inEvent) {
@@ -1133,6 +1184,7 @@ enyo.kind({
         this.closeEraser();
         this.closePen();
         this.closeHighlighter();
+        this.dimPenPicker();
         this.selecting.on ? this.cancelSelect() : this.openSelect();
     },
 
@@ -1145,7 +1197,7 @@ enyo.kind({
     },
 
     cancelSelect: function() {
-        if (!this.selecting.on) return;
+        //if (!this.selecting.on) return;
 
         this.selecting.on = false;
         this.$.selectButton.applyStyle("background-image", "url(../images/btn_choose_gray.png)");
