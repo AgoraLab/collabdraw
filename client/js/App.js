@@ -294,15 +294,15 @@ enyo.kind({
             centered: false,
             modal: false,
             floating: true,
-            style: "height:135px; padding: 0 20px 5px 20px;background-color: rgba(0,0,0,0.5);bottom:68px;left:0;right:0;",
+            style: "height:135px; padding: 0 0 5px 0;background-color: rgba(0,0,0,0.5);bottom:68px;left:0;right:0;",
             components: [{
                 style: "display:inline-block;float:left",
-                content: "<div style='width:20px;height:120px;background-image:url(../images/btn_left.png);background-position:center center;background-repeat:no-repeat;margin:10px;'></div>",
+                content: "<div style='width:40px;height:140px;background-image:url(../images/btn_left.png);background-position:center center;background-repeat:no-repeat;margin:0;background-color:rgba(0,0,0,0.8);border-radius:5px;'></div>",
                 allowHtml: true,
                 ontap: "selectPrevious",
             }, {
                 style: "display:inline-block;float:right;",
-                content: "<div style='width:20px;height:120px;background-image:url(../images/btn_right.png);background-repeat:no-repeat;background-position:center center;margin:10px;'></div>",
+                content: "<div style='width:40px;height:140px;background-image:url(../images/btn_right.png);background-repeat:no-repeat;background-position:center center;margin:0;background-color:rgba(0,0,0,0.8);border-radius:5px;'></div>",
                 allowHtml: true,
                 ontap: "selectNext",
             }],
