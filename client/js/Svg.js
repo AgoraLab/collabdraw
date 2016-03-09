@@ -765,6 +765,35 @@ enyo.kind({
         this.currentSelected = null;
     },
 
+    selectSvgElementByPoint: function(x, y) {
+        var indexX, indexY, element;
+
+        for (indexX = x - 3; indexX < x + 3; indexX += 1) {
+            for (indexY = y - 3; indexY < y + 3; indexY += 1) {
+                element = this.cvs.getElementByPoint(indexX, indexY);
+                if (element) {
+                    return element;
+                }
+            }
+        }
+        return undefined;
+    },
+
+    selectDomElementByPoint: function(x, y) {
+        var indexX, indexY, element;
+
+        for (indexX = x - 3; indexX < x + 3; indexX += 1) {
+            for (indexY = y - 3; indexY < y + 3; indexY += 1) {
+
+                element = document.elementFromPoint(indexX, indexY);
+                if (element && (element.id.indexOf('path-') > -1)) {
+                    return element;
+                }
+            }
+        }
+        return undefined;
+    },
+
     appclicked: function(x, y) {
         if (this.addingText) {
             this.executeAddText(x, y);
@@ -789,7 +818,8 @@ enyo.kind({
             var pageX = x + this.parent_.$.canvasContainer.getBounds().left;
             var pageY = y + this.parent_.$.canvasContainer.getBounds().top;
 
-            var svgElem = this.cvs.getElementByPoint(pageX, pageY);
+            //var svgElem = this.cvs.getElementByPoint(pageX, pageY);
+            var svgElem = this.selectSvgElementByPoint(pageX, pageY);
             if (svgElem) {
                 // Do not glow laser pen
                 if (svgElem !== this.laserPen) {
@@ -805,8 +835,8 @@ enyo.kind({
                 }
             }
 
-            var domElem = document.elementFromPoint(pageX, pageY);
-            if (domElem && (domElem.id.indexOf('path-') > -1)) {
+            var domElem = this.selectDomElementByPoint(pageX, pageY);
+            if (domElem) {
                 // cancel previous selection
                 this.cancelSelect();
 
