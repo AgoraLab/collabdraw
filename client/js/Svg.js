@@ -683,7 +683,8 @@ enyo.kind({
         var input = t.inlineTextEditing.startEditing();  // Retrieve created <input type=text> field
         var _this = this;
         input.addEventListener("blur", function(e) {
-            t.inlineTextEditing.stopEditing(); // Stop inline editing after blur on the text field
+            // Stop inline editing after blur on the text field
+            t.inlineTextEditing.stopEditing();
             _this.connection.sendPath({
                 type: 'edittext',
                 oldx: t.attrs.x,
@@ -821,7 +822,7 @@ enyo.kind({
             var svgElem = this.selectSvgElementByPoint(pageX, pageY);
             if (svgElem) {
                 // Do not glow laser pen
-                if (svgElem !== this.laserPen) {
+                if (svgElem !== this.laserPen && svgElem.type !== 'text') {
                     // cancel previous selection
                     this.cancelSelect();
 
@@ -931,8 +932,8 @@ enyo.kind({
         var text = this.cvs.text(x, y - 60, 'Adding text here')
             .attr({
                 'text-anchor': 'start',
-                'font-size': '25px'
-            }).transform([]);
+                'font-size': '16px',
+            });
 
         // Initialize text editing for the text element
         this.cvs.inlineTextEditing(text);
