@@ -68,7 +68,7 @@ enyo.kind({
                 ontap: "logout",
                 onmouseover: "logoutButtonMouseOver",
                 onmouseout: "logoutButtonMouseOut",
-                style: "background-image:url(../images/btn_quit_gray.png);background-repeat:no-repeat;background-color:transparent;"
+                style: "background-image:url(../images/btn_quit_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;"
             }, {
                 kind:'onyx.Tooltip',
                 classes:'above',
@@ -84,7 +84,7 @@ enyo.kind({
                     name: "optionsPicker",
                     onmouseover: "optionsPickerMouseOver",
                     onmouseout: "optionsPickerMouseOut",
-                    style: "float:right;background-image:url(../images/btn_new_gray.png);background-repeat:no-repeat;background-color:transparent;width:50px;",
+                    style: "float:right;background-image:url(../images/btn_new_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
                 }, {
                     kind: "onyx.Picker",
                     components: [{
@@ -160,7 +160,7 @@ enyo.kind({
                 onmouseover: "previewMouseOver",
                 onmouseout: "previewMouseOut",
                 popup: "previewPagesPopup",
-                style: "background-image:url(../images/btn_thumbnails_gray.png);background-repeat:no-repeat;background-color:transparent;"
+                style: "background-image:url(../images/btn_thumbnails_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;"
             }, {
                 kind: "onyx.Tooltip",
                 content: "Preview Pages",
@@ -175,7 +175,7 @@ enyo.kind({
                 name: "zoomInButton",
                 onmouseover: "zoomInMouseOver",
                 onmouseout: "zoomInMouseOut",
-                style: "background-image:url(../images/btn_enlarge_gray.png);background-repeat:no-repeat;background-color:transparent;"
+                style: "background-image:url(../images/btn_enlarge_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;"
             }, {
                 kind: "onyx.Tooltip",
                 content: "Zoom In",
@@ -187,7 +187,7 @@ enyo.kind({
             components: [{
                 kind: "onyx.Button",
                 name: "zoomOutButton",
-                style: "background-image:url(../images/btn_narrow_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "background-image:url(../images/btn_narrow_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
                 ontap: "zoomOutPane",
                 onmouseover: "zoomOutMouseOver",
                 onmouseout: "zoomOutMouseOut",
@@ -215,7 +215,7 @@ enyo.kind({
                 ontap: "deletePage",
                 onmouseover: "deleteButtonMouseOver",
                 onmouseout: "deleteButtonMouseOut",
-                style: "float:right;background-image:url(../images/btn_del_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "float:right;background-image:url(../images/btn_del_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
             }, {
                 kind: "onyx.Tooltip",
                 content: "Delete Page",
@@ -230,7 +230,7 @@ enyo.kind({
                 onmouseover: "clearButtonMouseOver",
                 onmouseout: "clearButtonMouseOut",
                 ontap: "selectClear",
-                style: "float:right;background-image:url(../images/btn_clear_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "float:right;background-image:url(../images/btn_clear_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
             }, {
                 kind: "onyx.Tooltip",
                 content: "Clear page",
@@ -243,7 +243,7 @@ enyo.kind({
                 name: "eraser",
                 kind: "onyx.Button",
                 ontap: "selectEraser",
-                style: "float: right;background-image:url(../images/btn_eraser_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "float: right;background-image:url(../images/btn_eraser_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
                 onmouseover: "eraserMouseOver",
                 onmouseout: "eraserMouseOut",
             }, {
@@ -260,7 +260,7 @@ enyo.kind({
                 name: "undoButton",
                 onmouseover: "undoButtonMouseOver",
                 onmouseout: "undoButtonMouseOut",
-                style: "float: right;background-image:url(../images/btn_undo_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "float: right;background-image:url(../images/btn_undo_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
             }, {
                 kind: "onyx.Tooltip",
                 content: "Undo",
@@ -275,7 +275,7 @@ enyo.kind({
                 name: "redoButton",
                 onmouseover: "redoButtonMouseOver",
                 onmouseout: "redoButtonMouseOut",
-                style: "float: right;background-image:url(../images/btn_redo_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "float: right;background-image:url(../images/btn_redo_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
             }, {
                 kind: "onyx.Tooltip",
                 content: "Redo",
@@ -315,7 +315,7 @@ enyo.kind({
                 name: "selectButton",
                 onmouseover: "selectButtonMouseOver",
                 onmouseout: "selectButtonMouseOut",
-                style: "background-image:url(../images/btn_choose_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "background-image:url(../images/btn_choose_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
             }, {
                 kind: "onyx.Tooltip",
                 content: "Select",
@@ -330,7 +330,7 @@ enyo.kind({
                 onmouseover: "laserPenMouseOver",
                 onmouseout: "laserPenMouseOut",
                 ontap: "selectLaserPen",
-                style: "background-image:url(../images/btn_laser_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "background-image:url(../images/btn_laser_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
             }, {
                 kind: "onyx.Tooltip",
                 content: "Laser",
@@ -341,13 +341,12 @@ enyo.kind({
             style: "float: right;",
             components: [{
                 kind: "onyx.PickerDecorator",
-                style: "float:right;",
                 components: [{
                     name: "penPicker",
                     kind: "onyx.Button",
                     onmouseover: "penPickerMouseOver",
                     onmouseout: "penPickerMouseOut",
-                    style: "width:48px;background:url(../images/btn_graph_gray.png), url(../images/icon_more_gray.png);background-repeat:no-repeat no-repeat;background-position:left center, right center; background-color:transparent;",
+                    style: "width:38px;background:url(../images/btn_graph_gray.png), url(../images/icon_more_gray.png);background-repeat:no-repeat no-repeat;background-position:left top, right center; background-color:transparent;background-size:25px,10px;height:30px;padding:0;",
                 }, {
                     kind: "onyx.Picker",
                     maxHeight: "400px",
@@ -409,7 +408,7 @@ enyo.kind({
                 onmouseover: "addTextButtonMouseOver",
                 onmouseout: "addTextButtonMouseOut",
                 ontap: "addText",
-                style: "float:right;background-image:url(../images/btn_word_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "float:right;background-image:url(../images/btn_word_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
             }, {
                 kind: "onyx.Tooltip",
                 content: "Add Text",
@@ -423,7 +422,7 @@ enyo.kind({
                 name: "highlighter",
                 onmouseover: "highlighterMouseOver",
                 onmouseout: "highlighterMouseOut",
-                style: "background-image:url(../images/btn_highlighter_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "background-image:url(../images/btn_highlighter_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
                 ontap: "selectHighlighter",
             }, {
                 kind: "onyx.Tooltip",
@@ -438,7 +437,7 @@ enyo.kind({
                 name: "pencilButton",
                 onmouseover: "pencilMouseOver",
                 onmouseout: "pencilMouseOut",
-                style: "float: right; background-image:url(../images/btn_pencil.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "float: right; background-image:url(../images/btn_pencil.png);background-repeat:no-repeat;background-color:transparent;height:25px;",
                 ontap: "selectPen",
             }, {
                 kind: "onyx.Tooltip",
@@ -454,7 +453,7 @@ enyo.kind({
                 components: [{
                     name: "lineWidthPicker",
                     kind: "onyx.Button",
-                    style: "width: 40px;background:url(../images/icon_line_1_white.png),url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center;background-color:transparent;",
+                    style: "width: 40px;background:url(../images/icon_line_1_white.png),url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center;background-color:transparent;height:25px;",
                 }, {
                     kind: "onyx.Picker",
                     maxHeight: "400px",
@@ -998,6 +997,7 @@ enyo.kind({
         this.$.penPicker.applyStyle("background-repeat", "no-repeat no-repeat");
         this.$.penPicker.applyStyle("background-position", "left center, right center");
         this.$.penPicker.applyStyle("background-color", "transparent");
+        this.$.penPicker.applyStyle("background-size", "25px,10px");
     },
 
     penPickerMouseOver: function(inSender, inEvent) {
@@ -1009,6 +1009,7 @@ enyo.kind({
         this.$.penPicker.applyStyle("background-repeat", "no-repeat no-repeat");
         this.$.penPicker.applyStyle("background-position", "left center, right center");
         this.$.penPicker.applyStyle("background-color", "transparent");
+        this.$.penPicker.applyStyle("background-size", "25px,10px");
     },
 
     penPickerMouseOut: function(inSender, inEvent) {
