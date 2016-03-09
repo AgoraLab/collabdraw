@@ -19,6 +19,22 @@ enyo.kind({
             on: false,
             previousDrawingItem: 'pen'
         },
+        pen: {
+            on: true,
+            previousDrawingItem: ''
+        },
+        highlighter: {
+            on: false,
+            previousDrawingItem: 'pen'
+        },
+        selecting: {
+            on: false,
+            previousDrawingItem: 'pen'
+        },
+        textEditing: {
+            on: false,
+            previousDrawingItem: 'pen'
+        },
         uid: 'test',
         sid: '',
         room: 'one',
@@ -307,14 +323,14 @@ enyo.kind({
             }],
         }, {
             kind: "onyx.TooltipDecorator",
-            style: "float: right",
+            style: "float: right;",
             components: [{
                 kind: "onyx.Button",
                 name: "laserPen",
                 onmouseover: "laserPenMouseOver",
                 onmouseout: "laserPenMouseOut",
                 ontap: "selectLaserPen",
-                style: "float:right;background-image:url(../images/btn_laser_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "background-image:url(../images/btn_laser_gray.png);background-repeat:no-repeat;background-color:transparent;",
             }, {
                 kind: "onyx.Tooltip",
                 content: "Laser",
@@ -325,9 +341,10 @@ enyo.kind({
             style: "float: right;",
             components: [{
                 kind: "onyx.PickerDecorator",
-                style: "float:right",
+                style: "float:right;",
                 components: [{
                     name: "penPicker",
+                    kind: "onyx.Button",
                     onmouseover: "penPickerMouseOver",
                     onmouseout: "penPickerMouseOut",
                     style: "width:48px;background:url(../images/btn_graph_gray.png), url(../images/icon_more_gray.png);background-repeat:no-repeat no-repeat;background-position:left center, right center; background-color:transparent;",
@@ -421,7 +438,7 @@ enyo.kind({
                 name: "pencilButton",
                 onmouseover: "pencilMouseOver",
                 onmouseout: "pencilMouseOut",
-                style: "float: right; background-image:url(../images/btn_pencil_gray.png);background-repeat:no-repeat;background-color:transparent;",
+                style: "float: right; background-image:url(../images/btn_pencil.png);background-repeat:no-repeat;background-color:transparent;",
                 ontap: "selectPen",
             }, {
                 kind: "onyx.Tooltip",
@@ -436,6 +453,7 @@ enyo.kind({
                 style: "float:right;width:50px;",
                 components: [{
                     name: "lineWidthPicker",
+                    kind: "onyx.Button",
                     style: "width: 40px;background:url(../images/icon_line_1_white.png),url(../images/icon_more.png);background-repeat:no-repeat no-repeat;background-position:left center, right center;background-color:transparent;",
                 }, {
                     kind: "onyx.Picker",
@@ -476,11 +494,12 @@ enyo.kind({
             style: "float: right",
             components: [{
                 kind: "onyx.PickerDecorator",
-                style: "float:right;border:1px solid #FFF;",
+                style: "border:1px solid #FFF;",
                 name: "colorPickerWrapper",
                 components: [{
                     name: "colorPicker",
-                    style: "background-color: black;height:36px;",
+                    kind: "onyx.Button",
+                    style: "background-color: black;height:30px;",
                 }, {
                     kind: "onyx.Picker",
                     name: "colorItemSelectedHolder",
@@ -488,28 +507,28 @@ enyo.kind({
                     maxHeight: "400px",
                     components: [{
                         name: "red",
-                        style: "background-color: red;height:16px;width:60px;",
+                        style: "background-color: red;height:6px;width:30px;",
                     }, {
                         name: "orange",
-                        style: "background-color: orange;height:16px;width:60px;",
+                        style: "background-color: orange;height:6px;width:30px;",
                     }, {
                         name: "yellow",
-                        style: "background-color: yellow;height:16px;width:60px;",
+                        style: "background-color: yellow;height:6px;width:30px;",
                     }, {
                         name: "blue",
-                        style: "background-color: blue;height:16px;width:60px;",
+                        style: "background-color: blue;height:6px;width:30px;",
                     }, {
                         name: "cyan",
-                        style: "background-color: cyan;height:16px;width:60px;",
+                        style: "background-color: cyan;height:6px;width:30px;",
                     }, {
                         name: "green",
-                        style: "background-color: green;height:16px;width:60px;",
+                        style: "background-color: green;height:6px;width:30px;",
                     }, {
                         name: "black",
-                        style: "background-color: black;height:16px;width:60px;",
+                        style: "background-color: black;height:6px;width:30px;",
                     }, {
                         name: "purple",
-                        style: "background-color: purple;height:16px;width:60px;",
+                        style: "background-color: purple;height:6px;width:30px;",
                     }]
                 }, ],
             }, {
@@ -527,8 +546,8 @@ enyo.kind({
             components: [{
                 kind: "onyx.Spinner"
             }, ],
-        }]
-    }, ],
+        }],
+    }],
 
     zoomInPane: function(inSender, inEvent) {
         this.closeEraser();
@@ -670,8 +689,7 @@ enyo.kind({
 
         this.eraser.on = true;
         //this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
-        this.eraser.backgroundColor = "transparent";
-        this.$.eraser.applyStyle("background-color", "rgba(255,255,255,0.3)");
+        this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser.png)");
         this.$.canvasContainer.applyStyle("cursor", "auto");
         this.$.canvasContainer.applyStyle("cursor", "url(../images/mouse_eraser.png) 4 4, auto");
         this.whiteboard.selectEraser();
@@ -682,13 +700,16 @@ enyo.kind({
 
         this.eraser.on = false;
         this.whiteboard.drawingItem = '';
-        this.$.eraser.applyStyle("background-color", this.eraser.backgroundColor);
+        this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser_gray.png)");
         this.$.canvasContainer.applyStyle("cursor", "auto");
         this.$.canvasContainer.applyStyle("cursor", "url(../images/mouse.png) 4 4, auto");
     },
 
     selectEraser: function(inSender, inEvent) {
+        this.closePen();
+        this.closeHighlighter();
         this.cancelSelect();
+        this.cancelEditingText();
         this.eraser.on ? this.closeEraser() : this.openEraser();
     },
 
@@ -698,33 +719,90 @@ enyo.kind({
             this.laser.on = false;
             this.whiteboard.drawingItem = this.laser.previousDrawingItem;
             this.whiteboard.removeLaser();
-            this.$.laserPen.applyStyle("background-color", "transparent");
+            this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser_gray.png)");
         } else {
             this.laser.on = true;
             this.laser.previousDrawingItem = this.whiteboard.drawingItem;
             this.whiteboard.drawingItem = '';
             this.whiteboard.drawLaser();
-            this.$.laserPen.applyStyle("background-color", "rgba(255,255,255,0.3)");
+            this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser.png)");
         }
     },
 
+    openHighlighter: function() {
+        if (this.highlighter.on) {
+            return;
+        }
+        this.highlighter.on = true;
+        this.$.highlighter.applyStyle("background-image", "url(../images/btn_highlighter.png)");
+        this.whiteboard.selectHighlighter();
+    },
+
+    closeHighlighter: function() {
+        if (!this.highlighter.on) {
+            return;
+        }
+
+        this.highlighter.on = false;
+        this.whiteboard.drawingItem = this.highlighter.previousDrawingItem;
+        this.$.highlighter.applyStyle("background-image", "url(../images/btn_highlighter_gray.png)");
+    },
 
     selectHighlighter: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
-        this.whiteboard.selectHighlighter();
+        this.closePen();
+        this.cancelEditingText();
+        this.highlighter.on ? this.closeHighlighter() : this.openHighlighter();
+    },
+
+    openPen: function() {
+        if (this.pen.on) return;
+
+        this.pen.on = true;
+        this.$.pencilButton.applyStyle("background-image", "url(../images/btn_pencil.png)");
+        this.whiteboard.selectPen();
+    },
+
+    closePen: function() {
+        if (!this.pen.on) return;
+
+        this.pen.on = false;
+        this.$.pencilButton.applyStyle("background-image", "url(../images/btn_pencil_gray.png)");
+        this.whiteboard.drawingItem = this.pen.previousDrawingItem;
     },
 
     selectPen: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
-        this.whiteboard.selectPen();
+        this.closeHighlighter();
+        this.cancelEditingText();
+        this.pen.on ? this.closePen() : this.openPen();
     },
 
     addText: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
+        this.closePen();
+        this.closeHighlighter();
+
+        this.textEditing.on ? this.cancelEditingText() : this.startEditingText();
+    },
+
+    startEditingText: function() {
+        if (!this.textEditing) return;
+
+        this.textEditing.on = true;
+        this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word.png)");
         this.whiteboard.addText();
+    },
+
+    cancelEditingText: function() {
+        if (!this.textEditing.on) return;
+
+        this.textEditing.on = false;
+        this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word_gray.png)");
+        this.whiteboard.drawingItem = this.textEditing.previousDrawingItem;
     },
 
     setLineWidth1: function(inSender, inEvent) {
@@ -781,6 +859,10 @@ enyo.kind({
         }
     },
 
+    cancelSelectedItems: function() {
+
+    },
+
     colorItemSelected: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
@@ -802,7 +884,9 @@ enyo.kind({
     },
 
     eraserMouseOut: function(inSender, inEvent) {
-        this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser_gray.png)");
+        if (!this.eraser.on) {
+            this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser_gray.png)");
+        }
     },
 
     deleteButtonMouseOver: function(inSender, inEvent) {
@@ -830,61 +914,71 @@ enyo.kind({
     },
 
     selectButtonMouseOver: function(inSender, inEvent) {
-        this.$.selectButton.applyStyle("background-image", "url(../images/btn_choose.png)")
+        this.$.selectButton.applyStyle("background-image", "url(../images/btn_choose.png)");
     },
 
     selectButtonMouseOut: function(inSender, inEvent) {
-        this.$.selectButton.applyStyle("background-image", "url(../images/btn_choose_gray.png)");
+        if (!this.selecting.on) {
+            this.$.selectButton.applyStyle("background-image", "url(../images/btn_choose_gray.png)");
+        }
     },
 
     laserPenMouseOver: function(inSender, inEvent) {
-        this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser.png)")
+        this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser.png)");
     },
 
     laserPenMouseOut: function(inSender, inEvent) {
-        this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser_gray.png)");
+        if (!this.laser.on) {
+            this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser_gray.png)");
+        }
     },
 
     penPickerMouseOver: function(inSender, inEvent) {
-        this.$.penPicker.applyStyle("background", "url(../images/btn_graph.png), url(../images/icon_more.png)")
+        this.$.penPicker.applyStyle("background", "url(../images/btn_graph.png), url(../images/icon_more.png)");
         this.$.penPicker.applyStyle("background-repeat", "no-repeat no-repeat");
         this.$.penPicker.applyStyle("background-position", "left center, right center");
         this.$.penPicker.applyStyle("background-color", "transparent");
     },
 
     penPickerMouseOut: function(inSender, inEvent) {
-        this.$.penPicker.applyStyle("background", "url(../images/btn_graph_gray.png), url(../images/icon_more_gray.png)")
+        this.$.penPicker.applyStyle("background", "url(../images/btn_graph_gray.png), url(../images/icon_more_gray.png)");
         this.$.penPicker.applyStyle("background-repeat", "no-repeat no-repeat");
         this.$.penPicker.applyStyle("background-position", "left center, right center");
         this.$.penPicker.applyStyle("background-color", "transparent");
     },
 
     addTextButtonMouseOver: function(inSender, inEvent) {
-        this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word.png)")
+        this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word.png)");
     },
 
     addTextButtonMouseOut: function(inSender, inEvent) {
-        this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word_gray.png)");
+        if (!this.textEditing.on) {
+            this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word_gray.png)");
+        }
     },
 
     highlighterMouseOver: function(inSender, inEvent) {
-        this.$.highlighter.applyStyle("background-image", "url(../images/btn_highlighter.png)")
+        this.$.highlighter.applyStyle("background-image", "url(../images/btn_highlighter.png)");
     },
 
     highlighterMouseOut: function(inSender, inEvent) {
-        this.$.highlighter.applyStyle("background-image", "url(../images/btn_highlighter_gray.png)");
+        if (!this.highlighter.on) {
+            this.$.highlighter.applyStyle("background-image", "url(../images/btn_highlighter_gray.png)");
+        }
     },
 
     pencilMouseOver: function(inSender, inEvent) {
-        this.$.pencilButton.applyStyle("background-image", "url(../images/btn_pencil.png)")
+        this.$.pencilButton.applyStyle("background-image", "url(../images/btn_pencil.png)");
     },
 
     pencilMouseOut: function(inSender, inEvent) {
-        this.$.pencilButton.applyStyle("background-image", "url(../images/btn_pencil_gray.png)");
+        if (!this.pen.on) {
+            this.$.pencilButton.applyStyle("background-image", "url(../images/btn_pencil_gray.png)");
+        }
     },
 
     logoutButtonMouseOver: function(inSender, inEvent) {
-        this.$.logoutButton.applyStyle("background-image", "url(../images/btn_quit.png)")
+        this.$.logoutButton.applyStyle("background-image", "url(../images/btn_quit.png)");
     },
 
     logoutButtonMouseOut: function(inSender, inEvent) {
@@ -892,7 +986,7 @@ enyo.kind({
     },
 
     optionsPickerMouseOver: function(inSender, inEvent) {
-        this.$.optionsPicker.applyStyle("background-image", "url(../images/btn_new.png)")
+        this.$.optionsPicker.applyStyle("background-image", "url(../images/btn_new.png)");
     },
 
     optionsPickerMouseOut: function(inSender, inEvent) {
@@ -1037,10 +1131,25 @@ enyo.kind({
 
     doSelect: function(inSender, inEvent) {
         this.closeEraser();
+        this.closePen();
+        this.closeHighlighter();
+        this.selecting.on ? this.cancelSelect() : this.openSelect();
+    },
+
+    openSelect: function() {
+        if (this.selecting.on) return;
+
+        this.selecting.on = true;
+        this.$.selectButton.applyStyle("background-image", "url(../images/btn_choose.png)");
         this.whiteboard.doSelect();
     },
 
     cancelSelect: function() {
+        if (!this.selecting.on) return;
+
+        this.selecting.on = false;
+        this.$.selectButton.applyStyle("background-image", "url(../images/btn_choose_gray.png)");
+        this.whiteboard.drawingItem = this.selecting.previousDrawingItem;
         this.whiteboard.cancelSelect();
     }
 });
