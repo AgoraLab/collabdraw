@@ -694,6 +694,8 @@ enyo.kind({
         if (this.whiteboard.hasSelectElement()) {
             this.highlightEraser();
         }
+
+        this.cancelEditingText();
     },
 
     touchstart: function(inSender, inEvent) {
@@ -853,6 +855,7 @@ enyo.kind({
 
         this.textEditing.on = true;
         this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word.png)");
+        this.textEditing.previousDrawingItem = this.whiteboard.drawingItem;
         this.whiteboard.addText();
     },
 
@@ -861,7 +864,7 @@ enyo.kind({
 
         this.textEditing.on = false;
         this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word_gray.png)");
-        this.whiteboard.drawingItem = this.textEditing.previousDrawingItem;
+        this.whiteboard.stopAddingText(this.textEditing.previousDrawingItem);
     },
 
     setLineWidth1: function(inSender, inEvent) {

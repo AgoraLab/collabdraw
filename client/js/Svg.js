@@ -797,7 +797,6 @@ enyo.kind({
     appclicked: function(x, y) {
         if (this.addingText) {
             this.executeAddText(x, y);
-            this.addingText = false;
             this.connection.sendPath({
                 oldx: x,
                 oldy: y,
@@ -929,8 +928,14 @@ enyo.kind({
     },
 
     executeAddText: function(x, y) {
-        var text = this.cvs.text(x, y, 'Adding text here').attr({'text-anchor': 'start', 'font-size': '25px'}).transform([]);
-        this.cvs.inlineTextEditing(text);   // Initialize text editing for the text element
+        var text = this.cvs.text(x, y - 60, 'Adding text here')
+            .attr({
+                'text-anchor': 'start',
+                'font-size': '25px'
+            }).transform([]);
+
+        // Initialize text editing for the text element
+        this.cvs.inlineTextEditing(text);
         text.click(this.onTextClicked.bind(this, text), true);
 
         var id = x.toString() + '-' + y.toString();
@@ -951,6 +956,11 @@ enyo.kind({
     addText: function() {
         this.drawingItem = '';
         this.addingText = true;
+    },
+
+    stopAddingText: function(drawingItem) {
+        this.addingText = false;
+        this.drawingItem = drawingItem;
     },
 
     cropContent: function() {
