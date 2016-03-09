@@ -527,9 +527,9 @@ enyo.kind({
         this.drawingItem = 'highlighter';
     },
 
-    selectEraser: function() {
-        this.drawingItem = 'eraser';
-    },
+    //selectEraser: function() {
+        //this.drawingItem = 'eraser';
+    //},
 
     removeLaser: function() {
         this.laserPen.remove();
@@ -693,6 +693,27 @@ enyo.kind({
         });
     },
 
+    removeSelected: function() {
+        if (!this.currentSelected) {
+            return;
+        }
+
+        var clone = $.extend({}, this.currentSelected.element);
+        if (this.currentSelected.path) {
+            this.undoStack.push({
+                type: 'rm-path',
+                shape: clone
+            });
+        } else {
+            this.undoStack.push({
+                type: 'rm-shape',
+                path: clone
+            });
+        }
+        this.currentSelected.element.remove();
+        this.cancelSelect();
+    },
+
     executeRemove: function(x, y) {
         var pageX = x + this.parent_.$.canvasContainer.getBounds().left;
         var pageY = y + this.parent_.$.canvasContainer.getBounds().top;
@@ -753,16 +774,18 @@ enyo.kind({
                 oldy: y,
                 type: 'addtext',
             });
-        } else if (this.drawingItem == 'eraser') {
-            var removed = this.executeRemove(x, y);
-            if (removed) {
-                this.connection.sendPath({
-                    oldx: x,
-                    oldy: y,
-                    type: 'rm'
-                });
-            }
-        } else if (this.doingSelect) {
+        }
+        //else if (this.drawingItem == 'eraser') {
+            //var removed = this.executeRemove(x, y);
+            //if (removed) {
+                //this.connection.sendPath({
+                    //oldx: x,
+                    //oldy: y,
+                    //type: 'rm'
+                //});
+            //}
+        //}
+        else if (this.doingSelect) {
             var pageX = x + this.parent_.$.canvasContainer.getBounds().left;
             var pageY = y + this.parent_.$.canvasContainer.getBounds().top;
 
@@ -775,6 +798,7 @@ enyo.kind({
 
                     var result = this.drawOuterLineOnSelected(svgElem);
                     this.currentSelected = {
+                        path: true,
                         element: svgElem,
                         outerRect: result
                     };
@@ -788,7 +812,8 @@ enyo.kind({
 
                 var result = this.drawOuterLineOnSelected(domElem);
                 this.currentSelected = {
-                    element: svgElem,
+                    path: false,
+                    element: domElem,
                     outerRect: result
                 };
             }
