@@ -55,7 +55,7 @@ class CenterHandler(tornado.web.RequestHandler):
 
     def getRedisServer(self, vendor_id, cname):
         key="%d:%s"%(vendor_id ,cname)
-        redis_id=CommonData.redisClient['client'].redis_client.hget("%d:redis_alloc"%vendor_id, key)
+        redis_id=CommonData.redisClient['client'].hget("redis_alloc:%d"%vendor_id, key)
         if redis_id :
             redis_id=str(redis_id,  encoding = "utf-8")
             return redis_id
@@ -63,7 +63,7 @@ class CenterHandler(tornado.web.RequestHandler):
             servers = list(CommonData.edgeRedis.keys())
             idx = hash(key) % len(servers)
             ret=servers[idx]
-            CommonData.redisClient['client'].redis_client.hset("%d:redis_alloc"%vendor_id, key, ret)
+            CommonData.redisClient['client'].redis_client.hset("redis_alloc:%d"%vendor_id, key, ret)
             return ret
 
     def getEdgeServer(self, vendor_id, cname):

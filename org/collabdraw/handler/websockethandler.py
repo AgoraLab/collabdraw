@@ -22,12 +22,14 @@ class RoomData(object):
         self.page_path=defaultdict(list)
         self.page_image={}
         self.pubsub_client=None
+        self.db_client=None
         self.topic=None
 
-    def init_room_topic(self, db_client, topic):
+    def init_room(self, url, topic):
         if not self.pubsub_client:
-            self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,db_client)
-            self.pubsub_client.subscribe(topic, self, RealtimeHandler.on_pubsub )
+            self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, url)
+            self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,self.db_client)
+            self.pubsub_client.subscribe(topic, self, RealtimeHandler.on_pubsub)
             self.topic=topic
 
     def publish(self, m):
@@ -99,7 +101,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         self.vid=0
         self.verified=False
         self.fromUid=0
-        self.db_client=None
+        # self.db_client=None
         # self.pubsub_client=None
         # self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, )
         # self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE)
@@ -125,9 +127,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.vid=cookie['vid']
                 self.fromUid= fromUid
                 self.room_name=data['room']
-                self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, cookie['redis'])
-                self.logger.info("xxxxx %s %s"%(cookie['redis'], self.room_topic()))
-                self.get_room().init_room_topic(self.db_client, self.room_topic())
+                # self.logger.info("xxxxx %s %s"%(cookie['redis'], self.room_topic()))
+                self.get_room().init_room(cookie['redis'], self.room_topic())
                 # self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,cookie['redis'])
 
         #
@@ -149,12 +150,12 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             room_name = data.get('room', '')
             page_id = data.get('page_id', None)
             self.logger.info("Initializing with room name %s" % room_name)
-            page_list = self.db_client.lrange(self.page_list_key(), 0, -1)
+            page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
             # if not page_list:
             #     return self.on_db_error()
             if len(page_list)== 0:
                 page_id=RealtimeHandler.gen_page_id()
-                self.db_client.rpush(self.page_list_key(), [page_id])
+                self.get_room().db_client.rpush(self.page_list_key(), [page_id])
             else:
                 if page_id not in page_list:
                     page_id = page_list[0]
@@ -164,7 +165,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             single_path = data['singlePath']
             path=self.get_page_path_data()
             self.logger.info(single_path)
-            ret=self.db_client.rpush(self.page_path_key(), [json.dumps(v) for v in single_path])
+            ret=self.get_room().db_client.rpush(self.page_path_key(), [json.dumps(v) for v in single_path])
             if not ret:
                 return self.on_db_error()
             path.extend(single_path)
@@ -175,19 +176,18 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("draw", msg))
 
         elif event == "delete-page":
-            self.db_client.lrem(self.page_list_key(), 0, self.page_id)
-            self.db_client.delete(self.page_path_key())
-
-            page_list = self.db_client.lrange(self.page_list_key(), 0, -1)
-            if not page_list:
-                return self.on_db_error()
+            self.get_room().db_client.lrem(self.page_list_key(), 0, self.page_id)
+            self.get_room().db_client.delete(self.page_path_key())
+            page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
+            # if not page_list:
+            #     return self.on_db_error()
             page_list = [int(i) for i in page_list]
 
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("delete-page", {'pages':page_list}))
             # self.get_room().delete_page(self.page_id)
 
         elif event == "clear":
-            self.db_client.delete(self.page_path_key())
+            self.get_room().db_client.delete(self.page_path_key())
             self.get_room().set_page_path(self.page_id, [])
             self.get_room().set_page_image(self.page_id, None)
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("clear",{}))
@@ -216,7 +216,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
     ## Higher lever methods
     def init_room_page(self, room_name, page_id):
         self.logger.info("Initializing %s and %s" % (room_name, page_id))
-        page_list = self.db_client.lrange(self.page_list_key(), 0, -1)
+        page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
         if not page_list:
             return self.on_db_error()
         self.logger.info(page_list)
@@ -302,7 +302,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     def on_broadcast_message(self, m):
         # m=json.loads(m)
-        self.logger.info("xxxxxxx  %s"%m)
         if m['event'] == 'draw':
             if m['data']['page_id'] != self.page_id:
                 return
@@ -332,6 +331,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         # Then send the paths
         path=self.get_room().page_path[self.page_id]
         if len(path) == 0:
-            path=self.db_client.lrange(self.page_path_key(), 0, -1)
+            path=self.get_room().db_client.lrange(self.page_path_key(), 0, -1)
             self.get_room().set_page_path(self.page_id, path)
         return path

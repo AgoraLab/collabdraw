@@ -27,17 +27,12 @@ PUBLIC_LISTEN_PORT = APP_PORT
 PUBSUB_CLIENT_TYPE = 'redis' # only redis supported now
 DB_CLIENT_TYPE = 'redis'  # only redis supported now
 
-# REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://127.0.0.1:6379')
-
-EDGE_REDIS_URL= {'1':'redis://127.0.0.1:6379','2':'redis://127.0.0.1:6379'}
-CENTER_SERVER_URL = ['http://10.203.112.131:5555']
-# CENTER_SERVER_URL = ['http://119.9.75.121:5555']
+EDGE_REDIS_URL= {}
 
 # Full path of "collabdraw" directory
 ROOT_DIR = "/".join(os.path.realpath(__file__).split('/')[:-1])
 RESOURCE_DIR = os.path.join(ROOT_DIR, 'client')
 FILES_DIR = os.path.join(ROOT_DIR, 'files')
-# I18N_DIR = os.path.join(ROOT_DIR, 'resources'
 HTML_ROOT = os.path.join(RESOURCE_DIR, 'html')
 
 # Hash salt for storing password in database

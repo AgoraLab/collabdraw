@@ -75,15 +75,20 @@ def serverKeepAliveCallBack(response):
             logger.error('serverKeepAlive return error')
             return
         config.EDGE_REDIS_URL=msg['redis']
+        logger.info('update redis %s' , config.EDGE_REDIS_URL)
 
 http_client = AsyncHTTPClient()
 
 def serverKeepAlive():
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    url = "http://collabdraw.agoralab.co:5555/registerEdgeServer"
     msg={"port":config.PUBLIC_LISTEN_PORT, "load":RealtimeHandler.clientCount(), "key":"bestvoip"}
     body = urllib.parse.urlencode(msg) #Make it into a post request
-    http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)
+    try :
+        for x in socket.gethostbyname_ex('collabdraw.agoralab.co')[2]:
+            url = "http://%s:5555/registerEdgeServer"%(x)
+            http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)
+    except:
+        logger.info("gethostbyname error")
 
 if __name__ == "__main__":
     if not config.ENABLE_SSL:

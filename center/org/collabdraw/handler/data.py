@@ -30,13 +30,13 @@ class CommonData(object):
         return False
 
     def loadEdgeRedisServers():
-        servers=CommonData.redisClient['client'].hgetall("redisServer")
+        servers=CommonData.redisClient['client'].hgetall("global:edgeRedisServer")
         if servers:
             CommonData.edgeRedis={}
             CommonData.edgeRedisUpdateTs=time.time()
             for k,v in servers.items():
                 k=str(k, encoding = "utf-8")
-                k=str(v, encoding = "utf-8")
+                v=str(v, encoding = "utf-8")
                 CommonData.edgeRedis[k]=v
 
     def init():

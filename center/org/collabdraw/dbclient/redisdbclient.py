@@ -26,6 +26,9 @@ class RedisDbClient(DbInterface):
     def get(self, key ):
         return self.exe_(self.redis_client.get, key)
 
+    def hget(self, key, key2):
+        return self.exe_(self.redis_client.hget, key, key2)
+
     def hset(self, key, value):
         return self.exe_(self.redis_client.hset, key, value)
 
