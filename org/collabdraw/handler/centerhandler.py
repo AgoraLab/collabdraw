@@ -66,9 +66,12 @@ class CenterHandler(tornado.web.RequestHandler):
                 if now < msg['expiredTs']:
                     CenterHandler.edgeServers[msg['addr']]=msg
 
-    def getEdgeServer(self, cip):
-        if len(self.edgeServers)>0:
-            return list(self.edgeServers.keys())[random.randrange(len(self.edgeServers.keys()))]
+    def getEdgeServer(self, cid):
+        servers=self.edgeServers.keys()
+        if len(servers)>0:
+            idx = cid % len(servers)
+            return  servers[idx]
+            # return list(self.edgeServers.keys())[random.randrange(len(self.edgeServers.keys()))]
         return None
 
     def initialize(self):
@@ -78,7 +81,7 @@ class CenterHandler(tornado.web.RequestHandler):
     def onSdkJoinChannelReq(self, key, cname, uinfo=None):
         self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
         code, vid = self.checkLoginRequest(key, cname)
-        addr=self.getEdgeServer('')
+        addr=self.getEdgeServer()
         res = {'code': code, 'cname': cname, 'server':addr}
         return res, vid;
 

@@ -7,14 +7,17 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import tornado.template as template
+from tornado.httputil import url_concat
+from tornado.httpclient import AsyncHTTPClient
 import time
 import socket
 import fcntl
 import struct
+import urllib
 from org.collabdraw.handler.websockethandler import RealtimeHandler
 from org.collabdraw.handler.uploadhandler import UploadHandler
 from org.collabdraw.handler.joinhandler import JoinHandler
-from org.collabdraw.handler.centerhandler import CenterHandler
+# from org.collabdraw.handler.centerhandler import CenterHandler
 from org.collabdraw.dbclient.dbclientfactory import DbClientFactory
 from org.collabdraw.dbclient.mysqlclient import MysqlClientVendor
 
@@ -50,7 +53,7 @@ class Application(tornado.web.Application):
             # (r'/resources/(.*)', tornado.web.StaticFileHandler, dict(path=config.I18N_DIR)),
             (r'/upload', UploadHandler),
             (r'/join', JoinHandler),
-            (r'/getEdgeServer', CenterHandler),
+            # (r'/getEdgeServer', CenterHandler),
         ]
 
         settings = dict(
@@ -62,20 +65,26 @@ class Application(tornado.web.Application):
 
         tornado.web.Application.__init__(self, handlers, **settings)
 
-def serverKeepAlive():
-    redisClient=DbClientFactory.getDbClient(config.DB_CLIENT_TYPE).redis_client
-    now=time.time()+60
-    if config.APP_IP_ADDRESS:
-        msg={'expiredTs':now, "addr":"%s:%s"%(config.APP_IP_ADDRESS,config.PUBLIC_LISTEN_PORT)}
-        # logger.info(msg)
-        redisClient.hset("edgeServer",msg['addr'], json.dumps(msg))
 
-def onTimer():
-    JoinHandler.clear_expired_cookies()
-    RealtimeHandler.clear_expired_data()
-    serverKeepAlive()
-    CenterHandler.loadEdgeServer()
-    MysqlClientVendor.loadVendors()
+def serverKeepAliveCallBack(response):
+    if response.error:
+        logger.error(response.error)
+    else:
+        msg=json.loads(str(bytes.decode(response.body, 'utf-8')))
+        if msg["ret"] != 0:
+            logger.error('serverKeepAlive return error')
+            return
+        config.EDGE_REDIS_URL=msg['redis']
+
+http_client = AsyncHTTPClient()
+
+def serverKeepAlive():
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    url = "http://collabdraw.agoralab.co:5555/registerEdgeServer"
+
+    msg={"port":config.PUBLIC_LISTEN_PORT, "load":RealtimeHandler.clientCount(), "key":"bestvoip"}
+    body = urllib.parse.urlencode(msg) #Make it into a post request
+    http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)
 
 if __name__ == "__main__":
     if not config.ENABLE_SSL:
@@ -86,10 +95,10 @@ if __name__ == "__main__":
             "keyfile": config.SERVER_KEY,
         })
 
-    onTimer()
-
     logger.info("Listening on port %s" % config.APP_PORT)
     http_server.listen(config.APP_PORT)
+    tornado.ioloop.PeriodicCallback(JoinHandler.clear_expired_cookies,60*1000).start()
+    tornado.ioloop.PeriodicCallback(RealtimeHandler.clear_expired_data,60*1000).start()
+    tornado.ioloop.PeriodicCallback(serverKeepAlive,7*1000).start()
 
-    tornado.ioloop.PeriodicCallback(onTimer,60*1000).start()
     tornado.ioloop.IOLoop.instance().start()

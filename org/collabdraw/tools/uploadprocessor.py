@@ -14,7 +14,7 @@ import tornado.ioloop
 
 logger = logging.getLogger('websocket')
 
-def process_uploaded_file_pdf(dir_path, fname, key):
+def process_uploaded_file_pdf(dir_path, fname, key, cookie):
     db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
 
     file_path = os.path.join(dir_path, fname)
@@ -37,10 +37,9 @@ def process_uploaded_file_pdf(dir_path, fname, key):
     # Delete all the files
     delete_files('%s/%d_*.pdf'%(dir_path , tmp_name))
     page_list=db_client.lrange(key, 0, -1)
-    tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.broadcast_message(key,{'event':'pages', 'data':{'pages':page_list}}))
-    # RealtimeHandler.broadcast_message(key, json.dumps({'event':'pages', 'data':{'pages':page_list}}), None)
+    tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: cookie.broadcast_message(key,{'event':'pages', 'data':{'pages':page_list}}))
 
-def process_uploaded_file_png(dir_path, fname, key):
+def process_uploaded_file_png(dir_path, fname, key, cookie):
     db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
     file_path = os.path.join(dir_path, fname)
     page_no=RealtimeHandler.gen_page_id()
@@ -49,10 +48,9 @@ def process_uploaded_file_png(dir_path, fname, key):
         return
     subprocess.call(['mogrify', '-format', 'png', '-write',"%s/image_%d.png"%(dir_path,page_no), '--', file_path])
     page_list=db_client.lrange(key, 0, -1)
-    tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.broadcast_message(key,{'event':'pages', 'data':{'pages':page_list}}))
-    # RealtimeHandler.broadcast_message(key, json.dumps({'event':'pages', 'data':{'pages':page_list}}), None)
+    tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: cookie.broadcast_message(key,{'event':'pages', 'data':{'pages':page_list}}))
 
-def process_uploaded_file_other(dir_path, fname, key):
+def process_uploaded_file_other(dir_path, fname, key, cookie):
     db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
     file_path = os.path.join(dir_path, fname)
     # logger.debug("Processing file %s" % file_path)
@@ -64,5 +62,4 @@ def process_uploaded_file_other(dir_path, fname, key):
     subprocess.call(['mogrify', '-format', 'png', '-write',"%s/image_%d.png"%(dir_path,page_no), '--', file_path])
     page_list=db_client.lrange(key, 0, -1)
     logger.info(page_list)
-    tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.broadcast_message(key,{'event':'pages', 'data':{'pages':page_list}}))
-    # RealtimeHandler.broadcast_message(key, json.dumps({'event':'pages', 'data':{'pages':page_list}}), None)
+    tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: cookie.broadcast_message(key,{'event':'pages', 'data':{'pages':page_list}}))

@@ -3,19 +3,19 @@ import socket
 import fcntl
 import struct
 
-def get_ip_address(ifname):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        return socket.inet_ntoa(fcntl.ioctl(
-            s.fileno(),
-            0x8915,  # SIOCGIFADDR
-            struct.pack('256s', bytes(ifname[:15], encoding='utf-8'))
-        )[20:24])
-    except:
-        return None
-
-# App's host and port
-APP_IP_ADDRESS = get_ip_address("eth0")
+# def get_ip_address(ifname):
+#     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#     try:
+#         return socket.inet_ntoa(fcntl.ioctl(
+#             s.fileno(),
+#             0x8915,  # SIOCGIFADDR
+#             struct.pack('256s', bytes(ifname[:15], encoding='utf-8'))
+#         )[20:24])
+#     except:
+#         return None
+#
+# # App's host and port
+# APP_IP_ADDRESS = get_ip_address("eth0")
 
 APP_PORT = os.environ.get('PORT', 5000)
 
@@ -27,7 +27,12 @@ PUBLIC_LISTEN_PORT = APP_PORT
 PUBSUB_CLIENT_TYPE = 'redis' # only redis supported now
 DB_CLIENT_TYPE = 'redis'  # only redis supported now
 
-REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://127.0.0.1:6379')
+# REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://127.0.0.1:6379')
+
+EDGE_REDIS_URL= {'1':'redis//127.0.0.1:6379','2':'redis//127.0.0.1:6379'}
+# CENTER_SERVER_URL = ['http://10.203.112.131:5555']
+CENTER_SERVER_URL = ['http://119.9.75.121:5555']
+# CENTER_REDIS_URL = 'redis://127.0.0.1:6379'
 
 # Full path of "collabdraw" directory
 ROOT_DIR = "/".join(os.path.realpath(__file__).split('/')[:-1])

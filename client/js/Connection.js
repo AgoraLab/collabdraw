@@ -61,9 +61,6 @@ enyo.kind({
     sendMessage: function(evt, data) {
         data["room"]=  this.whiteboard.room
         data["page_id"]=  this.whiteboard.getCurrentPageId()
-        // console.log(this.whiteboard.page_list);
-        // console.log( this.whiteboard.currentPage);
-
         message = JSON.stringify({
             "uid": this.uid,
             "event": evt,
@@ -150,7 +147,10 @@ enyo.kind({
         this.currentPathLength = 0;
         this.sendMessage("clear", {});
     },
-
+    delImage: function() {
+        this.sendMessage("del-image", {
+        });
+    },
     getImage: function() {
         //console.log("Getting image for page " + this.page);
         this.sendMessage("get-image", {

@@ -9,10 +9,11 @@ from .dbinterface import DbInterface
 
 
 class RedisDbClient(DbInterface):
-    redis_client = redis.from_url(config.REDIS_URL)
-
-    def __init__(self):
+    # redis_clients={}
+    # redis_client = redis.from_url(config.REDIS_URL)
+    def __init__(self, url):
         self.logger = logging.getLogger('web')
+        self.redis_client =redis.from_url(config.REDIS_URL)
 
     def exe_(self, func, *value):
         try:

@@ -41,15 +41,16 @@ function AgoraWhiteBoardApi() {
     this.join = function(key, cname, uinfo, onJoin) {
         this.cname = cname;
         _this = this;
-        $.get('http://collabdraw.agoralab.co:5000/getEdgeServer', {key: key, cname: cname},function (result, status) {
+        $.get('http://collabdraw.agoralab.co:5555/getEdgeServer', {key: key, cname: cname},function (result, status) {
             if (!result || result.length == 0) {
                 onJoin(-10, 'empty result from center server', cname, uinfo, uid)
                 return;
             }
             var ip = result['server'].substring(0, result['server'].indexOf(':'));
             var port = result['server'].substring(result['server'].indexOf(':')+1);
-
-            $.get('http://'+ip + ':' + port + '/join', {key: key, cname: cname, uinfo: uinfo},function (result, status) {
+            var redis_id = result['redis']
+            var vid = result['vid']
+            $.get('http://'+ip + ':' + port + '/join', {key: key, cname: cname, uinfo: uinfo, redis:redis_id, vid:vid},function (result, status) {
                 if (!result || result.length == 0) {
                 	onJoin(-10, 'empty result from agora server', cname, uinfo, uid)
                 	return;

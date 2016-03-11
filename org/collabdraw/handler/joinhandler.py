@@ -22,6 +22,7 @@ INTERNAL_ERROR = 8
 NO_AUTHORIZED = 9
 DYNAMIC_KEY_TIMEOUT = 10
 NO_ACTIVE_STATUS = 11
+INVALID_REDIS=12
 TIMEOUT_CODE = -1
 CANCELED_CODE = -2
 
@@ -70,24 +71,28 @@ class JoinHandler(tornado.web.RequestHandler):
         self.logger = logging.getLogger('web')
         self.set_header("Access-Control-Allow-Origin", "*")
 
-    def onSdkJoinChannelReq(self, key, cname, uinfo):
+    def onSdkJoinChannelReq(self, key, cname, uinfo, vid, redis):
         self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
-        code, vid = self.checkLoginRequest(key, cname)
+        code = self.checkLoginRequest(key, cname, vid, redis)
         uid = self.generateUid(key, cname, uinfo)
         login_id = key+":"+cname+":"+uinfo
         sid=str(hash(login_id))
         res = {'code': code, 'cname': cname, 'uid': uid, 'sid':sid}
-        return res, vid;
+        return res
 
     # return [ErrorCode, VendorID]
-    def checkLoginRequest(self, key, cname):
+    def checkLoginRequest(self, key, cname, vid, redis):
+        if vid == '' :
+            return INVALID_VENDOR_KEY
+        if redis not in config.EDGE_REDIS_URL.keys():
+            return INVALID_REDIS
+        return OK_CODE
         if (len(key) == 0 or len(key) > 128):
             return INVALID_CHANNEL_NAME, -1
         if (len(key) == STATIC_KEY_LENGTH):
             return self.checkStaticVendorKey(key)
         if (len(key) == DYNAMIC_KEY_LENGTH):
             return self.checkDynamicVendorKey(key, cname)
-
         self.logger.warn('invalid vendor key %s with size %u' % (key, len(key)))
         return INVALID_VENDOR_KEY, -1
 
@@ -124,19 +129,26 @@ class JoinHandler(tornado.web.RequestHandler):
         key = self.get_argument('key', '')
         cname = self.get_argument('cname', '')
         uinfo = self.get_argument('uinfo', '')
-        ret, vid = self.onSdkJoinChannelReq(key, cname, uinfo)
+        vid = self.get_argument('vid', '')
+        redis = self.get_argument('redis', '')
+        ret = self.onSdkJoinChannelReq(key, cname, uinfo, vid, redis)
         self.finish(ret)
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", ret['sid'])
-            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}
+            JoinHandler.cookies[ret['sid']]={'room':cname,
+                                             'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS,
+                                             'vid':vid,
+                                             'sid':ret['sid'],
+                                             'redis':config.EDGE_REDIS_URL[redis]}
 
 
     def post(self):
-        key = self.get_argument('key', '')
-        cname = self.get_argument('cname', '')
-        uinfo = self.get_argument('uinfo', '')
-        ret = self.onSdkJoinChannelReq(key, cname, uinfo)
-        self.finish(ret)
-        if ret['code'] == OK_CODE:
-            self.set_secure_cookie("loginId", ret['sid'])
-            JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}
+        pass
+        # key = self.get_argument('key', '')
+        # cname = self.get_argument('cname', '')
+        # uinfo = self.get_argument('uinfo', '')
+        # ret = self.onSdkJoinChannelReq(key, cname, uinfo)
+        # self.finish(ret)
+        # if ret['code'] == OK_CODE:
+        #     self.set_secure_cookie("loginId", ret['sid'])
+        #     JoinHandler.cookies[ret['sid']]={'room':cname, 'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS, 'vid':vid, 'sid':ret['sid']}
