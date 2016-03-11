@@ -1,0 +1,4 @@
+decorator==3.4.0
+pymysql
+redis==2.7.2
+tornado==2.4.1

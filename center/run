@@ -1,0 +1,33 @@
+#!/bin/bash
+cd `dirname $0`
+for i in $@; do
+    port=$i
+    source venv/bin/activate
+    export PORT=$port
+    pid=`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}'| awk -F/ '{print $1}'`
+    if [ "$pid" != "" ] ; then
+      echo "start fail : port $port already occupied"
+      echo "kill "+`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}'`
+      kill $pid
+      # exit
+    fi
+    # nohup python main.py > output.`date +"%y-%m-%d"`.log 2>&1 &
+    nohup python main.py > output_$port.log 2>&1 &
+    sleep 5
+    for x in `seq 0 5`
+    do
+      pid=`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}' | awk -F/ '{print $1}'`
+      if [ "$pid" != "" ] ; then
+        break
+      else
+        sleep 1
+      fi
+    done
+    if [ "$pid" != "" ] ; then
+      echo "start succ ; pid:$pid"
+    else
+      echo "start failed"
+      tail output_$port.log
+    fi
+    deactivate
+done
