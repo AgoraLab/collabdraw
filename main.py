@@ -81,7 +81,6 @@ http_client = AsyncHTTPClient()
 def serverKeepAlive():
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     url = "http://collabdraw.agoralab.co:5555/registerEdgeServer"
-
     msg={"port":config.PUBLIC_LISTEN_PORT, "load":RealtimeHandler.clientCount(), "key":"bestvoip"}
     body = urllib.parse.urlencode(msg) #Make it into a post request
     http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)

@@ -22,7 +22,14 @@ enyo.kind({
     getCurrentPage: function() {
         return this.currentPage;
     },
-
+    getPageById: function(pageid) {
+        for(i in this.page_list){
+            if(this.page_list[i]==pageid){
+                return i+1;
+            }
+        }
+        return 1;
+    },
     getCurrentPageId: function() {
         return this.page_list[this.currentPage-1];
     },
@@ -963,7 +970,9 @@ enyo.kind({
         this.addingText = false;
         this.drawingItem = drawingItem;
     },
-
+    deletePage:function(){
+      this.connection.deletePage();
+    },
     cropContent: function() {
         var content = this.cvs.toSVG();
         var a = $("<a id='download-img'>")

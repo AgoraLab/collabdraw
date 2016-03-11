@@ -13,7 +13,7 @@ class RedisDbClient(DbInterface):
     # redis_client = redis.from_url(config.REDIS_URL)
     def __init__(self, url):
         self.logger = logging.getLogger('web')
-        self.redis_client =redis.from_url(config.REDIS_URL)
+        self.redis_client =redis.from_url(url)
 
     def exe_(self, func, *value):
         try:
@@ -31,7 +31,7 @@ class RedisDbClient(DbInterface):
         # return self.redis_client.hgetall(key)
 
     def lrem(self, key, count, value):
-        return self.exe_(self.execute_command,'lrem',key, count, value)
+        return self.exe_(self.redis_client.execute_command,'lrem',key, count, value)
         # return self.redis_client.execute_command('lrem',key, count, value)
 
     def rpush(self, key, value):

@@ -950,7 +950,9 @@ enyo.kind({
             this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser_gray.png)");
         }
     },
-
+    deletePage:function(inSender, inEvent){
+        this.whiteboard.deletePage();
+    },
     deleteButtonMouseOver: function(inSender, inEvent) {
         this.$.deletePage.applyStyle("background-image", "url(../images/btn_del.png)");
     },

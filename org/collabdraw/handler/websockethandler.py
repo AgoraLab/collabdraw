@@ -24,9 +24,9 @@ class RoomData(object):
         self.pubsub_client=None
         self.topic=None
 
-    def init_room_topic(self, url, topic):
+    def init_room_topic(self, db_client, topic):
         if not self.pubsub_client:
-            self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,url)
+            self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,db_client)
             self.pubsub_client.subscribe(topic, self, RealtimeHandler.on_pubsub )
             self.topic=topic
 
@@ -38,6 +38,12 @@ class RoomData(object):
 
     def get_page_path(self, page_id):
         return self.page_path[page_id]
+
+    def delete_page(self, page_id):
+        if page_id in self.page_path:
+            del self.page_path[page_id]
+        if page_id in self.page_image:
+            del self.page_image[page_id]
 
     def get_page_image(self, page_id):
         if page_id in self.page_image:
@@ -80,6 +86,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         return int((time.time() * 1000000))
 
     def on_db_error(self):
+        self.logger.error('db error')
         self.send_message(self.construct_message("dberr"))
 
     def get_room(self):
@@ -107,7 +114,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         fromTs=time.time()
 
         # self.logger.debug("Processing event %s from uid %s @%s" % (event, fromUid, self.request.remote_ip))
-        # self.logger.info("Processing event %s %s %s %s" % (event, data['room'], data.get('page_id',None), data.get('page',None)))
+        self.logger.info("Processing event %s %s %s %s" % (event, data['room'], data.get('page_id',None), data.get('page',None)))
 
         # needed when realse
         if event == "init" :
@@ -119,7 +126,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.fromUid= fromUid
                 self.room_name=data['room']
                 self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, cookie['redis'])
-                self.get_room().init_room_topic(cookie['redis'], self.room_topic())
+                self.logger.info("xxxxx %s %s"%(cookie['redis'], self.room_topic()))
+                self.get_room().init_room_topic(self.db_client, self.room_topic())
                 # self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,cookie['redis'])
 
         #
@@ -142,8 +150,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             page_id = data.get('page_id', None)
             self.logger.info("Initializing with room name %s" % room_name)
             page_list = self.db_client.lrange(self.page_list_key(), 0, -1)
-            if not page_list:
-                return self.on_db_error()
+            # if not page_list:
+            #     return self.on_db_error()
             if len(page_list)== 0:
                 page_id=RealtimeHandler.gen_page_id()
                 self.db_client.rpush(self.page_list_key(), [page_id])
@@ -155,8 +163,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         elif event == "draw-click":
             single_path = data['singlePath']
             path=self.get_page_path_data()
-            # idx_start=len(path)
-            # idx_end=len(path)+len(single_path)
             self.logger.info(single_path)
             ret=self.db_client.rpush(self.page_path_key(), [json.dumps(v) for v in single_path])
             if not ret:
@@ -169,11 +175,16 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("draw", msg))
 
         elif event == "delete-page":
-            if self.page_path_key() in self.room_data:
-                self.db_client.lrem(self.path_list_key(), 0, self.page_id)
-                self.db_client.delete(self.page_path_key())
-                self.broadcast_message(self.room_topic(), self.construct_broadcast_message("delete", {}))
-                del self.room_data[self.page_path_key()]
+            self.db_client.lrem(self.page_list_key(), 0, self.page_id)
+            self.db_client.delete(self.page_path_key())
+
+            page_list = self.db_client.lrange(self.page_list_key(), 0, -1)
+            if not page_list:
+                return self.on_db_error()
+            page_list = [int(i) for i in page_list]
+
+            self.broadcast_message(self.room_topic(), self.construct_broadcast_message("delete-page", {'pages':page_list}))
+            # self.get_room().delete_page(self.page_id)
 
         elif event == "clear":
             self.db_client.delete(self.page_path_key())
@@ -204,7 +215,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     ## Higher lever methods
     def init_room_page(self, room_name, page_id):
-        self.logger.debug("Initializing %s and %s" % (room_name, page_id))
+        self.logger.info("Initializing %s and %s" % (room_name, page_id))
         page_list = self.db_client.lrange(self.page_list_key(), 0, -1)
         if not page_list:
             return self.on_db_error()
@@ -278,6 +289,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         elif m['event'] == 'clear':
             RealtimeHandler.room_data[topic].set_page_path(m['data']['page_id'], [])
             RealtimeHandler.room_data[topic].set_page_image(m['data']['page_id'], None)
+        elif m['event'] == 'delete-page':
+            RealtimeHandler.room_data[topic].delete_page(m['data']['page_id'])
 
         for client in RealtimeHandler.topics[topic]:
             client.on_broadcast_message(m)
@@ -289,7 +302,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     def on_broadcast_message(self, m):
         # m=json.loads(m)
-        # self.logger.info("xxxxxxx  %s"%m)
+        self.logger.info("xxxxxxx  %s"%m)
         if m['event'] == 'draw':
             if m['data']['page_id'] != self.page_id:
                 return
@@ -309,7 +322,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         if not image:
             try:
                 image = read(image_path)
-                self.get_room().page_image=image
+                self.get_room().set_page_image(self.page_id, image)
             except IOError as e:
                 return '', -1, -1
         width, height = image.size

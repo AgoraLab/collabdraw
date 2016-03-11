@@ -130,11 +130,12 @@ class JoinHandler(tornado.web.RequestHandler):
         cname = self.get_argument('cname', '')
         uinfo = self.get_argument('uinfo', '')
         vid = self.get_argument('vid', '')
-        redis = self.get_argument('redis', '')
+        redis = str(self.get_argument('redis', ''))
         ret = self.onSdkJoinChannelReq(key, cname, uinfo, vid, redis)
         self.finish(ret)
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", ret['sid'])
+            self.logger.info("xxx %s"%config.EDGE_REDIS_URL[redis])
             JoinHandler.cookies[ret['sid']]={'room':cname,
                                              'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS,
                                              'vid':vid,

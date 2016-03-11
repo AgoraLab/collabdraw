@@ -19,9 +19,10 @@ class RedisPubSubClient(PubSubInterface):
 
     # redis_client = redis.from_url(config.REDIS_URL)
 
-    def __init__(self, url):
+    def __init__(self, redis_client):
         self.logger = logging.getLogger('web')
-        self.redis_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, url).redis_client
+        # self.redis_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, url).redis_client
+        self.redis_client = redis_client.redis_client
         self.pubsub_client = self.redis_client.pubsub()
         self.t=None
         self.callback=None
@@ -29,7 +30,7 @@ class RedisPubSubClient(PubSubInterface):
 
     def subscribe(self, topic, listener, callback):
         if not self.t:
-            self.logger.debug("Subscribing to topic %s" % topic)
+            self.logger.info("Subscribing to topic %s" % topic)
             self.pubsub_client.subscribe(topic)
             self.callback=callback
             self.t = threading.Thread(target=self._redis_listener, args=(topic, listener, self.pubsub_client))

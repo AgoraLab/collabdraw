@@ -51,6 +51,9 @@ enyo.kind({
             case 'image':
                 _this.remoteImage(_this, data);
                 break;
+            case 'delete-page':
+                _this.remoteDelPage(_this, data);
+                break;
             case 'pages':
                 _this.remotePages(_this, data);
                 break;
@@ -90,7 +93,7 @@ enyo.kind({
         this.singlePath = [];
         this.currentPathLength = 0;
         this.whiteboard.clear(false, false);
-        //console.log("Sending init for room " + room);
+        console.log("Sending init for room " + room+' '+page);
         this.sendMessage("init", {
             "room": this.room,
             "sid": this.whiteboard.sid
@@ -147,8 +150,8 @@ enyo.kind({
         this.currentPathLength = 0;
         this.sendMessage("clear", {});
     },
-    delImage: function() {
-        this.sendMessage("del-image", {
+    deletePage: function() {
+        this.sendMessage("delete-page", {
         });
     },
     getImage: function() {
@@ -264,7 +267,6 @@ enyo.kind({
     remoteClear: function(self, data) {
         self.whiteboard.clear(false);
     },
-
     remoteImage: function(self, data) {
         if (data.url != "") {
             var img = document.createElement('img');
@@ -273,7 +275,24 @@ enyo.kind({
             self.whiteboard.loadImage('http://collabdraw.agoralab.co:5000/'+data.url, data.width, data.height);
         }
     },
-
+    remoteDelPage: function(self, data) {
+        console.log("receive cmd 'del-page' from server. data " + data);
+        var page_id=data['page_id'];
+        var cur_id=self.whiteboard.getCurrentPageId();
+        var cur_page=self.whiteboard.getCurrentPage();
+        var npages = data['pages'];
+        // TODO update total pages in UI
+        self.whiteboard.setTotalPages(npages);
+        if(page_id==cur_id){
+            if(cur_page >= self.whiteboard.getNumPages()){
+              self.whiteboard.prevPage()
+            }else{
+              self.whiteboard.gotoPage(cur_page);
+            }
+        }else{
+          self.whiteboard.gotoPage(self.whiteboard.getPageById(cur_id));
+        }
+    },
     remotePages: function(self, data) {
         console.log("receive cmd 'pages' from server. data " + data);
         var npages = data['pages'];
