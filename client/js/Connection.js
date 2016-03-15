@@ -105,16 +105,17 @@ enyo.kind({
      * @param {x, y, type, lineColor, lineWidth} a point on the path
      */
     sendPath: function(data) {
-        if(data.type == 'touchend' && this.touchMove ){
+        if(data.type == 'touchend'){
+          this.touchMove.path.push([data.x,data.y])
           this.singlePath.push(this.touchMove);
+          this.currentPathLength++;
           this.touchMove=undefined;
-        }
-        // console.log("1111",data.type);
-        if(data.type == 'touchmove'){
-          if(!this.touchMove){
+        }else if(data.type == 'touchstart'){
             this.touchMove = data;
+            this.touchMove.type='touchmovement';
             this.touchMove.path=[];
-          }
+            this.touchMove.path.push([data.oldx,data.oldy]);
+        }else if(data.type == 'touchmove'){
           this.touchMove.path.push([data.x,data.y]);
         }else{
           this.singlePath.push(data);
@@ -126,9 +127,10 @@ enyo.kind({
         // Send undo or redo immediately. by sunyurun@agora.io
         // Send path every two points or when user removes finger
 
-        if (this.currentPathLength > 2 || data.type === "touchend" ||
+        if (this.currentPathLength > 2 || data.type == "touchend" ||
             data.type == 'undo' || data.type == 'redo' ||
-            data.type == 'addtext' || data.type == 'edittext' || data.type == 'rm') {
+            data.type == 'addtext' || data.type == 'edittext'
+            || data.type == 'rm' || data.type=='touchmovement') {
             // console.log("33333", this.singlePath);
             this.sendMessage("draw-click", {
                 "singlePath": this.singlePath
@@ -181,6 +183,46 @@ enyo.kind({
      * All remote functions below
      */
 
+    drawEx:function(self, data){
+        if (data == null) return;
+        if (data.drawingItem) {
+            self.whiteboard.drawingItem = data.drawingItem;
+        }
+        if (data.type == 'touchstart') self.whiteboard.startPath(data.oldx, data.oldy, data.lineColor, data.lineWidth, false);
+        // else if (data.type == 'touchmove') self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+        else if (data.type == 'touchmove'){
+          if(data.path){
+            // console.log("xxxxx", data.path);
+            for(i in data.path){
+                self.whiteboard.continuePath(data.oldx, data.oldy, data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
+            }
+          }else{
+            self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+          }
+        }
+        else if (data.type == 'touchmovement'){
+          if(data.path){
+            for(i in data.path){
+                if(i==0){
+                    self.whiteboard.startPath(data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
+                }else if(i==data.path.length-1){
+                    self.whiteboard.endPath(data.oldx, data.oldy,data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
+                }else{
+                    self.whiteboard.continuePath(data.oldx, data.oldy, data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
+                }
+            }
+          }else{
+            self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+          }
+        }
+        else if (data.type == 'touchend') self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+        else if (data.type == 'undo') self.whiteboard.executeUndo();
+        else if (data.type == 'redo') self.whiteboard.executeRedo();
+        else if (data.type == 'addtext') self.whiteboard.executeAddText(data.oldx, data.oldy);
+        else if (data.type == 'edittext') self.whiteboard.executeEditText(data.oldx, data.oldy, data.value);
+        else if (data.type == 'rm') self.whiteboard.executeRemove(data.oldx, data.oldy);
+        else { console.log("not supported operation: " + data.type); }
+    },
     /**
      * Draw from realtime data incoming from server
      * Called when server sends @event 'draw'
@@ -193,30 +235,32 @@ enyo.kind({
         // point on path
         for (d in sPath) {
             data = sPath[d];
-            if (data == null) continue;
-            if (data.drawingItem) {
-                self.whiteboard.drawingItem = data.drawingItem;
-            }
-            // console.log("xxxxx1111", ds[d]);
-            if (data.type == 'touchstart') self.whiteboard.startPath(data.oldx, data.oldy, data.lineColor, data.lineWidth, false);
-            // else if (data.type == 'touchmove') self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
-            else if (data.type == 'touchmove'){
-              if(data.path){
-                // console.log("xxxxx", data.path);
-                for(i in data.path){
-                    self.whiteboard.continuePath(data.oldx, data.oldy, data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
-                }
-              }else{
-                self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
-              }
-            }
-            else if (data.type == 'touchend') self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
-            else if (data.type == 'undo') self.whiteboard.executeUndo();
-            else if (data.type == 'redo') self.whiteboard.executeRedo();
-            else if (data.type == 'addtext') self.whiteboard.executeAddText(data.oldx, data.oldy);
-            else if (data.type == 'edittext') self.whiteboard.executeEditText(data.oldx, data.oldy, data.value);
-            else if (data.type == 'rm') self.whiteboard.executeRemove(data.oldx, data.oldy);
-            else { console.log("not supported operation: " + data.type); }
+            self.drawEx(self, data)
+
+            // if (data == null) continue;
+            // if (data.drawingItem) {
+            //     self.whiteboard.drawingItem = data.drawingItem;
+            // }
+            // // console.log("xxxxx1111", ds[d]);
+            // if (data.type == 'touchstart') self.whiteboard.startPath(data.oldx, data.oldy, data.lineColor, data.lineWidth, false);
+            // // else if (data.type == 'touchmove') self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+            // else if (data.type == 'touchmove'){
+            //   if(data.path){
+            //     // console.log("xxxxx", data.path);
+            //     for(i in data.path){
+            //         self.whiteboard.continuePath(data.oldx, data.oldy, data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
+            //     }
+            //   }else{
+            //     self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+            //   }
+            // }
+            // else if (data.type == 'touchend') self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
+            // else if (data.type == 'undo') self.whiteboard.executeUndo();
+            // else if (data.type == 'redo') self.whiteboard.executeRedo();
+            // else if (data.type == 'addtext') self.whiteboard.executeAddText(data.oldx, data.oldy);
+            // else if (data.type == 'edittext') self.whiteboard.executeEditText(data.oldx, data.oldy, data.value);
+            // else if (data.type == 'rm') self.whiteboard.executeRemove(data.oldx, data.oldy);
+            // else { console.log("not supported operation: " + data.type); }
         }
     },
 
@@ -231,28 +275,29 @@ enyo.kind({
         self.whiteboard.setTotalPages(data.pages);
         ds = data.datas;
         for (d in ds) {
-            if (ds[d] === null) continue;
-            if (ds[d].drawingItem) {
-                 self.whiteboard.drawingItem = ds[d].drawingItem;
-            }
-            if (ds[d].type == 'touchstart') self.whiteboard.startPath(ds[d].oldx, ds[d].oldy, ds[d].lineColor, ds[d].lineWidth, false);
-            // else if (ds[d].type == 'touchmove') self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
-            else if (ds[d].type == 'touchmove'){
-              if(ds[d].path){
-                for(i in ds[d].path){
-                    self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].path[i][0], ds[d].path[i][1], ds[d].lineColor, ds[d].lineWidth, false);
-                }
-              }else{
-                self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
-              }
-            }
-            else if (ds[d].type == 'touchend') self.whiteboard.endPath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
-            else if (ds[d].type == 'undo') self.whiteboard.executeUndo();
-            else if (ds[d].type == 'redo') self.whiteboard.executeRedo();
-            else if (ds[d].type == 'addtext') self.whiteboard.executeAddText(ds[d].oldx, ds[d].oldy);
-            else if (ds[d].type == 'edittext') self.whiteboard.executeEditText(ds[d].oldx, ds[d].oldy, ds[d].value);
-            else if (ds[d].type == 'rm') self.whiteboard.executeRemove(ds[d].oldx, ds[d].oldy);
-            else { console.log("not supported operation: " + data.type); }
+            self.drawEx(self, ds[d])
+            // if (ds[d] === null) continue;
+            // if (ds[d].drawingItem) {
+            //      self.whiteboard.drawingItem = ds[d].drawingItem;
+            // }
+            // if (ds[d].type == 'touchstart') self.whiteboard.startPath(ds[d].oldx, ds[d].oldy, ds[d].lineColor, ds[d].lineWidth, false);
+            // // else if (ds[d].type == 'touchmove') self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
+            // else if (ds[d].type == 'touchmove'){
+            //   if(ds[d].path){
+            //     for(i in ds[d].path){
+            //         self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].path[i][0], ds[d].path[i][1], ds[d].lineColor, ds[d].lineWidth, false);
+            //     }
+            //   }else{
+            //     self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
+            //   }
+            // }
+            // else if (ds[d].type == 'touchend') self.whiteboard.endPath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
+            // else if (ds[d].type == 'undo') self.whiteboard.executeUndo();
+            // else if (ds[d].type == 'redo') self.whiteboard.executeRedo();
+            // else if (ds[d].type == 'addtext') self.whiteboard.executeAddText(ds[d].oldx, ds[d].oldy);
+            // else if (ds[d].type == 'edittext') self.whiteboard.executeEditText(ds[d].oldx, ds[d].oldy, ds[d].value);
+            // else if (ds[d].type == 'rm') self.whiteboard.executeRemove(ds[d].oldx, ds[d].oldy);
+            // else { console.log("not supported operation: " + data.type); }
         }
         //console.log("Total pages is " + data.npages);
 

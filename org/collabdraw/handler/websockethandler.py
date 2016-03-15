@@ -326,20 +326,20 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     def get_page_image_data(self):
         image=self.get_room().get_page_image(self.page_id)
-        self.logger.info("xxx %s"%image)
+        # self.logger.info("xxx %s"%image)
         if not image:
-            self.logger.info("xxx222 %s"%image)
+            # self.logger.info("xxx222 %s"%image)
             image=self.get_room().db_client.get(self.page_image_key())
-            self.logger.info("xxx333 %s %s"%(self.page_image_key(),image))
+            # self.logger.info("xxx333 %s %s"%(self.page_image_key(),image))
             if image :
-                self.logger.info("xxx444 %s %s"%(self.page_image_key(),image))
+                # self.logger.info("xxx444 %s %s"%(self.page_image_key(),image))
                 # image=str(image, encoding='utf-8')
                 self.get_room().set_page_image(self.page_id, image)
-                self.logger.info("xxx555 %s %s"%(self.page_image_key(),image))
-                self.logger.info("xxxxxxxxx %d %s"%(self.page_id,image))
+                # self.logger.info("xxx555 %s %s"%(self.page_image_key(),image))
+                # self.logger.info("xxxxxxxxx %d %s"%(self.page_id,image))
             else:
                 image=''
-        self.logger.info("xxx6666 %s %s"%(self.page_image_key(),image))
+        # self.logger.info("xxx6666 %s %s"%(self.page_image_key(),image))
         # width, height = image.size
         return image, 100, 100
 

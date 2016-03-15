@@ -39,10 +39,6 @@ class UploadHandler(tornado.web.RequestHandler):
 
     # @tornado.web.authenticated
     def post(self):
-        # return_str = "<html><head><meta http-equiv='REFRESH'\
-        #     content='5;url=http://" + config.APP_IP_ADDRESS + ":" + str(config.PUBLIC_LISTEN_PORT) + \
-        #              "/upload.html#room=%s'></head><body>%s. Will redirect back to the upload page in 5\
-        #              seconds</body></html>"
         self.room_name = self.get_argument('room', '')
         self.logger.info("Room name is %s" % self.room_name)
         if not self.room_name:
@@ -82,7 +78,5 @@ class UploadHandler(tornado.web.RequestHandler):
             threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname,db_key )).start()
         else:
             threading.Thread(target=process_uploaded_file_image, args=(fext.lower(), db_key, fileinfo['body'])).start()
-
         response_str = "Upload finished successfully"
         self.finish(response_str)
-        # self.finish(return_str % (self.room_name, response_str))

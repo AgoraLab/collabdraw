@@ -55,26 +55,3 @@ def process_uploaded_file_image(ftype ,room_topic, data):
     filename="%d%s"%(page_no, ftype)
     uploadfile(filename ,data)
     tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.on_uploadfile(room_topic,{page_no:filename}))
-
-    # room=RealtimeHandler.room_data[room_topic]
-    # db_client = room.db_client
-    # page_list_key="%s:page_list"%(room_topic)
-    # db_client.rpush(page_list_key, [page_no])
-    # db_client.set("%s:%d:page_image"%(room_topic,page_no), "http://userimg.collabdraw.agoralab.co\/%s"%(filename))
-    # page_list=db_client.lrange(page_list_key, 0, -1)
-    # room.publish(json.dumps({'event':'pages', 'data':{'pages':page_list}))
-    # tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.broadcast_message(room_topic,{'event':'pages', 'data':{'pages':page_list}}))
-
-# def process_uploaded_file_other(dir_path, fname, key, cookie):
-#     db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
-#     file_path = os.path.join(dir_path, fname)
-#     # logger.debug("Processing file %s" % file_path)
-#     page_no=RealtimeHandler.gen_page_id()
-#     ret=db_client.rpush(key, [page_no])
-#     if not ret :
-#         return
-#     # Convert the pdf files to png
-#     subprocess.call(['mogrify', '-format', 'png', '-write',"%s/image_%d.png"%(dir_path,page_no), '--', file_path])
-#     page_list=db_client.lrange(key, 0, -1)
-#     logger.info(page_list)
-#     tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: cookie.broadcast_message(key,{'event':'pages', 'data':{'pages':page_list}}))
