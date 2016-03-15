@@ -450,12 +450,46 @@ enyo.kind({
         if (send) this.connection.sendClear();
     },
 
+    getMeta: function (url, cbk) {
+        var img = new Image();
+        var _this = this;
+        img.onload = function(){
+            cbk(_this, img.width, img.height);
+        };
+        img.src = url;
+    },
+
     /**
      * Load an image onto the canvas
      * @param {Object} url
      */
     loadImage: function(url, width, height) {
-        this.cvs.image(url, 5, 5, width, height);
+        this.getMeta(url, function(_this, w, h) {
+            var W = _this.parent_.canvasWidth;
+            var H = _this.parent_.canvasHeight;
+
+            if (w <= W && h <= H) {
+                // @TODO, resize the canvas;
+                var x = (W - w) / 2;
+                var y = (H - h) / 2;
+            } else {
+                var ratioW = W / w;
+                var ratioH = H / h;
+                var ratio = Math.min(ratioW, ratioH);
+                w = w * ratio;
+                h = h * ratio;
+                var x = 0;
+                var y = 0;
+                if (ratioW < ratioH) {
+                    y = (H - h) / 2;
+                } else {
+                    x = (W - w) / 2;
+                }
+            }
+            if (y >= 30) { y = y - 30; }
+            _this.cvs.image(url, x, y, w, h);
+            //_this.cvs.image(url, 0, 0, _this.parent_.canvasWidth, _this.parent_.canvasHeight);
+        });
     },
 
     getImage: function() {
