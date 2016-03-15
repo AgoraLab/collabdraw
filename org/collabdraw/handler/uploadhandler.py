@@ -8,9 +8,9 @@ import tornado.web
 import tornado.template as template
 from .joinhandler import JoinHandler
 from ..dbclient.dbclientfactory import DbClientFactory
-from ..tools.uploadprocessor import process_uploaded_file_pdf
-from ..tools.uploadprocessor import process_uploaded_file_png
-from ..tools.uploadprocessor import process_uploaded_file_other
+
+from ..tools.uploadprocessor import *
+
 
 
 class UploadHandler(tornado.web.RequestHandler):
@@ -19,7 +19,7 @@ class UploadHandler(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Methods", 'OPTIONS, HEAD, GET, POST, DELETE')
         self.set_header("Access-Control-Allow-Headers", 'Content-Type, Content-Range, Content-Disposition')
-        self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
+        # self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE)
 
 
     def get_current_user(self):
@@ -71,20 +71,17 @@ class UploadHandler(tornado.web.RequestHandler):
 
         # write file
         dir_path = os.path.join(config.ROOT_DIR, "files", self.room_name)
-        os.makedirs(dir_path, exist_ok=True)
-        file_path = os.path.join(dir_path, fname)
-        fh = open(file_path, 'wb')
-        fh.write(fileinfo['body'])
-        fh.close()
-
-        db_key = "%s:%s:page_list" % (cookie['vid'], self.room_name)
+        # os.makedirs(dir_path, exist_ok=True)
+        # file_path = os.path.join(dir_path, fname)
+        # fh = open(file_path, 'wb')
+        # fh.write(fileinfo['body'])
+        # fh.close()
+        db_key = "%s:%s" % (cookie['vid'], self.room_name)
         # split and convert pdf to png
         if fext.lower() == '.pdf':
-            threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname, db_key, cookie)).start()
-        elif fext.lower() == '.png':
-            threading.Thread(target=process_uploaded_file_png, args=(dir_path, fname, db_key, cookie)).start()
+            threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname,db_key )).start()
         else:
-            threading.Thread(target=process_uploaded_file_other, args=(dir_path, fname, db_key, cookie)).start()
+            threading.Thread(target=process_uploaded_file_image, args=(fext.lower(), db_key, fileinfo['body'])).start()
 
         response_str = "Upload finished successfully"
         self.finish(response_str)

@@ -25,7 +25,7 @@ class CommonData(object):
         now=time.time()
         if addr in CommonData.edge_servers :
             if now-CommonData.edge_servers[addr]['ts'] <= 10 and \
-                CommonData.edge_servers[addr]['load']<500:
+                CommonData.edge_servers[addr]['load']<200:
                 return True
         return False
 

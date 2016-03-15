@@ -23,6 +23,15 @@ class RedisDbClient(DbInterface):
             traceback.print_exc()
             return None
 
+    def get(self, key):
+        value = self.exe_(self.redis_client.get, key)
+        if value:
+            return str(value.decode('utf-8'))
+        return None
+
+    def set(self, key, value):
+        return self.exe_(self.redis_client.set, key, value)
+
     def hset(self, key, value):
         return self.exe_(self.redis_client.hset, key, value)
 

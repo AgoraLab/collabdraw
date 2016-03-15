@@ -14,6 +14,8 @@ import socket
 import fcntl
 import struct
 import urllib
+import hmac
+import base64
 from org.collabdraw.handler.websockethandler import RealtimeHandler
 from org.collabdraw.handler.uploadhandler import UploadHandler
 from org.collabdraw.handler.joinhandler import JoinHandler
@@ -43,16 +45,14 @@ logger.setLevel(logging.INFO)
 #                                                         app_port=config.PUBLIC_LISTEN_PORT)
 #         self.finish(return_str)
 
-
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r'/realtime/', RealtimeHandler),
             (r'/client/(.*)', tornado.web.StaticFileHandler, dict(path=config.RESOURCE_DIR)),
             (r'/files/(.*)', tornado.web.StaticFileHandler, dict(path=config.FILES_DIR)),
-            # (r'/resources/(.*)', tornado.web.StaticFileHandler, dict(path=config.I18N_DIR)),
-            (r'/upload', UploadHandler),
             (r'/join', JoinHandler),
+            (r'/upload', UploadHandler),
             # (r'/getEdgeServer', CenterHandler),
         ]
 

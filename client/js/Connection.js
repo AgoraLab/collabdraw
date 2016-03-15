@@ -272,7 +272,7 @@ enyo.kind({
             var img = document.createElement('img');
             img.src = data.url;
             console.log("Image url is " + data.url);
-            self.whiteboard.loadImage('http://collabdraw.agoralab.co:5000/'+data.url, data.width, data.height);
+            self.whiteboard.loadImage(data.url, data.width, data.height);
         }
     },
     remoteDelPage: function(self, data) {

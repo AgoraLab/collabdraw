@@ -101,10 +101,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         self.vid=0
         self.verified=False
         self.fromUid=0
-        # self.db_client=None
-        # self.pubsub_client=None
-        # self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, )
-        # self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE)
+
         self.send_message(self.construct_message("ready"))
 
     # @Override
@@ -130,6 +127,9 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 # self.logger.info("xxxxx %s %s"%(cookie['redis'], self.room_topic()))
                 self.get_room().init_room(cookie['redis'], self.room_topic())
                 # self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,cookie['redis'])
+            # self.fromUid= fromUid
+            # self.room_name=data['room']
+            # self.get_room().init_room('redis://127.0.0.1:6301', self.room_topic())
 
         #
         # if not self.verified:
@@ -178,16 +178,17 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         elif event == "delete-page":
             self.get_room().db_client.lrem(self.page_list_key(), 0, self.page_id)
             self.get_room().db_client.delete(self.page_path_key())
+            self.get_room().db_client.delete(self.page_image_key())
             page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
             # if not page_list:
             #     return self.on_db_error()
             page_list = [int(i) for i in page_list]
-
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("delete-page", {'pages':page_list}))
-            # self.get_room().delete_page(self.page_id)
+            self.get_room().delete_page(self.page_id)
 
         elif event == "clear":
             self.get_room().db_client.delete(self.page_path_key())
+            self.get_room().db_client.delete(self.page_image_key())
             self.get_room().set_page_path(self.page_id, [])
             self.get_room().set_page_image(self.page_id, None)
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("clear",{}))
@@ -202,7 +203,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         elif event == "new-page":
             page_id = RealtimeHandler.gen_page_id()
-            ret=self.db_client.rpush(self.page_list_key(),[page_id])
+            ret=self.get_room().db_client.rpush(self.page_list_key(),[page_id])
             if not ret:
                 return self.on_db_error()
             self.init_room_page(self.room_name, page_id)
@@ -231,6 +232,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         # First send the image if it exists
         image_url, width, height = self.get_page_image_data()
+        self.logger.info("xxxx 7777 %s"%image_url)
         self.send_message(self.construct_message("image", {'url': image_url,
                                                            'width': width, 'height': height}))
         path=self.get_page_path_data()
@@ -246,7 +248,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
 
     def join_room(self):
-        self.logger.info("Joining room %s" % self.room_name)
+        self.logger.info("Joining room %s %d" % (self.room_name, self.page_id))
         # self.pubsub_client.subscribe(self.page_list_key(), self)
         if self not in self.topics[self.room_topic()]:
             self.topics[self.room_topic()].append(self)
@@ -254,6 +256,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
     ## Messaging related methods
     # def construct_key(self, namespace, key, *keys):
     #     return ":".join([str(namespace), str(key)] + list(map(str, keys)))
+    def page_image_key(self):
+        return "%s:%s:%s:page_image"%(str(self.vid), self.room_name, self.page_id)
 
     def page_path_key(self):
         return "%s:%s:%s:page_path"%(str(self.vid), self.room_name, self.page_id)
@@ -282,6 +286,16 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         m=json.dumps(message)
         self.room_data[topic].publish(m)
 
+    def on_uploadfile(room_topic, page_image_map):
+        RealtimeHandler.logger.info("on_uploadfile %s"%page_image_map)
+        room=RealtimeHandler.room_data[room_topic]
+        page_list_key="%s:page_list"%(room_topic)
+        for k,v in page_image_map.items():
+            room.db_client.set("%s:%d:page_image"%(room_topic,k), "http://userimg.collabdraw.agoralab.co/%s"%(v))
+        room.db_client.rpush(page_list_key, list(page_image_map.keys()))
+        page_list=room.db_client.lrange(page_list_key, 0, -1)
+        room.publish(json.dumps({'event':'pages', 'data':{'pages':page_list}}))
+
     def on_pubsub(topic, message):
         m=json.loads(message)
         if m['event'] == 'draw':
@@ -302,30 +316,32 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     def on_broadcast_message(self, m):
         # m=json.loads(m)
-        if m['event'] == 'draw':
+        if m['event'] in ['draw','clear']:
             if m['data']['page_id'] != self.page_id:
                 return
-            # start,end=m['data']['path_start'],m['data']['path_end']
-            # path=self.get_page_path_data()
-            # if end <= len(path):
-            #     m['data']={'singlePath':path[start:end]}
         else:
             pass
         message = b64encode(compress(bytes(quote(str(json.dumps(m))), 'utf-8'), 9))
         self.write_message(message)
 
     def get_page_image_data(self):
-        image_url = os.path.join("files", self.room_name, "image_%s.png"%(str(self.page_id)))
-        image_path = os.path.join(config.ROOT_DIR, image_url)
         image=self.get_room().get_page_image(self.page_id)
+        self.logger.info("xxx %s"%image)
         if not image:
-            try:
-                image = read(image_path)
+            self.logger.info("xxx222 %s"%image)
+            image=self.get_room().db_client.get(self.page_image_key())
+            self.logger.info("xxx333 %s %s"%(self.page_image_key(),image))
+            if image :
+                self.logger.info("xxx444 %s %s"%(self.page_image_key(),image))
+                # image=str(image, encoding='utf-8')
                 self.get_room().set_page_image(self.page_id, image)
-            except IOError as e:
-                return '', -1, -1
-        width, height = image.size
-        return image_url, width, height
+                self.logger.info("xxx555 %s %s"%(self.page_image_key(),image))
+                self.logger.info("xxxxxxxxx %d %s"%(self.page_id,image))
+            else:
+                image=''
+        self.logger.info("xxx6666 %s %s"%(self.page_image_key(),image))
+        # width, height = image.size
+        return image, 100, 100
 
     def get_page_path_data(self):
         # Then send the paths
