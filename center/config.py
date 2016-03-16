@@ -11,7 +11,7 @@ PUBSUB_CLIENT_TYPE = 'redis' # only redis supported now
 DB_CLIENT_TYPE = 'redis'  # only redis supported now
 
 # REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://127.0.0.1:6379')
-EDGE_REDIS_URL=  {}
+EDGE_REDIS_URL=  {'1':'redis://119.9.75.121:6301'}
 # CENTER_REDIS_URL = ['redis://127.0.0.1:6300']
 CENTER_REDIS_URL = ['redis://119.9.75.121:6300']
 

@@ -390,7 +390,7 @@ enyo.kind({
                 }
                 break;
             default:
-                console.log("endPath: unknown item. ignore");
+                console.log("endPath: unknown item. ignore",this.drawingItem);
                 return;
         }
 

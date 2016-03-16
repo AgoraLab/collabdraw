@@ -59,6 +59,6 @@ if __name__ == "__main__":
     logger.info("Listening on port %s" % config.APP_PORT)
     http_server.listen(config.APP_PORT)
     tornado.ioloop.PeriodicCallback(CommonData.loadEdgeRedisServers,60*1000).start()
-    tornado.ioloop.PeriodicCallback(MysqlClientVendor.loadVendors,60*1000).start()
+    tornado.ioloop.PeriodicCallback(MysqlClientVendor.onTimer,60*1000).start()
     tornado.ioloop.PeriodicCallback(CommonData.redis_keep_alive,10*1000).start()
     tornado.ioloop.IOLoop.instance().start()
