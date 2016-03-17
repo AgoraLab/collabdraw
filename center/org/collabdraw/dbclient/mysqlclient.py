@@ -23,13 +23,13 @@ class MysqlClientVendor:
         # self.vendorInfos = {}
         # self.onTimer()
 
-    def getVendorKeys():
+    def getVendorKeys(self):
         with MysqlClientVendor.vendor_lock:
             return MysqlClientVendor.vendorKeys
 
-    def getVendorInfos():
+    def getVendorInfos(self):
         with MysqlClientVendor.vendor_lock:
-            return MysqlClientVendor.vendorKeys
+            return MysqlClientVendor.vendorInfos
 
     def onTimer():
         threading.Thread(target=MysqlClientVendor.loadVendors, args=()).start()
@@ -42,8 +42,8 @@ class MysqlClientVendor:
         vendorInfos={}
         for (vid, name, key, signkey, status) in cur:
             vendorKeys[key] = vid
-            vendorInfos[vid] = {'vid': vid, 'name': name, 'key': key, 'signkey': signkey, 'status': status}
-        MysqlClientVendor.logger.info('update %u vendor info from mysql' % len(MysqlClientVendor.vendorKeys))
+            vendorInfos[vid] = {'vid': int(vid), 'name': name, 'key': key, 'signkey': signkey, 'status': status}
+        MysqlClientVendor.logger.info('update %u vendor info from mysql' % len(vendorInfos))
         cur.close()
         conn.close()
         with MysqlClientVendor.vendor_lock:

@@ -24,8 +24,8 @@ class CommonData(object):
     def isEdgeServerValid(addr):
         now=time.time()
         if addr in CommonData.edge_servers :
-            if now-CommonData.edge_servers[addr]['ts'] <= 10 and \
-                CommonData.edge_servers[addr]['load']<200:
+            if now-CommonData.edge_servers[addr]['ts'] <= 20 and \
+                CommonData.edge_servers[addr]['load']<1000:
                 return True
         return False
 

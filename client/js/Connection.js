@@ -69,6 +69,7 @@ enyo.kind({
             "event": evt,
             "data": data
         });
+        console.log('sendms:',message);
         this.socket.send(message);
     },
 
@@ -130,7 +131,7 @@ enyo.kind({
         if (this.currentPathLength > 2 || data.type == "touchend" ||
             data.type == 'undo' || data.type == 'redo' ||
             data.type == 'addtext' || data.type == 'edittext'
-            || data.type == 'rm' || data.type=='touchmovement') {
+            || data.type == 'rm' ) {
             // console.log("33333", this.singlePath);
             this.sendMessage("draw-click", {
                 "singlePath": this.singlePath

@@ -50,7 +50,7 @@ function AgoraWhiteBoardApi() {
             var port = result['server'].substring(result['server'].indexOf(':')+1);
             var redis_id = result['redis']
             var vid = result['vid']
-            // port=5002;
+            console.log('ws '+ip+' '+port);
             $.get('http://'+ip + ':' + port + '/join', {key: key, cname: cname, uinfo: uinfo, redis:redis_id, vid:vid},function (result, status) {
                 if (!result || result.length == 0) {
                 	onJoin(-10, 'empty result from agora server', cname, uinfo, uid)

@@ -18,7 +18,6 @@ enyo.kind({
     getNumPages: function() {
         return this.totalPages;
     },
-
     getCurrentPage: function() {
         return this.currentPage;
     },
@@ -32,6 +31,9 @@ enyo.kind({
     },
     getCurrentPageId: function() {
         return this.page_list[this.currentPage-1];
+    },
+    getPageIdByPage: function(page) {
+        return this.page_list[page-1];
     },
 
     /**
@@ -59,7 +61,7 @@ enyo.kind({
         this.textEdits       = {};
         this.penPoints       = [];
         this.penCbkCount     = 0;
-        this.penFunction     = d3.svg.line().interpolate('cardinal');
+        this.penFunction     = d3.svg.line();
         this.penPathID       = 10000;
         this.currentSelected = null;
         this.laserPen        = null;

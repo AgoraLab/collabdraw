@@ -1092,21 +1092,21 @@ enyo.kind({
     },
 
     selectPreviewPages: function(inSender, inEvent) {
-
         var totalPages = this.whiteboard.getNumPages(),
             index;
         // Minus left and right arrows
-        if (this.pagePreviewNum !== totalPages) {
+        // if (this.pagePreviewNum == 0) {
             for (index = 0; index < this.pagePreviewContainer.length; index += 1) {
                 this.pagePreviewContainer[index].destroy();
             }
             this.pagePreviewContainer = [];
-
             for (index = 0; index < Math.min(6, totalPages); index += 1) {
+                var page=this.pagePreviewNum+index+1;
+                var url="http://"+this.appIpAddress+":"+this.appPort+"/files/"+this.room+"/"+this.whiteboard.getPageIdByPage(page)+"_thumbnail.png"
                 var comp = this.createComponent({
                     container: this.$.previewPagesPopup,
-                    style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;background-color:#fff;margin:10px;color:#000;",
-                    content: "<div>Page preview goes here...</div>",
+                    style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;background-color:#fff;margin:10px;color:#000;background-image:url("+url+");background-size:contain;background-repeat:no-repeat;background-position:center center;",
+                    content: "<div style='text-align:right;'> " + page +" </div>",
                     allowHtml: true,
                     ontap: "gotoPage",
                     // page index starts with 1
@@ -1114,10 +1114,8 @@ enyo.kind({
                 });
                 this.pagePreviewContainer.push(comp);
             }
-            this.pagePreviewNum = totalPages;
             this.$.previewPagesPopup.render();
-        }
-
+        // }
         var p = this.$[inEvent.originator.popup];
         if (p) {
             p.show();
@@ -1152,19 +1150,27 @@ enyo.kind({
     selectNext: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
-        this.$.loadingPopup.show();
-        var result = this.whiteboard.nextPage();
-        this.updatePageInfo();
-        if (!result) this.$.loadingPopup.hide();
+        this.pagePreviewNum = this.pagePreviewNum + 6;
+        this.selectPreviewPages(inSender, inEvent)
+
+        // this.$.loadingPopup.show();
+        // var result = this.whiteboard.nextPage();
+        // this.updatePageInfo();
+        // if (!result) this.$.loadingPopup.hide();
     },
 
     selectPrevious: function(inSender, inEvent) {
         this.cancelSelect();
         this.closeEraser();
-        this.$.loadingPopup.show();
-        var result = this.whiteboard.prevPage();
-        this.updatePageInfo();
-        if (!result) this.$.loadingPopup.hide();
+        // this.$.loadingPopup.show();
+        this.pagePreviewNum = 0;this.pagePreviewNum - 6;
+        if (this.pagePreviewNum<0){
+            this.pagePreviewNum = 0;
+        }
+        this.selectPreviewPages(inSender, inEvent, -1)
+        // var result = this.whiteboard.prevPage();
+        // this.updatePageInfo();
+        // if (!result) this.$.loadingPopup.hide();
     },
 
     selectCreateJoinRoomPopupCancel: function(inSender, inEvent) {
@@ -1200,7 +1206,7 @@ enyo.kind({
         this.closeEraser();
         this.cancelSelect();
         //this.whiteboard.gotoPage(inEvent.selected.content);
-        this.whiteboard.gotoPage(inSender.index);
+        this.whiteboard.gotoPage(this.pagePreviewNum+inSender.index);
     },
 
     doSelect: function(inSender, inEvent) {

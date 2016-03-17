@@ -75,7 +75,7 @@ def serverKeepAliveCallBack(response):
             logger.error('serverKeepAlive return error')
             return
         config.EDGE_REDIS_URL=msg['redis']
-        logger.info('update redis %s' , config.EDGE_REDIS_URL)
+        # logger.info('update redis %s' , config.EDGE_REDIS_URL)
 
 http_client = AsyncHTTPClient()
 

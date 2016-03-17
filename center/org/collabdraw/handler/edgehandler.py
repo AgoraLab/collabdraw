@@ -32,7 +32,7 @@ class EdgeHandler(tornado.web.RequestHandler):
 
         remote_ip = self.request.headers.get("X-Real-IP") or self.request.remote_ip
         addr="%s:%s"%(remote_ip, port)
-        self.logger.debug("register edge %s load:%s"%(addr, str(load)))
+        self.logger.info("register edge %s load:%s"%(addr, str(load)))
         now= time.time()
         CommonData.edge_servers[addr]={'ts':now,'load':int(load)}
         ret['redis']=CommonData.edgeRedis

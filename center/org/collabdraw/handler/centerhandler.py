@@ -107,16 +107,18 @@ class CenterHandler(tornado.web.RequestHandler):
         return INVALID_VENDOR_KEY, -1
 
     def checkStaticVendorKey(self, staticKeyString):
-        if not staticKeyString in CommonData.mysqlClient.getVendorKeys():
+        vendorInfos=CommonData.mysqlClient.getVendorInfos()
+        vendorKeys=CommonData.mysqlClient.getVendorKeys()
+        # self.logger.info(vendorInfos)
+        if not staticKeyString in vendorKeys:
             self.logger.warn('invalid login: fail to find static vendor key %s' % staticKeyString)
             return INVALID_VENDOR_KEY, -1
 
-        vid = CommonData.mysqlClient.getVendorKeys()[staticKeyString]
-        if not vid in CommonData.mysqlClient.vendorInfos:
+        vid = vendorKeys[staticKeyString]
+        if not vid in vendorInfos:
             self.logger.warn('invalid login: fail to find vendor info for vendor %u' % vid)
             return INTERNAL_ERROR, -1
-
-        vinfo = CommonData.mysqlClient.getVendorInfos()[vid]
+        vinfo = vendorInfos[vid]
         if (len(vinfo['signkey']) > 0):
             self.logger.warn('invalid login: dynamic key is expected for vendor %u' % vid)
             return NO_AUTHORIZED, -1

@@ -16,6 +16,9 @@ from collections import defaultdict
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..pubsub.pubsubclientfactory import PubSubClientFactory
 from ..tools.videomaker import make_video
+from ..tools.svg import gen_svg
+from tornado import ioloop
+logger = logging.getLogger('websocket')
 
 class RoomData(object):
     def __init__(self):
@@ -24,16 +27,54 @@ class RoomData(object):
         self.pubsub_client=None
         self.db_client=None
         self.topic=None
+        self.room=None
 
-    def init_room(self, url, topic):
+    def load_room_data(self):
+        page_list = self.db_client.lrange("%s:page_list"%self.topic, 0, -1)
+        for page_id in page_list:
+            image=self.db_client.get("%s:%d:page_image"%(self.topic, page_id))
+            path=self.db_client.lrange("%s:%d:page_path"%(self.topic, page_id), 0, -1)
+            if image:
+                self.page_image[page_id]=image
+            if path:
+                self.page_path[page_id]=path
+
+    def load_image(self,page_id):
+        if page_id not in self.page_image:
+            image=self.db_client.get("%s:%d:page_image"%(self.topic, page_id))
+            if image :
+                self.page_image[page_id]=image
+
+    def load_path(self,page_id):
+        if page_id not in self.page_path:
+            path=self.db_client.lrange("%s:%d:page_path"%(self.topic, page_id), 0, -1)
+            if path :
+                self.page_path[page_id]=path
+
+    def timer_thumbnail(self):
+        if len(RealtimeHandler.topics[self.topic])>0:
+            page_list = self.db_client.lrange("%s:page_list"%self.topic, 0, -1)
+            for k in page_list:
+                self.load_image(k)
+                self.load_path(k)
+                image=None if k not in  self.page_image else self.page_image[k]
+                gen_svg(self.room, k, self.page_path[k],image)
+            ioloop.IOLoop.instance().add_timeout(time.time()+20,self.timer_thumbnail)
+
+    def init_room(self, url, topic, room):
         if not self.pubsub_client:
             self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, url)
             self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,self.db_client)
             self.pubsub_client.subscribe(topic, self, RealtimeHandler.on_pubsub)
             self.topic=topic
+            self.room=room
+            ioloop.IOLoop.instance().add_timeout(time.time(),self.timer_thumbnail)
 
     def publish(self, m):
         self.pubsub_client.publish(self.topic, m, self)
+
+    def update_page_path(self, page_id, path):
+        self.page_path[page_id].extend(path)
 
     def set_page_path(self, page_id, path):
         self.page_path[page_id]=path
@@ -55,7 +96,7 @@ class RoomData(object):
     def set_page_image(self, page_id, image):
         self.page_image[page_id]=image
 
-    def destroy():
+    def destroy(self):
         if self.topic and self.pubsub_client:
             self.pubsub_client.unsubscribe(topic, self)
         self.page_path=None
@@ -125,7 +166,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.fromUid= fromUid
                 self.room_name=data['room']
                 # self.logger.info("xxxxx %s %s"%(cookie['redis'], self.room_topic()))
-                self.get_room().init_room(cookie['redis'], self.room_topic())
+                self.get_room().init_room(cookie['redis'], self.room_topic(), data['room'])
                 # self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,cookie['redis'])
             # self.fromUid= fromUid
             # self.room_name=data['room']
@@ -163,12 +204,12 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         elif event == "draw-click":
             single_path = data['singlePath']
-            path=self.get_page_path_data()
-            self.logger.info(single_path)
+            # path=self.get_page_path_data()
+            # self.logger.info(single_path)
             ret=self.get_room().db_client.rpush(self.page_path_key(), [json.dumps(v) for v in single_path])
             if not ret:
                 return self.on_db_error()
-            path.extend(single_path)
+            self.get_room().update_page_path(self.page_id, single_path)
             # msg={'path_start':idx_start, 'path_end':idx_end}
             msg={'singlePath':single_path}
             if 't' in data:
@@ -232,7 +273,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         # First send the image if it exists
         image_url, width, height = self.get_page_image_data()
-        self.logger.info("xxxx 7777 %s"%image_url)
+        # self.logger.info("xxxx 7777 %s"%image_url)
         self.send_message(self.construct_message("image", {'url': image_url,
                                                            'width': width, 'height': height}))
         path=self.get_page_path_data()
@@ -248,10 +289,13 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
 
     def join_room(self):
-        self.logger.info("Joining room %s %d" % (self.room_name, self.page_id))
+        self.logger.info("Joining room %s %d %s" % (self.room_name, self.page_id,self))
         # self.pubsub_client.subscribe(self.page_list_key(), self)
+        self.logger.info("before join clients:%s"%(self.topics[self.room_topic()]))
         if self not in self.topics[self.room_topic()]:
             self.topics[self.room_topic()].append(self)
+        self.logger.info("after join clients:%s"%(self.topics[self.room_topic()]))
+
 
     ## Messaging related methods
     # def construct_key(self, namespace, key, *keys):
@@ -305,7 +349,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             RealtimeHandler.room_data[topic].set_page_image(m['data']['page_id'], None)
         elif m['event'] == 'delete-page':
             RealtimeHandler.room_data[topic].delete_page(m['data']['page_id'])
-
+        RealtimeHandler.logger.info("broadcast %s to %d clients"%(m['event'], len(RealtimeHandler.topics[topic])))
         for client in RealtimeHandler.topics[topic]:
             client.on_broadcast_message(m)
 
