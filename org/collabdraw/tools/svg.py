@@ -51,10 +51,10 @@ def gen_svg_ex(room, page_id, path, url):
     logger.info("gen_svg_ex start %s %d %s"%(room, page_id, url))
     dir_path = os.path.join(config.ROOT_DIR, "files", room)
     ret="""<?xml version="1.0"?>
-        <svg height="768" version="1.1" width="1024" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 768" fill='white'>
+        <svg height="200" version="1.1" width="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 768" fill='white'>
     """
     if url:
-        ret+="""<image x="0" y="0" width="1024" height="768" preserveAspectRatio="none" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="%s"></image>
+        ret+="""<image x="0" y="0" width="200" height="200" preserveAspectRatio="none" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="%s"></image>
 """%url
     for i in path:
         ret+=generateSvgXml(i)+"\n"

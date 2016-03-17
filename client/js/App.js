@@ -1096,25 +1096,25 @@ enyo.kind({
             index;
         // Minus left and right arrows
         // if (this.pagePreviewNum == 0) {
-            for (index = 0; index < this.pagePreviewContainer.length; index += 1) {
-                this.pagePreviewContainer[index].destroy();
-            }
-            this.pagePreviewContainer = [];
-            for (index = 0; index < Math.min(6, totalPages); index += 1) {
-                var page=this.pagePreviewNum+index+1;
-                var url="http://"+this.appIpAddress+":"+this.appPort+"/files/"+this.room+"/"+this.whiteboard.getPageIdByPage(page)+"_thumbnail.png"
-                var comp = this.createComponent({
-                    container: this.$.previewPagesPopup,
-                    style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;background-color:#fff;margin:10px;color:#000;background-image:url("+url+");background-size:contain;background-repeat:no-repeat;background-position:center center;",
-                    content: "<div style='text-align:right;'> " + page +" </div>",
-                    allowHtml: true,
-                    ontap: "gotoPage",
-                    // page index starts with 1
-                    index: index + 1
-                });
-                this.pagePreviewContainer.push(comp);
-            }
-            this.$.previewPagesPopup.render();
+        for (index = 0; index < this.pagePreviewContainer.length; index += 1) {
+            this.pagePreviewContainer[index].destroy();
+        }
+        this.pagePreviewContainer = [];
+        for (index = 0; index < Math.min(6, totalPages-this.pagePreviewNum); index += 1) {
+            var page=this.pagePreviewNum+index+1;
+            var url="http://"+this.appIpAddress+":"+this.appPort+"/files/"+this.room+"/"+this.whiteboard.getPageIdByPage(page)+"_thumbnail.png"
+            var comp = this.createComponent({
+                container: this.$.previewPagesPopup,
+                style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;background-color:#fff;margin:10px;color:#000;background-image:url("+url+");background-size:contain;background-repeat:no-repeat;background-position:center center;",
+                content: "<div style='text-align:right;'> " + page +" </div>",
+                allowHtml: true,
+                ontap: "gotoPage",
+                // page index starts with 1
+                index: index + 1
+            });
+            this.pagePreviewContainer.push(comp);
+        }
+        this.$.previewPagesPopup.render();
         // }
         var p = this.$[inEvent.originator.popup];
         if (p) {
@@ -1148,6 +1148,9 @@ enyo.kind({
     },
 
     selectNext: function(inSender, inEvent) {
+        if(this.pagePreviewNum+6>this.whiteboard.getNumPages()){
+            return;
+        }
         this.closeEraser();
         this.cancelSelect();
         this.pagePreviewNum = this.pagePreviewNum + 6;
@@ -1160,13 +1163,13 @@ enyo.kind({
     },
 
     selectPrevious: function(inSender, inEvent) {
+        if(this.pagePreviewNum==0){
+            return;
+        }
         this.cancelSelect();
         this.closeEraser();
         // this.$.loadingPopup.show();
-        this.pagePreviewNum = 0;this.pagePreviewNum - 6;
-        if (this.pagePreviewNum<0){
-            this.pagePreviewNum = 0;
-        }
+        this.pagePreviewNum = this.pagePreviewNum - 6;
         this.selectPreviewPages(inSender, inEvent, -1)
         // var result = this.whiteboard.prevPage();
         // this.updatePageInfo();
