@@ -57,6 +57,13 @@ enyo.kind({
             case 'pages':
                 _this.remotePages(_this, data);
                 break;
+            case 'laser-move':
+                if (_this.uid == fromUid) {
+                    console.log("ignore message 'laser-move' from mine. uid " + fromUid);
+                    break;
+                }
+                _this.remoteLaserMove(_this, data);
+                break;
             }
         }
     },
@@ -122,8 +129,6 @@ enyo.kind({
           this.singlePath.push(data);
           this.currentPathLength++;
         }
-        // console.log("22222",this.currentPathLength, this.touchMove);
-        // this.singlePath.push(data);
 
         // Send undo or redo immediately. by sunyurun@agora.io
         // Send path every two points or when user removes finger
@@ -131,7 +136,7 @@ enyo.kind({
         if (this.currentPathLength > 2 || data.type == "touchend" ||
             data.type == 'undo' || data.type == 'redo' ||
             data.type == 'addtext' || data.type == 'edittext'
-            || data.type == 'rm' ) {
+            || data.type == 'rm'  ) {
             // console.log("33333", this.singlePath);
             this.sendMessage("draw-click", {
                 "singlePath": this.singlePath
@@ -152,6 +157,16 @@ enyo.kind({
         this.singlePath = [];
         this.currentPathLength = 0;
         this.sendMessage("clear", {});
+    },
+    sendLaserMove: function(data) {
+        data["room"]=  this.whiteboard.room
+        data["page_id"]=  this.whiteboard.getCurrentPageId()
+        message = JSON.stringify({
+            "uid": this.uid,
+            "event": 'laser-move',
+            "data": data
+        });
+        this.socket.send(message);
     },
     deletePage: function() {
         this.sendMessage("delete-page", {
@@ -237,31 +252,6 @@ enyo.kind({
         for (d in sPath) {
             data = sPath[d];
             self.drawEx(self, data)
-
-            // if (data == null) continue;
-            // if (data.drawingItem) {
-            //     self.whiteboard.drawingItem = data.drawingItem;
-            // }
-            // // console.log("xxxxx1111", ds[d]);
-            // if (data.type == 'touchstart') self.whiteboard.startPath(data.oldx, data.oldy, data.lineColor, data.lineWidth, false);
-            // // else if (data.type == 'touchmove') self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
-            // else if (data.type == 'touchmove'){
-            //   if(data.path){
-            //     // console.log("xxxxx", data.path);
-            //     for(i in data.path){
-            //         self.whiteboard.continuePath(data.oldx, data.oldy, data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
-            //     }
-            //   }else{
-            //     self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
-            //   }
-            // }
-            // else if (data.type == 'touchend') self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
-            // else if (data.type == 'undo') self.whiteboard.executeUndo();
-            // else if (data.type == 'redo') self.whiteboard.executeRedo();
-            // else if (data.type == 'addtext') self.whiteboard.executeAddText(data.oldx, data.oldy);
-            // else if (data.type == 'edittext') self.whiteboard.executeEditText(data.oldx, data.oldy, data.value);
-            // else if (data.type == 'rm') self.whiteboard.executeRemove(data.oldx, data.oldy);
-            // else { console.log("not supported operation: " + data.type); }
         }
     },
 
@@ -277,31 +267,8 @@ enyo.kind({
         ds = data.datas;
         for (d in ds) {
             self.drawEx(self, ds[d])
-            // if (ds[d] === null) continue;
-            // if (ds[d].drawingItem) {
-            //      self.whiteboard.drawingItem = ds[d].drawingItem;
-            // }
-            // if (ds[d].type == 'touchstart') self.whiteboard.startPath(ds[d].oldx, ds[d].oldy, ds[d].lineColor, ds[d].lineWidth, false);
-            // // else if (ds[d].type == 'touchmove') self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
-            // else if (ds[d].type == 'touchmove'){
-            //   if(ds[d].path){
-            //     for(i in ds[d].path){
-            //         self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].path[i][0], ds[d].path[i][1], ds[d].lineColor, ds[d].lineWidth, false);
-            //     }
-            //   }else{
-            //     self.whiteboard.continuePath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
-            //   }
-            // }
-            // else if (ds[d].type == 'touchend') self.whiteboard.endPath(ds[d].oldx, ds[d].oldy, ds[d].x, ds[d].y, ds[d].lineColor, ds[d].lineWidth, false);
-            // else if (ds[d].type == 'undo') self.whiteboard.executeUndo();
-            // else if (ds[d].type == 'redo') self.whiteboard.executeRedo();
-            // else if (ds[d].type == 'addtext') self.whiteboard.executeAddText(ds[d].oldx, ds[d].oldy);
-            // else if (ds[d].type == 'edittext') self.whiteboard.executeEditText(ds[d].oldx, ds[d].oldy, ds[d].value);
-            // else if (ds[d].type == 'rm') self.whiteboard.executeRemove(ds[d].oldx, ds[d].oldy);
-            // else { console.log("not supported operation: " + data.type); }
         }
         //console.log("Total pages is " + data.npages);
-
     },
 
     /**
@@ -345,5 +312,9 @@ enyo.kind({
         // TODO update total pages in UI
         self.whiteboard.setTotalPages(npages);
     },
+    remoteLaserMove: function(self, data) {
+        self.whiteboard.removeLaser();
+        self.whiteboard.drawLaser(data.x, data.y)
+    }
 
 });

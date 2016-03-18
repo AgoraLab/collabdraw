@@ -62,8 +62,6 @@ class RedisPubSubClient(PubSubInterface):
                 if message['type'] == 'message':
                     self.logger.info("xxxxx %s",str(message['data'], encoding='utf-8'))
                     msg=str(message['data'], encoding='utf-8')
-                    # tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.on_pubsub(topic, msg))
                     tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: self.callback(topic, msg))
-                    # listener.on_broadcast_message(message['data'].decode('utf-8'))
         except:
             traceback.print_exc()

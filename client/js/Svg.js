@@ -575,14 +575,20 @@ enyo.kind({
     //},
 
     removeLaser: function() {
-        this.laserPen.remove();
-        this.laserPen = null;
+        if (this.laserPen){
+            this.laserPen.remove();
+            this.laserPen = null;
+        }
     },
 
-    drawLaser: function() {
+    drawLaser: function(x, y) {
+        var self = this;
         var canvasBounds = this.parent_.$.canvasContainer.getBounds();
-        var x = canvasBounds.width / 2;
-        var y = canvasBounds.height / 2;
+        if (!x && !y){
+            x = canvasBounds.width / 2;
+            y = canvasBounds.height / 2;
+        }
+
         if (!this.laserPen) {
             this.laserPen = this.cvs.circle(x, y, 8);
             this.laserPen.attr({
@@ -595,6 +601,15 @@ enyo.kind({
                     // We have a 60px header bar
                     cy: dy - 60
                 });
+                var nx=dx - canvasBounds.left;
+                var ny=dy - 60;
+                console.log(self.laserPen, x,nx,y,ny);
+                if(Math.abs(self.laserPen.attrs.cx - nx)>2 || Math.abs(self.laserPen.attrs.cx - ny)>2){
+                    self.connection.sendLaserMove({
+                        x: nx,
+                        y: ny,
+                    })
+                }
             },
             function(x, y, e) {
                 this.attr("fill", "red");

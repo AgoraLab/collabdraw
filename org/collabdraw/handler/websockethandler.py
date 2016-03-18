@@ -65,7 +65,7 @@ class RoomData(object):
         if not self.pubsub_client:
             self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, url)
             self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,self.db_client)
-            self.pubsub_client.subscribe(topic, self, RealtimeHandler.on_pubsub)
+            self.pubsub_client.subscribe(topic, self, RealtimeHandler.on_broadcast_message)
             self.topic=topic
             self.room=room
             ioloop.IOLoop.instance().add_timeout(time.time(),self.timer_thumbnail)
@@ -204,13 +204,10 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         elif event == "draw-click":
             single_path = data['singlePath']
-            # path=self.get_page_path_data()
-            # self.logger.info(single_path)
             ret=self.get_room().db_client.rpush(self.page_path_key(), [json.dumps(v) for v in single_path])
             if not ret:
                 return self.on_db_error()
             self.get_room().update_page_path(self.page_id, single_path)
-            # msg={'path_start':idx_start, 'path_end':idx_end}
             msg={'singlePath':single_path}
             if 't' in data:
                 msg['t']=data['t']
@@ -221,8 +218,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.get_room().db_client.delete(self.page_path_key())
             self.get_room().db_client.delete(self.page_image_key())
             page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
-            # if not page_list:
-            #     return self.on_db_error()
             page_list = [int(i) for i in page_list]
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("delete-page", {'pages':page_list}))
             self.get_room().delete_page(self.page_id)
@@ -248,6 +243,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             if not ret:
                 return self.on_db_error()
             self.init_room_page(self.room_name, page_id)
+        elif event == "laser-move":
+            self.broadcast_message(self.room_topic(), self.construct_broadcast_message(event,data))
 
         self.logger.info("%s takes %.4f sec" %(event,(time.time() - fromTs)))
 
@@ -316,15 +313,12 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         data['room']=self.room_name
         data['page_id']=self.page_id
         return {"event": event, "data": data}
-        # m = json.dumps({"event": event, "data": data})
-        # return m
 
     def construct_broadcast_message(self, event, data={}):
         data['room']=self.room_name
         data['page_id']=self.page_id
         return {"fromUid": self.fromUid, "event": event, "data": data}
-        # m = json.dumps({"fromUid": self.fromUid, "event": event, "data": data})
-        # return m
+
 
     def broadcast_message(self, topic, message):
         m=json.dumps(message)
@@ -340,7 +334,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         page_list=room.db_client.lrange(page_list_key, 0, -1)
         room.publish(json.dumps({'event':'pages', 'data':{'pages':page_list}}))
 
-    def on_pubsub(topic, message):
+    def on_broadcast_message(topic, message):
         m=json.loads(message)
         if m['event'] == 'draw':
             pass
@@ -349,24 +343,16 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             RealtimeHandler.room_data[topic].set_page_image(m['data']['page_id'], None)
         elif m['event'] == 'delete-page':
             RealtimeHandler.room_data[topic].delete_page(m['data']['page_id'])
-        RealtimeHandler.logger.info("broadcast %s to %d clients"%(m['event'], len(RealtimeHandler.topics[topic])))
+        # RealtimeHandler.logger.info("broadcast %s to %d clients"%(m['event'], len(RealtimeHandler.topics[topic])))
         for client in RealtimeHandler.topics[topic]:
-            client.on_broadcast_message(m)
+            if m['event'] in ['draw','clear','laser-move'] and m['data']['page_id'] != client.page_id:
+                    continue
+            client.send_message(m)
 
     def send_message(self, message):
         m=json.dumps(message)
         m = b64encode(compress(bytes(quote(str(m)), 'utf-8'), 9))
         self.write_message(m)
-
-    def on_broadcast_message(self, m):
-        # m=json.loads(m)
-        if m['event'] in ['draw','clear']:
-            if m['data']['page_id'] != self.page_id:
-                return
-        else:
-            pass
-        message = b64encode(compress(bytes(quote(str(json.dumps(m))), 'utf-8'), 9))
-        self.write_message(message)
 
     def get_page_image_data(self):
         image=self.get_room().get_page_image(self.page_id)

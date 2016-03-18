@@ -7,6 +7,8 @@ import cairosvg
 logger = logging.getLogger('websocket')
 
 def generateSvgXml(data):
+    if 'drawingItem' not in data:
+        return ''
     opacity=1
     if data['drawingItem']=='highlighter':
         opacity=0.5
