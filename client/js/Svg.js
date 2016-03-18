@@ -61,7 +61,7 @@ enyo.kind({
         this.textEdits       = {};
         this.penPoints       = [];
         this.penCbkCount     = 0;
-        this.penFunction     = d3.svg.line();
+        this.penFunction     = d3.svg.line().interpolate('cardinal');
         this.penPathID       = 10000;
         this.currentSelected = null;
         this.laserPen        = null;
