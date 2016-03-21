@@ -24,27 +24,29 @@ def uploadfile(filename, data):
     s3.Bucket(config.S3_BUCKET).put_object(Key=filename, Body=data, ContentType='image')
 
 
-def process_uploaded_file_pdf(dir_path ,fname, room_topic):
-    file_path = os.path.join(dir_path, fname)
-    tmp_name=int(round(time.time() * 1000))
+def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
+    no=RealtimeHandler.gen_page_id()
+    tmp_name=no
+    os.makedirs(dir_path, exist_ok=True)
+    file_path = os.path.join(dir_path, "%d.pdf"%tmp_name)
+    fh = open(file_path, 'wb')
+    fh.write(body)
+    fh.close()
+
     # Split the pdf files by pages
     subprocess.call(['pdfseparate', file_path, "%s/%d_%%d.pdf"%(dir_path,tmp_name)])
-    pages=len(glob.glob("%s/%d*.pdf"%(dir_path,tmp_name)))
-    no=RealtimeHandler.gen_page_id()
+    pages=len(glob.glob("%s/%d_*.pdf"%(dir_path,tmp_name)))
     page_list=[i+no for i in range(pages)]
-    ret=subprocess.call(['mogrify', '-format', 'png', '--', "%s/%d_*.pdf"%(dir_path,tmp_name)])
-    for i in range(pages):
-        cmd=['mv',"%s/%d_%d.png"%(dir_path,tmp_name,i+1),"%s/image_%d.png"%(dir_path,page_list[i])]
-        ret=subprocess.call(cmd)
+    subprocess.call(['mogrify', '-format', 'png', '--', "%s/%d_*.pdf"%(dir_path,tmp_name)])
     ret={}
     for i in page_list:
         filename="%d.png"%(i)
-        data = open("%s/image_%d.png"%(dir_path,i), 'rb')
+        data = open("%s/%d_%d.png"%(dir_path,tmp_name,i-tmp_name+1), 'rb')
         uploadfile(filename ,data)
         ret[i]=filename
     # Convert the pdf files to png
     # Delete all the files
-    delete_files('%s/%d_*.pdf'%(dir_path , tmp_name))
+    delete_files('%s/%d*pdf'%(dir_path , tmp_name))
     tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.on_uploadfile(room_topic,ret))
 
 def process_uploaded_file_image(ftype ,room_topic, data):

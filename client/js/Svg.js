@@ -126,7 +126,12 @@ enyo.kind({
             //fill: "#AEAEAE"
         //});
     //},
-
+    zoomConvert:function(x){
+        x = x /  this.zoomRatio;
+        // x += x*(1-this.zoomRatio)/2;
+        // y += y*(1-this.zoomRatio);
+        return x
+    },
     /**
      * Called when user starts a path
      * @param {Object} x
@@ -135,8 +140,12 @@ enyo.kind({
      */
     startPath: function(x, y, lc, lw, send) {
         // calculate x and y after being zoomed.
-        x += x * (1 - this.zoomRatio);
-        y += y * (1 - this.zoomRatio);
+        // x += x * (1 - this.zoomRatio);
+        // y += y * (1 - this.zoomRatio);
+        if(send){
+            x=this.zoomConvert(x);
+            y=this.zoomConvert(y);
+        }
         this.drawStartX = x;
         this.drawStartY = y;
 
@@ -202,8 +211,12 @@ enyo.kind({
      * Called when user continues path (without lifting finger)
      */
     continuePath: function(oldx, oldy, x, y, lc, lw, send) {
-        x += x * (1 - this.zoomRatio);
-        y += y * (1 - this.zoomRatio);
+        // x += x * (1 - this.zoomRatio);
+        // y += y * (1 - this.zoomRatio);
+        if(send){
+            x=this.zoomConvert(x);
+            y=this.zoomConvert(y);
+        }
         var reallyNeedToSend = false;
         switch(this.drawingItem) {
             case 'pen':
@@ -335,8 +348,12 @@ enyo.kind({
      * Called when user lifts finger
      */
     endPath: function(oldx, oldy, x, y, lc, lw, send) {
-        x += x * (1 - this.zoomRatio);
-        y += y * (1 - this.zoomRatio);
+        // x += x * (1 - this.zoomRatio);
+        // y += y * (1 - this.zoomRatio);
+        if(send){
+            x=this.zoomConvert(x);
+            y=this.zoomConvert(y);
+        }
         switch(this.drawingItem) {
             case 'pen':
                 this.drawPath2(x, y, lc, lw, 1);
