@@ -112,7 +112,10 @@ enyo.kind({
         fit: true,
         style: "text-align: center;background-color: #5b5b5b; z-index: 0;",
         components: [{
-            style: "margin: auto; background-color: #FFFFFF;",
+            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_left.png) center center no-repeat;position:absolute;left:2%;top:50%;background-color: #808080;z-index:10;",
+            ontap: "gotoPreviousPage"
+        }, {
+            style: "margin: auto; background-color: #FFFFFF;display:inline-block;",
             ontap: "appclicked",
             ondragstart: "touchstart",
             ondragover: "touchmove",
@@ -147,7 +150,10 @@ enyo.kind({
                     );
                 }
             },
-        }],
+        }, {
+            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_right.png) center center no-repeat;position:absolute;right:2%;top:50%;background-color: #808080;z-index:10;",
+            ontap: "gotoNextPage",
+        },],
     }, {
         kind: "onyx.MoreToolbar",
         components: [{
@@ -1156,10 +1162,20 @@ enyo.kind({
         this.pagePreviewNum = this.pagePreviewNum + 6;
         this.selectPreviewPages(inSender, inEvent)
 
-        // this.$.loadingPopup.show();
-        // var result = this.whiteboard.nextPage();
-        // this.updatePageInfo();
-        // if (!result) this.$.loadingPopup.hide();
+    },
+
+    gotoNextPage: function(inSender, inEvent) {
+        this.$.loadingPopup.show();
+        var result = this.whiteboard.nextPage();
+        this.updatePageInfo();
+        if (!result) this.$.loadingPopup.hide();
+    },
+
+    gotoPreviousPage: function(inSender, inEvent) {
+        this.$.loadingPopup.show();
+        var result = this.whiteboard.prevPage();
+        this.updatePageInfo();
+        if (!result) this.$.loadingPopup.hide();
     },
 
     selectPrevious: function(inSender, inEvent) {
@@ -1168,12 +1184,8 @@ enyo.kind({
         }
         this.cancelSelect();
         this.closeEraser();
-        // this.$.loadingPopup.show();
         this.pagePreviewNum = this.pagePreviewNum - 6;
         this.selectPreviewPages(inSender, inEvent, -1)
-        // var result = this.whiteboard.prevPage();
-        // this.updatePageInfo();
-        // if (!result) this.$.loadingPopup.hide();
     },
 
     selectCreateJoinRoomPopupCancel: function(inSender, inEvent) {
@@ -1208,8 +1220,10 @@ enyo.kind({
     gotoPage: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
+        this.$.loadingPopup.show();
         //this.whiteboard.gotoPage(inEvent.selected.content);
-        this.whiteboard.gotoPage(this.pagePreviewNum+inSender.index);
+        var result = this.whiteboard.gotoPage(this.pagePreviewNum+inSender.index);
+        if (!result) this.$.loadingPopup.hide();
     },
 
     doSelect: function(inSender, inEvent) {
