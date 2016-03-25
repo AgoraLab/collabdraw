@@ -112,8 +112,11 @@ enyo.kind({
         fit: true,
         style: "text-align: center;background-color: #5b5b5b; z-index: 0;",
         components: [{
-            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_left.png) center center no-repeat;position:absolute;left:2%;top:50%;background-color: #808080;z-index:10;",
-            ontap: "gotoPreviousPage"
+            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_left.png) center center no-repeat;position:absolute;left:2%;top:50%;background-color: #808080;z-index:10;border-radius:5px;",
+            ontap: "gotoPreviousPage",
+            onmouseover: "gotoPreviousPageMouseOver",
+            onmouseout: "gotoPreviousPageMouseOut",
+            name: "gotoPreviousPage",
         }, {
             style: "margin: auto; background-color: #FFFFFF;display:inline-block;",
             ontap: "appclicked",
@@ -151,8 +154,11 @@ enyo.kind({
                 }
             },
         }, {
-            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_right.png) center center no-repeat;position:absolute;right:2%;top:50%;background-color: #808080;z-index:10;",
+            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_right.png) center center no-repeat;position:absolute;right:2%;top:50%;background-color: #808080;z-index:10;border-radius:5px;",
             ontap: "gotoNextPage",
+            onmouseover: "gotoNextPageMouseOver",
+            onmouseout: "gotoNextPageMouseOut",
+            name: "gotoNextPage",
         },],
     }, {
         kind: "onyx.MoreToolbar",
@@ -1162,6 +1168,26 @@ enyo.kind({
         this.pagePreviewNum = this.pagePreviewNum + 6;
         this.selectPreviewPages(inSender, inEvent)
 
+    },
+
+    gotoNextPageMouseOver: function(inSender, inEvent) {
+        this.$.gotoNextPage.applyStyle("background", "url(../images/btn_right_gray.png) center center no-repeat");
+        this.$.gotoNextPage.applyStyle("background-color", "#FFF");
+    },
+
+    gotoNextPageMouseOut: function(inSender, inEvent) {
+        this.$.gotoNextPage.applyStyle("background", "url(../images/btn_right.png) center center no-repeat");
+        this.$.gotoNextPage.applyStyle("background-color", "#808080");
+    },
+
+    gotoPreviousPageMouseOver: function(inSender, inEvent) {
+        this.$.gotoPreviousPage.applyStyle("background", "url(../images/btn_left_gray.png) center center no-repeat");
+        this.$.gotoPreviousPage.applyStyle("background-color", "#FFF");
+    },
+
+    gotoPreviousPageMouseOut: function(inSender, inEvent) {
+        this.$.gotoPreviousPage.applyStyle("background", "url(../images/btn_left.png) center center no-repeat");
+        this.$.gotoPreviousPage.applyStyle("background-color", "#808080");
     },
 
     gotoNextPage: function(inSender, inEvent) {
