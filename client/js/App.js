@@ -827,7 +827,8 @@ enyo.kind({
         this.closePen();
         this.cancelEditingText();
         this.dimPenPicker();
-        this.highlighter.on ? this.closeHighlighter() : this.openHighlighter();
+        //this.highlighter.on ? this.closeHighlighter() : this.openHighlighter();
+        this.openHighlighter();
     },
 
     openPen: function() {
@@ -854,7 +855,8 @@ enyo.kind({
         this.cancelEditingText();
         this.dimPenPicker();
         this.hideLaser();
-        this.pen.on ? this.closePen() : this.openPen();
+        //this.pen.on ? this.closePen() : this.openPen();
+        this.openPen();
     },
 
     addText: function(inSender, inEvent) {
@@ -864,7 +866,8 @@ enyo.kind({
         this.closeHighlighter();
         this.dimPenPicker();
 
-        this.textEditing.on ? this.cancelEditingText() : this.startEditingText();
+        //this.textEditing.on ? this.cancelEditingText() : this.startEditingText();
+        this.startEditingText();
     },
 
     startEditingText: function() {
@@ -1261,7 +1264,8 @@ enyo.kind({
         this.closePen();
         this.closeHighlighter();
         this.dimPenPicker();
-        this.selecting.on ? this.cancelSelect() : this.openSelect();
+        //this.selecting.on ? this.cancelSelect() : this.openSelect();
+        this.openSelect();
     },
 
     openSelect: function() {
@@ -1277,7 +1281,8 @@ enyo.kind({
 
         this.selecting.on = false;
         this.$.selectButton.applyStyle("background-image", "url(../images/btn_choose_gray.png)");
-        this.whiteboard.drawingItem = this.selecting.previousDrawingItem;
+        //this.whiteboard.drawingItem = this.selecting.previousDrawingItem;
         this.whiteboard.cancelSelect();
+        this.whiteboard.stopDoingSelect();
     }
 });

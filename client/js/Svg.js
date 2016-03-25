@@ -841,6 +841,10 @@ enyo.kind({
         this.currentSelected = null;
     },
 
+    stopDoingSelect: function() {
+        this.doingSelect = false;
+    },
+
     selectSvgElementByPoint: function(x, y) {
         var indexX, indexY, element;
 
