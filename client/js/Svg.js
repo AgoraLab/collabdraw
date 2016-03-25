@@ -1008,7 +1008,9 @@ enyo.kind({
     },
 
     executeAddText: function(x, y) {
-        var text = this.cvs.text(x, y - 60, 'Adding text here')
+        // Top banner is 60px height
+        var yPosition = y - 60;
+        var text = this.cvs.text(x, yPosition, 'Adding text here')
             .attr({
                 'text-anchor': 'start',
                 'font-size': '16px',
@@ -1018,7 +1020,7 @@ enyo.kind({
         this.cvs.inlineTextEditing(text);
         text.click(this.onTextClicked.bind(this, text), true);
 
-        var id = x.toString() + '-' + y.toString();
+        var id = x.toString() + '-' + yPosition.toString();
         this.textEdits[id] = text;
 
         var clone = $.extend({}, text);
