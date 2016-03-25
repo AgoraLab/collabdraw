@@ -784,18 +784,22 @@ enyo.kind({
 
     selectLaserPen: function(inSender, inEvent) {
         this.closeEraser();
-        if (this.laser.on) {
-            this.laser.on = false;
-            this.whiteboard.drawingItem = this.laser.previousDrawingItem;
-            this.whiteboard.removeLaser();
-            this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser_gray.png)");
-        } else {
-            this.laser.on = true;
-            this.laser.previousDrawingItem = this.whiteboard.drawingItem;
-            this.whiteboard.drawingItem = '';
-            this.whiteboard.drawLaser();
-            this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser.png)");
-        }
+        this.laser.on ? this.hideLaser() : this.showLaser();
+    },
+
+    showLaser: function() {
+        this.laser.on = true;
+        this.laser.previousDrawingItem = this.whiteboard.drawingItem;
+        this.whiteboard.drawingItem = '';
+        this.whiteboard.drawLaser();
+        this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser.png)");
+    },
+
+    hideLaser: function() {
+        this.laser.on = false;
+        this.whiteboard.drawingItem = this.laser.previousDrawingItem;
+        this.whiteboard.removeLaser();
+        this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser_gray.png)");
     },
 
     openHighlighter: function() {
@@ -849,6 +853,7 @@ enyo.kind({
         this.closeHighlighter();
         this.cancelEditingText();
         this.dimPenPicker();
+        this.hideLaser();
         this.pen.on ? this.closePen() : this.openPen();
     },
 
@@ -1167,7 +1172,6 @@ enyo.kind({
         this.cancelSelect();
         this.pagePreviewNum = this.pagePreviewNum + 6;
         this.selectPreviewPages(inSender, inEvent)
-
     },
 
     gotoNextPageMouseOver: function(inSender, inEvent) {
