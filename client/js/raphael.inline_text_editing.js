@@ -107,6 +107,10 @@
                     width: width+'px',
                     height: height+'px',
                     color: subject.attrs.fill,
+                    resize: 'none',
+                    placeholder: 'Adding text here',
+                    border: 'none',
+                    overflow: 'auto',
 
                     '-moz-transform-origin': sOrigin,
                     '-ms-transform-origin': sOrigin,
