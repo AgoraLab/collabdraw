@@ -1126,7 +1126,7 @@ enyo.kind({
             var comp = this.createComponent({
                 container: this.$.previewPagesPopup,
                 style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;background-color:#fff;margin:10px;color:#000;background-image:url("+url+");background-size:contain;background-repeat:no-repeat;background-position:center center;",
-                content: "<div style='text-align:right;'> " + page +" </div>",
+                content: "<div style='text-align:center;height: 100%;font-size:3em;'> " + page +" </div>",
                 allowHtml: true,
                 ontap: "gotoPage",
                 // page index starts with 1
