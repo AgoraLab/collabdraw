@@ -142,9 +142,9 @@ enyo.kind({
         // calculate x and y after being zoomed.
         // x += x * (1 - this.zoomRatio);
         // y += y * (1 - this.zoomRatio);
-        if(send){
-            x=this.zoomConvert(x);
-            y=this.zoomConvert(y);
+        if (send){
+            x = this.zoomConvert(x);
+            y = this.zoomConvert(y);
         }
         this.drawStartX = x;
         this.drawStartY = y;
@@ -164,32 +164,36 @@ enyo.kind({
                 }
                 break;
             case 'circle':
-                if (!this.element)
+                if (!this.element) {
                     this.element = this.cvs.circle(x, y, 0);
-                //this.element.drag(this.move, this.start, this.up);
-                this.element.attr({
-                    "stroke": lc,
-                    "stroke-width": lw
-                });
+
+                    //this.element.drag(this.move, this.start, this.up);
+                    this.element.attr({
+                        "stroke": lc,
+                        "stroke-width": lw
+                    });
+                }
                 break;
             case 'square':
             case 'rectangle':
-                if (!this.element)
+                if (!this.element) {
                     this.element = this.cvs.rect(x, y, 0, 0);
-                //this.element.drag(this.move, this.start, this.up);
-                this.element.attr({
-                    "stroke": lc,
-                    "stroke-width": lw
-                });
+                    //this.element.drag(this.move, this.start, this.up);
+                    this.element.attr({
+                        "stroke": lc,
+                        "stroke-width": lw
+                    });
+                }
                 break;
             case 'ellipse':
-                if (!this.element)
+                if (!this.element) {
                     this.element = this.cvs.ellipse(x, y, 0, 0);
-                //this.element.drag(this.move, this.start, this.up);
-                this.element.attr({
-                    "stroke": lc,
-                    "stroke-width": lw
-                });
+                    //this.element.drag(this.move, this.start, this.up);
+                    this.element.attr({
+                        "stroke": lc,
+                        "stroke-width": lw
+                    });
+                }
                 break;
             default:
                 console.log("startPath: unknown item. ignore");
@@ -284,25 +288,25 @@ enyo.kind({
                 break;
             case 'circle':
                 if (this.element) {
-                    var width = x - this.drawStartX,
+                    var width  = x - this.drawStartX,
                         height = y - this.drawStartY,
-                            radius = Math.max(Math.abs(width), Math.abs(height));
+                        radius = Math.max(Math.abs(width), Math.abs(height));
 
-                            this.element.attr({
-                                "r": radius
-                            });
+                    this.element.attr({
+                        "r": radius
+                    });
                 }
                 break;
             case 'square':
                 if (this.element) {
                     var width = x - this.drawStartX,
                         height = y - this.drawStartY,
-                            lineWidth = Math.max(width, height);
+                        lineWidth = Math.max(width, height);
 
-                            this.element.attr({
-                                "width": lineWidth > 0 ? lineWidth: 0,
-                                "height": lineWidth > 0 ? lineWidth: 0
-                            });
+                    this.element.attr({
+                        "width": lineWidth > 0 ? lineWidth: 0,
+                        "height": lineWidth > 0 ? lineWidth: 0
+                    });
                 }
                 break;
             case 'rectangle':
@@ -310,10 +314,10 @@ enyo.kind({
                     var width = x - this.drawStartX,
                         height = y - this.drawStartY;
 
-                        this.element.attr({
-                            "width": width > 0 ? width : 0,
-                            "height": height > 0 ? height : 0
-                        });
+                    this.element.attr({
+                        "width": width > 0 ? width : 0,
+                        "height": height > 0 ? height : 0
+                    });
                 }
                 break;
             case 'ellipse':
@@ -321,10 +325,10 @@ enyo.kind({
                     var width = x - this.drawStartX,
                         height = y - this.drawStartY;
 
-                        this.element.attr({
-                            "rx": width > 0 ? width : 0,
-                            "ry": height > 0 ? height : 0
-                        });
+                    this.element.attr({
+                        "rx": width > 0 ? width : 0,
+                        "ry": height > 0 ? height : 0
+                    });
                 }
                 break;
             default:
@@ -347,15 +351,18 @@ enyo.kind({
     /**
      * Called when user lifts finger
      */
-    endPath: function(oldx, oldy, x, y, lc, lw, send) {
+    endPath: function(oldx, oldy, x, y, lc, lw, guidRemote, send) {
+        var guid;
         // x += x * (1 - this.zoomRatio);
         // y += y * (1 - this.zoomRatio);
-        if(send){
-            x=this.zoomConvert(x);
-            y=this.zoomConvert(y);
+        if (send){
+            x = this.zoomConvert(x);
+            y = this.zoomConvert(y);
         }
         switch(this.drawingItem) {
             case 'pen':
+                guid = guidRemote || this.currentPathID();
+
                 this.drawPath2(x, y, lc, lw, 1);
                 this.undoStack.push({
                     type: 'path-line',
@@ -368,6 +375,8 @@ enyo.kind({
                 this.penCbkCount = 0;
                 break;
             case 'highlighter':
+                guid = guidRemote || this.currentPathID();
+
                 this.drawPath2(x, y, lc, lw, 0.5);
                 this.undoStack.push({
                     type: 'path-line',
@@ -386,26 +395,14 @@ enyo.kind({
             case 'square':
             case 'ellipse':
             case 'rectangle':
+                guid = guidRemote || this.guid();
                 this.continuePath(oldx, oldy, x, y, lc, lw, false);
                 if (this.element) {
+                    this.element.node.id = guid;
                     var BBox = this.element.getBBox();
                     if ( BBox.width == 0 && BBox.height == 0 ) {
                         this.element.remove();
                     }
-
-                    //this.element.hover(
-                        //// When the mouse comes over the object //
-                        //// Stock the created "glow" object in myCircle.g
-                        //function() {
-                            //this.g = this.glow({
-                                //width: 5
-                            //});
-                        //},
-                        //// When the mouse goes away //
-                        //// this.g was already created. Destroy it!
-                        //function() {
-                            //this.g.remove();
-                        //});
                 }
                 break;
             default:
@@ -425,10 +422,20 @@ enyo.kind({
                 type: 'touchend',
                 lineColor: lc,
                 lineWidth: lw,
-                drawingItem: this.drawingItem
+                drawingItem: this.drawingItem,
+                guid: guid
             });
         }
         this.element = null;
+    },
+
+    guid: function() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     },
 
     currentPathID: function() {
@@ -467,6 +474,8 @@ enyo.kind({
         this.cvs.clear();
         if (reloadImage) this.connection.getImage();
         if (send) this.connection.sendClear();
+        this.undoStack = [];
+        this.redoStack = [];
     },
 
     getMeta: function (url, cbk) {
@@ -673,6 +682,67 @@ enyo.kind({
     zoomOut: function() {
         this.zoomRatio -= 0.1;
         this.cvs.scaleAll(this.zoomRatio);
+    },
+
+    undoWithDrawing: function() {
+        this.executeUndo2(true);
+    },
+
+    redoWithDrawing: function() {
+        this.executeRedo2(true);
+    },
+
+    executeUndo2: function(send, guid) {
+        var element = this.undoStack.pop(),
+            guid;
+
+        if (element) {
+            if (element.type === 'path-line') {
+                guid = guid || element.pathID;
+            } else {
+                guid = guid || element.node.id;
+            }
+
+            $("#" + guid).remove();
+            this.redoStack.push(element);
+            if (send) {
+                this.connection.sendPath({
+                    type: 'undo',
+                    guid: guid
+                })
+            }
+        }
+    },
+
+    executeRedo2: function(send, guid) {
+        var element = this.redoStack.pop(),
+            guid, clone;
+
+        if (element) {
+            if (element.type === 'path-line') {
+                guid = guid || element.pathID;
+                this.d3SVG.append("path")
+                    .datum(element.datum)
+                    .attr("id", element.pathID)
+                    .attr("stroke", element.lineColor)
+                    .attr("stroke-width", element.lineWidth)
+                    .attr("fill", "none")
+                    .attr("d", this.penFunction);
+                this.undoStack.push(element);
+            } else {
+                guid = guid || element.node.id;
+                clone = element.clone();
+                clone.node.id = guid;
+                this.undoStack.push(clone);
+            }
+
+            if (send) {
+                this.connection.sendPath({
+                    type: 'redo',
+                    guid: guid
+                });
+            }
+        }
     },
 
     undo: function() {

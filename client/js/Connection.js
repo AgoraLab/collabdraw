@@ -113,21 +113,22 @@ enyo.kind({
      * @param {x, y, type, lineColor, lineWidth} a point on the path
      */
     sendPath: function(data) {
-        if(data.type == 'touchend'){
-          this.touchMove.path.push([data.x,data.y])
-          this.singlePath.push(this.touchMove);
-          this.currentPathLength++;
-          this.touchMove=undefined;
-        }else if(data.type == 'touchstart'){
+        if (data.type == 'touchend') {
+            this.touchMove.path.push([data.x,data.y]);
+            this.touchMove.guid = data.guid;
+            this.singlePath.push(this.touchMove);
+            this.currentPathLength++;
+            this.touchMove=undefined;
+        } else if (data.type == 'touchstart') {
             this.touchMove = data;
             this.touchMove.type='touchmovement';
             this.touchMove.path=[];
             this.touchMove.path.push([data.oldx,data.oldy]);
         }else if(data.type == 'touchmove'){
-          this.touchMove.path.push([data.x,data.y]);
+            this.touchMove.path.push([data.x,data.y]);
         }else{
-          this.singlePath.push(data);
-          this.currentPathLength++;
+            this.singlePath.push(data);
+            this.currentPathLength++;
         }
 
         // Send undo or redo immediately. by sunyurun@agora.io
@@ -144,10 +145,6 @@ enyo.kind({
             this.singlePath = [];
             this.currentPathLength = 0;
         }
-    },
-
-    sendArrow: function(data) {
-        // TODO implement data sending logic.
     },
 
     /**
@@ -222,7 +219,7 @@ enyo.kind({
                 if(i==0){
                     self.whiteboard.startPath(data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
                 }else if(i==data.path.length-1){
-                    self.whiteboard.endPath(data.oldx, data.oldy,data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
+                    self.whiteboard.endPath(data.oldx, data.oldy,data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, data.guid, false);
                 }else{
                     self.whiteboard.continuePath(data.oldx, data.oldy, data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
                 }
@@ -231,12 +228,24 @@ enyo.kind({
             self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
           }
         }
-        else if (data.type == 'touchend') self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
-        else if (data.type == 'undo') self.whiteboard.executeUndo();
-        else if (data.type == 'redo') self.whiteboard.executeRedo();
-        else if (data.type == 'addtext') self.whiteboard.executeAddText(data.oldx, data.oldy);
-        else if (data.type == 'edittext') self.whiteboard.executeEditText(data.oldx, data.oldy, data.value);
-        else if (data.type == 'rm') self.whiteboard.executeRemove(data.oldx, data.oldy);
+        else if (data.type == 'touchend') {
+            self.whiteboard.endPath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, data.guid, false);
+        }
+        else if (data.type == 'undo') {
+            self.whiteboard.executeUndo2(false, data.guid);
+        }
+        else if (data.type == 'redo') {
+            self.whiteboard.executeRedo2(false, data.guid);
+        }
+        else if (data.type == 'addtext') {
+            self.whiteboard.executeAddText(data.oldx, data.oldy);
+        }
+        else if (data.type == 'edittext') {
+            self.whiteboard.executeEditText(data.oldx, data.oldy, data.value);
+        }
+        else if (data.type == 'rm') {
+            self.whiteboard.executeRemove(data.oldx, data.oldy);
+        }
         else { console.log("not supported operation: " + data.type); }
     },
     /**

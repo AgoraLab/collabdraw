@@ -573,13 +573,15 @@ enyo.kind({
     undoPath: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
-        this.whiteboard.undo();
+        //this.whiteboard.undo();
+        this.whiteboard.undoWithDrawing();
     },
 
     redoPath: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
-        this.whiteboard.redo();
+        //this.whiteboard.redo();
+        this.whiteboard.redoWithDrawing();
     },
 
     cropContent: function(inSender, inEvent) {
@@ -733,7 +735,7 @@ enyo.kind({
             var canvasBounds = this.$.canvasContainer.getBounds();
             x = inEvent.pageX - canvasBounds.left;
             y = inEvent.pageY - canvasBounds.top - 60;
-            this.whiteboard.endPath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, true);
+            this.whiteboard.endPath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, undefined, true);
             this.curves.oldx = -1;
             this.curves.oldy = -1;
         }
