@@ -126,7 +126,7 @@ enyo.kind({
             //fill: "#AEAEAE"
         //});
     //},
-    zoomConvert:function(x){
+    zoomConvert: function(x){
         x = x /  this.zoomRatio;
         // x += x*(1-this.zoomRatio)/2;
         // y += y*(1-this.zoomRatio);
@@ -612,25 +612,26 @@ enyo.kind({
         var self = this;
         var canvasBounds = this.parent_.$.canvasContainer.getBounds();
         if (!x && !y){
-            x = canvasBounds.width / 2;
+            x = canvasBounds.width / 2 + canvasBounds.left;
             y = canvasBounds.height / 2;
         }
 
         if (!this.laserPen) {
             this.laserPen = this.cvs.circle(x, y, 8);
             this.laserPen.attr({
+                stroke: "red",
                 fill: "red",
                 opacity: "0.5"
             });
             this.laserPen.drag(function(x, y, dx, dy, e) {
+                var nx = self.zoomConvert(dx) - self.zoomConvert(canvasBounds.left);
+                // We have a 60px header bar
+                var ny = self.zoomConvert(dy - 60);
                 this.attr({
-                    cx: dx - canvasBounds.left,
-                    // We have a 60px header bar
-                    cy: dy - 60
+                    cx: nx,
+                    cy: ny
                 });
-                var nx=dx - canvasBounds.left;
-                var ny=dy - 60;
-                if(Math.abs(self.laserPen.attrs.cx - nx)>2 || Math.abs(self.laserPen.attrs.cx - ny)>2){
+                if(Math.abs(self.laserPen.attrs.cx - nx) > 2 || Math.abs(self.laserPen.attrs.cx - ny) > 2){
                     self.connection.sendLaserMove({
                         x: nx,
                         y: ny,
@@ -677,11 +678,22 @@ enyo.kind({
     zoomIn: function() {
         this.zoomRatio += 0.1;
         this.cvs.scaleAll(this.zoomRatio);
+
+        if (this.laserPen) {
+            this.removeLaser();
+            this.drawLaser();
+        }
     },
 
     zoomOut: function() {
         this.zoomRatio -= 0.1;
         this.cvs.scaleAll(this.zoomRatio);
+        // redrew the laser pen, or there will be offset while been dragging around,
+        // since it will be calculated by old canvas bounds.
+        if (this.laserPen) {
+            this.removeLaser();
+            this.drawLaser();
+        }
     },
 
     undoWithDrawing: function() {
