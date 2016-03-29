@@ -1025,6 +1025,11 @@ enyo.kind({
             for (indexY = y - 3; indexY < y + 3; indexY += 1) {
                 element = this.cvs.getElementByPoint(indexX, indexY);
                 if (element) {
+                    if (element.type === 'image') {
+                        // background image should not be selected.
+                        // ignore it
+                        continue;
+                    }
                     return element;
                 }
             }
