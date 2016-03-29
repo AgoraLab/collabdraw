@@ -146,15 +146,12 @@ enyo.kind({
                         this.owner,
                         1, websocketAddress,
                         function(numPages, currentPage) {
-                            //_this.owner.$.currentPage.setMax(numPages);
-                            //_this.owner.$.currentPage.setValue(currentPage);
+                            // update button status after being initialized.
+                            _this.owner.updatePageInfo();
                             _this.owner.$.loadingPopup.hide();
                         }
                     );
                 }
-
-                // update button status
-                this.owner.updatePageInfo();
             },
         }, {
             style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_right.png) center center no-repeat #808080;position:absolute;right:2%;top:50%;cursor:pointer;z-index:10;border-radius:5px;cursor:pointer;",
@@ -956,7 +953,7 @@ enyo.kind({
             alert("The last page cannot deleted.");
             return;
         }
-        var yes = confirm("Do you want to delete this page?")
+        var yes = confirm("Do you want to delete this page?");
         if (yes) {
             this.whiteboard.deletePage();
         }
@@ -1237,26 +1234,38 @@ enyo.kind({
         this.cancelSelect();
 
         // update previous and next button style
-        var totalPagesNum = this.whiteboard.getNumPages();
-        var currentPage = this.whiteboard.getCurrentPage();
+        var totalPagesNum = this.whiteboard.getNumPages(),
+            currentPage = this.whiteboard.getCurrentPage();
+
+        if (currentPage > totalPagesNum) {
+            // current page cannot larger than number of total pages
+            currentPage = totalPagesNum;
+        }
 
         if (currentPage === 1) {
             this.$.gotoPreviousPage.applyStyle("cursor", "default");
             this.$.gotoPreviousPage.applyStyle("opacity", "0.3");
-            this.$.gotoPreviousPage.applyStyle("curser", "default");
-        } else if (currentPage === totalPagesNum) {
-            this.$.gotoNextPage.applyStyle("background", "url(../images/btn_right.png) center center no-repeat #808080");
+        } else {
+            this.$.gotoPreviousPage.applyStyle("cursor", "pointer");
+            this.$.gotoPreviousPage.applyStyle("opacity", "1");
+        }
+
+        if (currentPage === totalPagesNum) {
             this.$.gotoNextPage.applyStyle("cursor", "default");
             this.$.gotoNextPage.applyStyle("opacity", "0.3");
         } else {
-            this.$.gotoPreviousPage.applyStyle("background", "url(../images/btn_left.png) center center no-repeat #808080");
-            this.$.gotoPreviousPage.applyStyle("cursor", "pointer");
-            this.$.gotoPreviousPage.applyStyle("opacity", "1");
-
-            this.$.gotoNextPage.applyStyle("background", "url(../images/btn_right.png) center center no-repeat #808080");
             this.$.gotoNextPage.applyStyle("cursor", "pointer");
             this.$.gotoNextPage.applyStyle("opacity", "1");
         }
+
+        if (currentPage > 1 && currentPage < totalPagesNum) {
+            this.$.gotoPreviousPage.applyStyle("cursor", "pointer");
+            this.$.gotoPreviousPage.applyStyle("opacity", "1");
+
+            this.$.gotoNextPage.applyStyle("cursor", "pointer");
+            this.$.gotoNextPage.applyStyle("opacity", "1");
+        }
+
     },
 
     gotoPage: function(inSender, inEvent) {

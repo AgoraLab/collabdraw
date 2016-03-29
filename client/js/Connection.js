@@ -166,8 +166,7 @@ enyo.kind({
         this.socket.send(message);
     },
     deletePage: function() {
-        this.sendMessage("delete-page", {
-        });
+        this.sendMessage("delete-page", {});
     },
     getImage: function() {
         //console.log("Getting image for page " + this.page);
