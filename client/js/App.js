@@ -112,7 +112,7 @@ enyo.kind({
         fit: true,
         style: "text-align: center;background-color: #5b5b5b; z-index: 0;",
         components: [{
-            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_left.png) center center no-repeat;position:absolute;left:2%;top:50%;background-color: #808080;z-index:10;border-radius:5px;",
+            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_left.png) center center no-repeat #808080;position:absolute;left:2%;top:50%;cursor:pointer;z-index:10;border-radius:5px;",
             ontap: "gotoPreviousPage",
             onmouseover: "gotoPreviousPageMouseOver",
             onmouseout: "gotoPreviousPageMouseOut",
@@ -152,9 +152,12 @@ enyo.kind({
                         }
                     );
                 }
+
+                // update button status
+                this.owner.updatePageInfo();
             },
         }, {
-            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_right.png) center center no-repeat;position:absolute;right:2%;top:50%;background-color: #808080;z-index:10;border-radius:5px;",
+            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_right.png) center center no-repeat #808080;position:absolute;right:2%;top:50%;cursor:pointer;z-index:10;border-radius:5px;",
             ontap: "gotoNextPage",
             onmouseover: "gotoNextPageMouseOver",
             onmouseout: "gotoNextPageMouseOut",
@@ -1229,19 +1232,40 @@ enyo.kind({
     },
 
     updatePageInfo: function() {
+        // restore button status
         this.closeEraser();
         this.cancelSelect();
-        //this.$.currentPage.setMax(this.whiteboard.getNumPages());
-        //this.$.currentPage.setValue(this.whiteboard.getCurrentPage());
+
+        // update previous and next button style
+        var totalPagesNum = this.whiteboard.getNumPages();
+        var currentPage = this.whiteboard.getCurrentPage();
+
+        if (currentPage === 1) {
+            this.$.gotoPreviousPage.applyStyle("cursor", "default");
+            this.$.gotoPreviousPage.applyStyle("opacity", "0.3");
+            this.$.gotoPreviousPage.applyStyle("curser", "default");
+        } else if (currentPage === totalPagesNum) {
+            this.$.gotoNextPage.applyStyle("background", "url(../images/btn_right.png) center center no-repeat #808080");
+            this.$.gotoNextPage.applyStyle("cursor", "default");
+            this.$.gotoNextPage.applyStyle("opacity", "0.3");
+        } else {
+            this.$.gotoPreviousPage.applyStyle("background", "url(../images/btn_left.png) center center no-repeat #808080");
+            this.$.gotoPreviousPage.applyStyle("cursor", "pointer");
+            this.$.gotoPreviousPage.applyStyle("opacity", "1");
+
+            this.$.gotoNextPage.applyStyle("background", "url(../images/btn_right.png) center center no-repeat #808080");
+            this.$.gotoNextPage.applyStyle("cursor", "pointer");
+            this.$.gotoNextPage.applyStyle("opacity", "1");
+        }
     },
 
     gotoPage: function(inSender, inEvent) {
         this.closeEraser();
         this.cancelSelect();
         this.$.loadingPopup.show();
-        //this.whiteboard.gotoPage(inEvent.selected.content);
         var result = this.whiteboard.gotoPage(this.pagePreviewNum+inSender.index);
         if (!result) this.$.loadingPopup.hide();
+        this.updatePageInfo();
     },
 
     doSelect: function(inSender, inEvent) {
