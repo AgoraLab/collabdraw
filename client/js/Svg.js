@@ -515,7 +515,8 @@ enyo.kind({
                 }
             }
             if (y >= 30) { y = y - 30; }
-            _this.cvs.image(url, x, y, w, h);
+            var img = _this.cvs.image(url, x, y, w, h);
+            img.toBack();
             //_this.cvs.image(url, 0, 0, _this.parent_.canvasWidth, _this.parent_.canvasHeight);
         });
     },
