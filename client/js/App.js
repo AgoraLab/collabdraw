@@ -948,7 +948,15 @@ enyo.kind({
         }
     },
     deletePage:function(inSender, inEvent){
-        this.whiteboard.deletePage();
+        var totalPagesNum = this.whiteboard.getNumPages();
+        if (totalPagesNum <= 1) {
+            alert("The last page cannot deleted.");
+            return;
+        }
+        var yes = confirm("Do you want to delete this page?")
+        if (yes) {
+            this.whiteboard.deletePage();
+        }
     },
     deleteButtonMouseOver: function(inSender, inEvent) {
         this.$.deletePage.applyStyle("background-image", "url(../images/btn_del.png)");
