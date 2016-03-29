@@ -748,40 +748,15 @@ enyo.kind({
         return color.match(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
     },
 
-    //openEraser: function() {
-        //// Cannot enable eraser with no element been selected.
-        //if (!this.whiteboard.hasSelectElement()) {
-            //return;
-        //}
-        //if (this.eraser.on) return;
-
-        //this.eraser.on = true;
-        ////this.eraser.backgroundColor = this.$.eraser.getComputedStyleValue('background-color');
-        //this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser.png)");
-        //this.$.canvasContainer.applyStyle("cursor", "auto");
-        //this.$.canvasContainer.applyStyle("cursor", "url(../images/mouse_eraser.png) 4 4, auto");
-        //this.eraser.previousDrawingItem = this.whiteboard.drawingItem;
-        //this.whiteboard.selectEraser();
-    //},
-
     closeEraser: function() {
         if (!this.eraser.on) return;
 
         this.eraser.on = false;
         this.$.eraser.applyStyle("background-image", "url(../images/btn_eraser_gray.png)");
-        //this.$.canvasContainer.applyStyle("cursor", "auto");
-        //this.$.canvasContainer.applyStyle("cursor", "url(../images/mouse.png) 4 4, auto");
-        //this.whiteboard.drawingItem = this.eraser.previousDrawingItem;
     },
 
     selectEraser: function(inSender, inEvent) {
-
-        //this.closePen();
-        //this.closeHighlighter();
-        //this.cancelEditingText();
-        //this.dimPenPicker();
-        //this.eraser.on ? this.closeEraser() : this.openEraser();
-        this.whiteboard.removeSelected();
+        this.whiteboard.removeSelected(true);
     },
 
     selectLaserPen: function(inSender, inEvent) {

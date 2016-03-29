@@ -244,7 +244,8 @@ enyo.kind({
             self.whiteboard.executeEditText(data.oldx, data.oldy, data.value);
         }
         else if (data.type == 'rm') {
-            self.whiteboard.executeRemove(data.oldx, data.oldy);
+            //self.whiteboard.executeRemove(data.oldx, data.oldy);
+            self.whiteboard.removeSelected(false, data.guid);
         }
         else { console.log("not supported operation: " + data.type); }
     },
@@ -277,7 +278,6 @@ enyo.kind({
         for (d in ds) {
             self.drawEx(self, ds[d])
         }
-        //console.log("Total pages is " + data.npages);
     },
 
     /**

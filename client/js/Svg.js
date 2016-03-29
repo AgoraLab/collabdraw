@@ -629,7 +629,6 @@ enyo.kind({
                 });
                 var nx=dx - canvasBounds.left;
                 var ny=dy - 60;
-                console.log(self.laserPen, x,nx,y,ny);
                 if(Math.abs(self.laserPen.attrs.cx - nx)>2 || Math.abs(self.laserPen.attrs.cx - ny)>2){
                     self.connection.sendLaserMove({
                         x: nx,
@@ -694,17 +693,36 @@ enyo.kind({
 
     executeUndo2: function(send, guid) {
         var element = this.undoStack.pop(),
-            guid;
+            guid, clone;
 
         if (element) {
             if (element.type === 'path-line') {
                 guid = guid || element.pathID;
+                $("#" + guid).remove();
+                this.redoStack.push(element);
+            } else if (element.type === 'rm-shape') {
+                guid = guid || element.shape.node.id;
+                clone = element.shape.clone();
+                clone.node.id = guid;
+                this.redoStack.push({
+                    type: 'rm-shape',
+                    shape: clone
+                });
+            } else if (element.type === 'rm-path') {
+                guid = guid || element.path.pathID;
+                this.d3SVG.append("path")
+                    .datum(element.path.datum)
+                    .attr("id", element.path.pathID)
+                    .attr("stroke", element.path.lineColor)
+                    .attr("stroke-width", element.path.lineWidth)
+                    .attr("fill", "none")
+                    .attr("d", this.penFunction);
+                this.redoStack.push(element);
             } else {
                 guid = guid || element.node.id;
+                $("#" + guid).remove();
+                this.redoStack.push(element);
             }
-
-            $("#" + guid).remove();
-            this.redoStack.push(element);
             if (send) {
                 this.connection.sendPath({
                     type: 'undo',
@@ -729,6 +747,20 @@ enyo.kind({
                     .attr("fill", "none")
                     .attr("d", this.penFunction);
                 this.undoStack.push(element);
+            } else if (element.type === 'rm-shape') {
+                guid = guid || element.shape.node.id;
+                $("#" + guid).remove();
+                this.undoStack.push({
+                    shape: element.shape,
+                    type: 'rm-shape'
+                });
+            } else if (element.type === 'rm-path') {
+                guid = guid || element.path.pathID;
+                $("#" + guid).remove();
+                this.undoStack.push({
+                    path: element.path,
+                    type: 'rm-path'
+                });
             } else {
                 guid = guid || element.node.id;
                 clone = element.clone();
@@ -839,25 +871,96 @@ enyo.kind({
         });
     },
 
-    removeSelected: function() {
-        if (!this.currentSelected) {
-            return;
+    findAndRemoveFromStack: function(stack, guid) {
+        var clone;
+
+        for (index = 0, length = stack.length; index < length; index += 1) {
+            var obj = stack[index];
+            if (obj.type === 'path-line') {
+                if (obj.pathID === guid) {
+                    clone = $.extend({}, obj);
+                    // Remove the element from stack
+                    stack.splice(index, 1);
+                    stack.push({
+                        path: clone,
+                        type: 'rm-path'
+                    });
+                }
+            } else if (obj.type === 'rm-shape') {
+                if (obj.shape.node.id === guid) {
+                    clone = $.extend({}, obj.shape);
+                    stack.splice(index, 1);
+                    stack.push({
+                        shape: clone,
+                        type: 'rm-shape'
+                    });
+                }
+            } else if (obj.type === 'rm-path') {
+                if (obj.path.pathID === guid) {
+                    clone = $.extend({}, obj.path);
+                    stack.splice(index, 1);
+                    stack.push({
+                        path: clone,
+                        type: 'rm-path'
+                    })
+                }
+            } else {
+                if (obj.node.id === guid) {
+                    clone = $.extend({}, obj);
+                    stack.splice(index, 1);
+                    stack.push({
+                        shape: clone,
+                        type: 'rm-shape'
+                    });
+                }
+            }
+        }
+        return clone;
+    },
+
+    /*
+    * @guid if guid is not null, then the operation is from remote user
+    * */
+    removeSelected: function(send, guid) {
+        var element,
+            elementId,
+            clone,
+            index,
+            length,
+            id,
+            guid;
+
+        if (guid) {
+            elementId = guid;
+        } else {
+            // currentSelected is a local variable, it only initialzed by user selection
+            // if the remove operation is initialized by remove user, then it always be null.
+            if (!this.currentSelected) {
+                return;
+            }
+            element = this.currentSelected.element;
+            if (this.currentSelected.path) {
+                // user select a path object
+                elementId = element.id;
+            } else {
+                // user select a shape object
+                elementId = element.node.id;
+            }
+            guid = elementId;
         }
 
-        var clone = $.extend({}, this.currentSelected.element);
-        if (this.currentSelected.path) {
-            this.undoStack.push({
-                type: 'rm-path',
-                shape: clone
-            });
-        } else {
-            this.undoStack.push({
-                type: 'rm-shape',
-                path: clone
+        this.findAndRemoveFromStack(this.undoStack, guid);
+        this.findAndRemoveFromStack(this.redoStack, guid);
+
+        $("#" + guid).remove();
+        this.cancelSelect();
+
+        if (send) {
+            this.connection.sendPath({
+                type: 'rm',
+                guid: guid
             });
         }
-        this.currentSelected.element.remove();
-        this.cancelSelect();
     },
 
     executeRemove: function(x, y) {
@@ -953,16 +1056,6 @@ enyo.kind({
                 type: 'addtext',
             });
         }
-        //else if (this.drawingItem == 'eraser') {
-            //var removed = this.executeRemove(x, y);
-            //if (removed) {
-                //this.connection.sendPath({
-                    //oldx: x,
-                    //oldy: y,
-                    //type: 'rm'
-                //});
-            //}
-        //}
         else if (this.doingSelect) {
             var pageX = x + this.parent_.$.canvasContainer.getBounds().left;
             var pageY = y + this.parent_.$.canvasContainer.getBounds().top;
@@ -977,7 +1070,7 @@ enyo.kind({
 
                     var result = this.drawOuterLineOnSelected(svgElem);
                     this.currentSelected = {
-                        path: true,
+                        path: false,
                         element: svgElem,
                         outerRect: result
                     };
@@ -991,7 +1084,7 @@ enyo.kind({
 
                 var result = this.drawOuterLineOnSelected(domElem);
                 this.currentSelected = {
-                    path: false,
+                    path: true,
                     element: domElem,
                     outerRect: result
                 };
