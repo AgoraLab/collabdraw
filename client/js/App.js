@@ -635,6 +635,7 @@ enyo.kind({
         this.closeHighlighter();
         this.cancelEditingText();
         this.closePen();
+        this.hideLaser();
         this.whiteboard.drawRectangle();
         this.highlightPenPicker();
     },
@@ -645,6 +646,7 @@ enyo.kind({
         this.closeHighlighter();
         this.cancelEditingText();
         this.closePen();
+        this.hideLaser();
         this.whiteboard.drawSquare();
         this.highlightPenPicker();
     },
@@ -655,6 +657,7 @@ enyo.kind({
         this.closeHighlighter();
         this.cancelEditingText();
         this.closePen();
+        this.hideLaser();
         this.whiteboard.drawLine();
         this.highlightPenPicker();
     },
@@ -665,6 +668,7 @@ enyo.kind({
         this.closeHighlighter();
         this.cancelEditingText();
         this.closePen();
+        this.hideLaser();
         this.whiteboard.drawTriangle();
         this.highlightPenPicker();
     },
@@ -675,6 +679,7 @@ enyo.kind({
         this.closeHighlighter();
         this.cancelEditingText();
         this.closePen();
+        this.hideLaser();
         this.whiteboard.drawArrow();
         this.highlightPenPicker();
     },
@@ -685,6 +690,7 @@ enyo.kind({
         this.closeHighlighter();
         this.cancelEditingText();
         this.closePen();
+        this.hideLaser();
         this.whiteboard.drawEllipse();
         this.highlightPenPicker();
     },
@@ -695,6 +701,7 @@ enyo.kind({
         this.closeHighlighter();
         this.cancelEditingText();
         this.closePen();
+        this.hideLaser();
         this.whiteboard.drawCircle();
         this.highlightPenPicker();
     },
