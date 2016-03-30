@@ -110,7 +110,9 @@
                     resize: 'none',
                     placeholder: 'Adding text here',
                     border: 'none',
-                    overflow: 'auto',
+                    overflow: 'scroll',
+                    "max-width": "200px",
+                    "max-height": "200px",
 
                     '-moz-transform-origin': sOrigin,
                     '-ms-transform-origin': sOrigin,
