@@ -1043,6 +1043,11 @@ enyo.kind({
     },
 
     penPickerMouseOut: function(inSender, inEvent) {
+        var allShapes = ['circle', 'triangle', 'rectangle', 'ellipse', 'arrow', 'line', 'square'];
+        if (allShapes.indexOf(this.whiteboard.drawingItem) >= 0) {
+            // keep it highlighted if current drawing item is one of the shapes.
+            return;
+        }
         this.dimPenPicker();
     },
 
