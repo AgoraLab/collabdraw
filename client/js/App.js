@@ -60,9 +60,9 @@ enyo.kind({
             content: "agora.io",
             style: "text-transform: uppercase;letter-spacing:0.1em;"
         }, {
-            content: "",
+            content: "Page 1",
             name: "channelId",
-            style: "text-transform: uppercase;letter-spacing:0.1em;"
+            style: "text-transform: uppercase;letter-spacing:0.1em;font-size: 0.8em;font-weight:normal;"
         }, {
             kind: "onyx.TooltipDecorator",
             style: "float: right;",
@@ -154,7 +154,9 @@ enyo.kind({
                             // update button status after being initialized.
                             _this.owner.updatePageInfo();
                             _this.owner.$.loadingPopup.hide();
-                            _this.owner.$.channelId;
+                            _this.owner.$.channelId.content = "Page " + _this.owner.whiteboard.getCurrentPage();
+                            // render the change on the fly.
+                            _this.owner.$.channelId.render();
                         },
                         this.owner.connectionLostCallback
                     );

@@ -22,11 +22,13 @@ enyo.kind({
         return this.currentPage;
     },
     getPageById: function(pageid) {
-        for(i in this.page_list){
-            if(this.page_list[i]==pageid){
-                return i+1;
+        var index, length;
+        for (index = 0, length = this.page_list.length; index < length; index += 1) {
+            if (this.page_list[index] === pageid) {
+                return index + 1;
             }
         }
+        // default return page no. 1.
         return 1;
     },
     getCurrentPageId: function() {
