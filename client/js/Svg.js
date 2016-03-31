@@ -677,6 +677,18 @@ enyo.kind({
         this.drawingItem = 'circle';
     },
 
+    disableTextEditing: function() {
+        var self = this;
+        this.cvs.forEach(function(node) {
+            if (node.type === 'text') {
+                // disable text editing after being zoomed
+                // since zooming would lead to several issues
+                // that hard to resolve.
+                node.unclick();
+            }
+        });
+    },
+
     zoomIn: function() {
         this.zoomRatio += 0.1;
         this.cvs.scaleAll(this.zoomRatio);
@@ -685,6 +697,7 @@ enyo.kind({
             this.removeLaser();
             this.drawLaser();
         }
+        this.disableTextEditing();
     },
 
     zoomOut: function() {
@@ -696,6 +709,7 @@ enyo.kind({
             this.removeLaser();
             this.drawLaser();
         }
+        this.disableTextEditing();
     },
 
     undoWithDrawing: function() {
@@ -1201,7 +1215,7 @@ enyo.kind({
 
         // Initialize text editing for the text element
         this.cvs.inlineTextEditing(text);
-        text.click(this.onTextClicked.bind(this, text), true);
+        text.click(this.onTextClicked.bind(this, text));
 
         var id = x.toString() + '-' + yPosition.toString();
         this.textEdits[id] = text;
