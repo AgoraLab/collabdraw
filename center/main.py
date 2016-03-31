@@ -55,7 +55,6 @@ if __name__ == "__main__":
         })
     CommonData.init()
     IP.load("/etc/voice/mydata4vipweek_en.dat")
-    logger.info(IP.find("107.155.24.133"))
     MysqlClientVendor.loadVendors()
     logger.info("Listening on port %s" % config.APP_PORT)
     http_server.listen(config.APP_PORT)

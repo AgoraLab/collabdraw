@@ -71,15 +71,23 @@ class CenterHandler(tornado.web.RequestHandler):
 
     def getEdgeServer(self, vendor_id, cname):
         servers,servers2=[],[]
-        self.logger.info(self.request.remote_ip)
+        # self.logger.info(self.request.remote_ip)
         client_country=getCountry(self.request.remote_ip)
+        self.logger.info(client_country)
         for addr, info in CommonData.edge_servers.items():
             if  CommonData.isEdgeServerValid(addr):
-                if client_country == getCountry(info['ip']):
-                    servers.append(addr)
+                if client_country == "China":
+                    if getCountry(info['ip'])=="China":
+                        servers.append(addr)
+                    else:
+                        servers2.append(addr)
                 else:
-                    servers2.append(addr)
+                    if getCountry(info['ip']) == "United States":
+                        servers.append(addr)
+                    else:
+                        servers2.append(addr)
         servers.extend(servers2)
+        self.logger.info("allocEdges:%s"%servers)
         if len(servers)>0:
             return servers[0]
         return None
@@ -139,10 +147,11 @@ class CenterHandler(tornado.web.RequestHandler):
         cname = self.get_argument('cname', '')
         ret, vid = self.onSdkJoinChannelReq(key, cname)
         self.finish(ret)
-        self.logger.info(ret)
+        self.logger.info("CenterHandler from %s ret %s"%(self.request.remote_ip,ret))
 
     def post(self):
         key = self.get_argument('key', '')
         cname = self.get_argument('cname', '')
         ret = self.onSdkJoinChannelReq(key, cname)
         self.finish(ret)
+        self.logger.info("CenterHandler from %s ret %s"%(self.request.remote_ip,ret))

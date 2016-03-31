@@ -102,6 +102,6 @@ if __name__ == "__main__":
     http_server.listen(config.APP_PORT)
     tornado.ioloop.PeriodicCallback(JoinHandler.clear_expired_cookies,60*1000).start()
     tornado.ioloop.PeriodicCallback(RealtimeHandler.clear_expired_data,60*1000).start()
-    tornado.ioloop.PeriodicCallback(serverKeepAlive,7*1000).start()
+    tornado.ioloop.PeriodicCallback(serverKeepAlive,3*1000).start()
 
     tornado.ioloop.IOLoop.instance().start()

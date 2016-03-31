@@ -121,7 +121,7 @@ class JoinHandler(tornado.web.RequestHandler):
         return -100, -1
 
     def generateSid(self, key, cname):
-        return "%.8x%x"%(hash("%s:%s:%s:%d"%(key,cname,config.get_ip_address(),config.APP_PORT)),id(self))
+        return "%.8x%x"%(hash("%s:%s:%s:%s"%(key,cname,config.get_ip_address('eth0'),config.APP_PORT)),id(self))
 
     def generateUid(self, key, cname, uinfo):
         if uinfo != '':
@@ -138,7 +138,7 @@ class JoinHandler(tornado.web.RequestHandler):
         host = str(self.get_argument('host', '0'))
         ret = self.onSdkJoinChannelReq(key, cname, uinfo, vid, redis)
         self.finish(ret)
-        self.logger.info("[%s] JoinHandler from %s ret:%s"%(id(self), host,self.request.remote_ip, ret))
+        self.logger.info("[%d] JoinHandler from %s ret:%s"%(id(self), self.request.remote_ip, ret))
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", ret['sid'])
             JoinHandler.cookies[ret['sid']]={'room':cname,
