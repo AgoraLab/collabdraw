@@ -38,7 +38,15 @@ function AgoraWhiteBoardApi() {
         return this.canvasNode ? $(this.canvasNode).width() : 800;
     }
 
-    this.join = function(key, cname, uinfo, onJoin, onConnectionLost) {
+    this.join = function(params) {
+        var key = params.key,
+            cname = params.cname,
+            uinfo = params.uinfo,
+            host = params.host,
+            mode = params.mode,
+            onJoin = params.onJoin,
+            onConnectionLost = params.onConnectionLost;
+
         this.cname = cname;
         _this = this;
         $.get('http://collabdraw.agoralab.co:5555/getEdgeServer', {
@@ -59,7 +67,8 @@ function AgoraWhiteBoardApi() {
                 cname : cname,
                 uinfo : uinfo,
                 redis : redis_id,
-                vid   : vid
+                vid   : vid,
+                host  : host
             }, function (result, status) {
                 if (!result || result.length == 0) {
                     onJoin(-10, 'empty result from agora server', cname, uinfo, uid)

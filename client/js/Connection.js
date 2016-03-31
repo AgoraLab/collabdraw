@@ -21,11 +21,11 @@ enyo.kind({
 
         _this = this;
         this.socket.onmessage = function(evt) {
-            message = JXG.decompress(evt.data);
-            message = JSON.parse(message);
-            fromUid = message['fromUid'];
-            evnt = message['event'];
-            data = message['data'];
+            var message = JSON.parse(JXG.decompress(evt.data)),
+                fromUid = message['fromUid'],
+                evnt    = message['event'],
+                data    = message['data'];
+
             console.log('receive msg from server. uid ' + fromUid + ' event ' + evnt + ' data ' + JSON.stringify(data));
             switch (evnt) {
             case 'ready':
@@ -63,6 +63,9 @@ enyo.kind({
                     break;
                 }
                 _this.remoteLaserMove(_this, data);
+                break;
+            case 'change-page':
+                _this.changePage(data['page_id']);
                 break;
             }
         };
@@ -104,6 +107,10 @@ enyo.kind({
             "sid": this.whiteboard.sid,
             "page": currentPage
         });
+    },
+
+    changePage: function(pageId) {
+        this.whiteboard.gotoPage(pageId);
     },
 
     /**
