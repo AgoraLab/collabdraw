@@ -5,7 +5,6 @@ import json
 import random
 import tornado.web
 import time
-
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..dbclient.mysqlclient import MysqlClientVendor
 from ..tools.tools import hash_password
@@ -46,8 +45,8 @@ VENDOR_STATUS_DEPRECATED = 3
 
 COOKIE_EXPIRED_SECONDS=3600
 
-MODE_MEETING=1
-MODE_PPT=0
+MODE_MEETING='1'
+MODE_PPT='0'
 class JoinHandler(tornado.web.RequestHandler):
     """
     Http request handler for join request.
@@ -134,8 +133,9 @@ class JoinHandler(tornado.web.RequestHandler):
         vid = self.get_argument('vid', '')
         redis = str(self.get_argument('redis', ''))
         mode = str(self.get_argument('mode', MODE_PPT))
-        host = str(self.get_argument('host', 0))
+        host = str(self.get_argument('host', '0'))
         ret = self.onSdkJoinChannelReq(key, cname, uinfo, vid, redis)
+        self.logger.info("join %s %s %s"%(cname, mode, host))
         self.finish(ret)
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", ret['sid'])

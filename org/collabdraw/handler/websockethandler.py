@@ -12,12 +12,15 @@ import tornado.websocket
 import tornado.web
 from pystacia import read
 from .joinhandler import JoinHandler
+from .joinhandler import MODE_PPT
 from collections import defaultdict
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..pubsub.pubsubclientfactory import PubSubClientFactory
 from ..tools.videomaker import make_video
 from ..tools.svg import gen_svg
+from ..tools.svg import gen_list_svg
 from tornado import ioloop
+import threading
 logger = logging.getLogger('websocket')
 
 class RoomData(object):
@@ -70,7 +73,7 @@ class RoomData(object):
                 if now-self.page_update_ts[k]<20:
                     plist.append((self.room, k, self.page_path[k],image))
                     # gen_svg(self.room, k, self.page_path[k],image)
-                threading.Thread(target=gen_list_svg, args=(plist)).start()
+                threading.Thread(target=gen_list_svg, args=(plist,)).start()
             ioloop.IOLoop.instance().add_timeout(time.time()+20,self.timer_thumbnail)
 
     def init_room(self, url, topic, room):
@@ -157,7 +160,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         self.vid=0
         self.verified=False
         self.fromUid=0
-
+        self.cookie=None
         self.send_message(self.construct_message("ready"))
 
     # @Override
@@ -180,6 +183,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.vid=cookie['vid']
                 self.fromUid= fromUid
                 self.room_name=data['room']
+                self.cookie=cookie
                 self.get_room().init_room(cookie['redis'], self.room_topic(), data['room'])
 
         #
@@ -196,13 +200,13 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         if event not in ['init', 'new-page'] and  self.page_id != data['page_id']:
             self.logger.error("Room page  %s doesn't match with current  %s " % (data['page_id'],self.page_id))
             return
-
         if event == "init":
             room_name = data.get('room', '')
             page_id = data.get('page_id', None)
-            if cookie['mode'] == JoinHandler.MODE_PPT and self.get_room().host_page_id != 0:
+            self.logger.info("%s")
+            if self.cookie['mode'] == MODE_PPT and self.cookie['host'] != '1' and self.get_room().host_page_id != 0:
                 page_id=self.get_room().host_page_id
-            self.logger.info("Initializing with room name %s" % room_name)
+            self.logger.info("Initializing with room name %s %s" % (room_name,self.cookie))
             page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
             # if not page_list:
             #     return self.on_db_error()
@@ -213,13 +217,13 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 if page_id not in page_list:
                     page_id = page_list[0]
             self.init_room_page(room_name, page_id)
-            if cookie['host']==1 and cookie['mode'] == JoinHandler.MODE_PPT:
+            if self.cookie['host']=='1' and self.cookie['mode'] == MODE_PPT:
                 self.get_room().host_page_id=page_id
                 self.broadcast_message(self.room_topic(), self.construct_broadcast_message("change-page", {'page_id':page_id}))
 
         elif event == "draw-click":
-            if cookie['host'] != 1:
-                logger.error("user not host")
+            if self.cookie['host'] != '1':
+                logger.error("user not host :%s"%(self.cookie))
                 return
             single_path = data['singlePath']
             ret=self.get_room().db_client.rpush(self.page_path_key(), [json.dumps(v) for v in single_path])
@@ -232,8 +236,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("draw", msg))
 
         elif event == "delete-page":
-            if cookie['host'] != 1:
-                logger.error("user not host")
+            if self.cookie['host'] != '1':
+                logger.error("user not host :%s"%(self.cookie))
                 return
             self.get_room().db_client.lrem(self.page_list_key(), 0, self.page_id)
             self.get_room().db_client.delete(self.page_path_key())
@@ -244,8 +248,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.get_room().delete_page(self.page_id)
 
         elif event == "clear":
-            if cookie['host'] != 1:
-                logger.error("user not host")
+            if self.cookie['host'] != '1':
+                logger.error("user not host :%s"%(self.cookie))
                 return
             self.get_room().db_client.delete(self.page_path_key())
             self.get_room().db_client.delete(self.page_image_key())
@@ -261,8 +265,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         #     make_video(self.path_key())
 
         elif event == "new-page":
-            if cookie['host'] != 1:
-                logger.error("user not host")
+            if self.cookie['host'] != '1':
+                logger.error("user not host :%s"%(self.cookie))
                 return
             page_id = RealtimeHandler.gen_page_id()
             ret=self.get_room().db_client.rpush(self.page_list_key(),[page_id])
@@ -270,8 +274,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 return self.on_db_error()
             self.init_room_page(self.room_name, page_id)
         elif event == "laser-move":
-            if cookie['host'] != 1:
-                logger.error("user not host")
+            if self.cookie['host'] != '1':
+                logger.error("user not host :%s"%(self.cookie))
                 return
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message(event,data))
 
@@ -317,10 +321,10 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
     def join_room(self):
         self.logger.info("Joining room %s %d %s" % (self.room_name, self.page_id,self))
         # self.pubsub_client.subscribe(self.page_list_key(), self)
-        self.logger.info("before join clients:%s"%(self.topics[self.room_topic()]))
+        # self.logger.info("before join clients:%s"%(self.topics[self.room_topic()]))
         if self not in self.topics[self.room_topic()]:
             self.topics[self.room_topic()].append(self)
-        self.logger.info("after join clients:%s"%(self.topics[self.room_topic()]))
+        # self.logger.info("after join clients:%s"%(self.topics[self.room_topic()]))
 
 
     ## Messaging related methods

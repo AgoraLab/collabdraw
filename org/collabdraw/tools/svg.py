@@ -39,12 +39,16 @@ def gen_svg(room, page_id, path, url):
     threading.Thread(target=gen_svg_ex, args=(room, page_id, path, url)).start()
 
 def gen_list_svg(list):
+    # list=data["data"]
     for x in list:
         gen_svg_ex(x[0],x[1],x[2],x[3])
 
 def cairosvg_svg_to_png(svg,dir_path, page_id):
     fout = open("%s/%d_thumbnail.png"%(dir_path,page_id),'wb')
-    cairosvg.svg2png(bytestring=bytes(svg,'utf-8'),write_to=fout)
+    try:
+        cairosvg.svg2png(bytestring=bytes(svg,'utf-8'),write_to=fout)
+    except:
+        pass
     fout.close()
 
 def svgexport_svg_to_png(svg, dir_path, page_id):
@@ -56,6 +60,7 @@ def svgexport_svg_to_png(svg, dir_path, page_id):
 def gen_svg_ex(room, page_id, path, url):
     logger.info("gen_svg_ex start %s %d %s"%(room, page_id, url))
     dir_path = os.path.join(config.ROOT_DIR, "files", room)
+    os.makedirs(dir_path, exist_ok=True)
     ret="""<?xml version="1.0"?>
         <svg height="768" version="1.1" width="1024" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 768" fill='white'>
     """
@@ -67,13 +72,6 @@ def gen_svg_ex(room, page_id, path, url):
     ret+="</svg>"
     # svgexport_svg_to_png(ret, dir_path, page_id)
     cairosvg_svg_to_png(ret, dir_path, page_id)
-
-
-
-    # f = open("%s/%d_thumbnail.svg"%(dir_path,page_id),'w')
-    # f.write(ret) # python will convert \n to os.linesep
-    # f.close() # you can omit in most cases as the destructor will call it
-    # subprocess.call(["svgexport","%s/%d_thumbnail.svg"%(dir_path,page_id),"%s/%d_thumbnail.png"%(dir_path,page_id),"200:200"])
 
 # path=[
 #     {"drawingItem": "pen", "lineColor": "black", "oldy": 360, "lineWidth": "3px", "type": "touchmovement", "oldx": 672, "path": [[672, 360], [722, 412], [748, 421], [773, 415], [797, 385], [812, 356], [814, 346], [815, 331], [815, 315], [813, 298], [809, 276], [798, 252], [762, 223], [715, 209], [705, 199], [721, 172], [762, 144], [801, 132], [802, 131]]},
