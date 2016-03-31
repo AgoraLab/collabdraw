@@ -41,14 +41,14 @@ enyo.kind({
      * @param parent: Class canvasContainer
      * @param callback: called once the page is rendered
      */
-    constructor: function(name, parent, page, websocketAddress, callback) {
+    constructor: function(name, parent, page, websocketAddress, callback, connLostCallback) {
         this.parent_         = parent;
         this.uid             = parent.uid;
         this.sid             = parent.sid;
         this.room            = parent.room;
         this.cvs             = new ScaleRaphael(name, parent.canvasWidth, parent.canvasHeight);
         this.d3SVG           = d3.select(this.cvs.canvas);
-        this.connection      = new Connection(websocketAddress, this, this.room, this.uid);
+        this.connection      = new Connection(websocketAddress, this, this.room, this.uid, connLostCallback);
         this.callback        = callback;
         this.zoomRatio       = 1;
         this.page_list       = [];

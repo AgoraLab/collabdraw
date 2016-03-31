@@ -10,7 +10,7 @@ enyo.kind({
     room: 'undefined',
     page: 1,
 
-    constructor: function(address, whiteboard, room, uid) {
+    constructor: function(address, whiteboard, room, uid, connLostCallback) {
         this.whiteboard = whiteboard;
         //console.log("Connecting to address " + address);
         this.socket = new WebSocket(address);
@@ -65,7 +65,23 @@ enyo.kind({
                 _this.remoteLaserMove(_this, data);
                 break;
             }
+        };
+
+        this.socket.onerror = function(err) {
+            alert("error occured, please refresh your browser to rejoin.");
+            console.log(err);
         }
+
+        this.socket.onclose = function(event) {
+            var code = event.code;
+            var reason = event.reason;
+            var wasClean = event.wasClean;
+
+            console.log("Connection lost @ " + Date.now());
+            if (connLostCallback && $.isFunction(connLostCallback)) {
+                connLostCallback();
+            }
+        };
     },
 
     sendMessage: function(evt, data) {

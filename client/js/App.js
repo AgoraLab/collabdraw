@@ -44,6 +44,9 @@ enyo.kind({
         appPort: "",
         pagePreviewNum: 0,
         pagePreviewContainer: [],
+        connectionLostCallback: function() {
+            alert("Your connection is lost, please refresh to rejoin.");
+        },
     },
 
     components: [{
@@ -144,12 +147,14 @@ enyo.kind({
                     this.owner.whiteboard = new WhiteboardSvg(
                         this.node.getAttribute("id"),
                         this.owner,
-                        1, websocketAddress,
+                        1,
+                        websocketAddress,
                         function(numPages, currentPage) {
                             // update button status after being initialized.
                             _this.owner.updatePageInfo();
                             _this.owner.$.loadingPopup.hide();
-                        }
+                        },
+                        this.owner.connectionLostCallback
                     );
                 }
             },
