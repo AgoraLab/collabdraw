@@ -98,7 +98,6 @@ if __name__ == "__main__":
             "certfile": config.SERVER_CERT,
             "keyfile": config.SERVER_KEY,
         })
-
     logger.info("Listening on port %s" % config.APP_PORT)
     http_server.listen(config.APP_PORT)
     tornado.ioloop.PeriodicCallback(JoinHandler.clear_expired_cookies,60*1000).start()

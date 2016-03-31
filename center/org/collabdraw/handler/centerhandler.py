@@ -6,11 +6,10 @@ import random
 import tornado.web
 import time
 import redis
-
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..dbclient.mysqlclient import MysqlClientVendor
 from .data import CommonData
-# from ..tools.tools import hash_password
+from .ipip import IP
 from enum import Enum
 
 OK_CODE = 0
@@ -47,6 +46,10 @@ VENDOR_STATUS_DEPRECATED = 3
 
 COOKIE_EXPIRED_SECONDS=3600
 
+def getCountry(ip):
+    loc=IP.find(ip)
+    return loc.split('  ')[0]
+
 class CenterHandler(tornado.web.RequestHandler):
     """
     Http request handler for join request.
@@ -67,19 +70,18 @@ class CenterHandler(tornado.web.RequestHandler):
             return ret
 
     def getEdgeServer(self, vendor_id, cname):
-        key="%d:%s"%(vendor_id ,cname)
-        if key in CommonData.allocEdges:
-            if  CommonData.isEdgeServerValid(CommonData.allocEdges[key]):
-                return CommonData.allocEdges[key]
-        servers=[]
+        servers,servers2=[],[]
+        self.logger.info(self.request.remote_ip)
+        client_country=getCountry(self.request.remote_ip)
         for addr, info in CommonData.edge_servers.items():
-            if info['ts'] > CommonData.edgeRedisUpdateTs :
-                servers.append(addr)
+            if  CommonData.isEdgeServerValid(addr):
+                if client_country == getCountry(info['ip']):
+                    servers.append(addr)
+                else:
+                    servers2.append(addr)
+        servers.extend(servers2)
         if len(servers)>0:
-            idx = hash(key)% len(servers)
-            ret=servers[idx]
-            CommonData.allocEdges[key]=ret
-            return ret
+            return servers[0]
         return None
 
     def initialize(self):
@@ -131,11 +133,6 @@ class CenterHandler(tornado.web.RequestHandler):
 
     def checkDynamicVendorKey(self, key, cname):
         return -100, -1
-
-    # def generateUid(self, key, cname, uinfo):
-    #     # TODO:
-    #     # I'm not sure if we should generate the consistent uid matched with uinfo if it's not empty
-    #     return random.randrange(1000000)
 
     def get(self):
         key = self.get_argument('key', '')

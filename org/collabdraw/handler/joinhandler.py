@@ -76,8 +76,7 @@ class JoinHandler(tornado.web.RequestHandler):
         self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
         code = self.checkLoginRequest(key, cname, vid, redis)
         uid = self.generateUid(key, cname, uinfo)
-        login_id = key+":"+cname+":"+uinfo
-        sid=str(hash(login_id))
+        sid= self.generateSid(key, cname)
         res = {'code': code, 'cname': cname, 'uid': uid, 'sid':sid}
         return res
 
@@ -121,10 +120,13 @@ class JoinHandler(tornado.web.RequestHandler):
     def checkDynamicVendorKey(self, key, cname):
         return -100, -1
 
+    def generateSid(self, key, cname):
+        return "%.8x%x"%(hash("%s:%s:%s:%d"%(key,cname,config.get_ip_address(),config.APP_PORT)),id(self))
+
     def generateUid(self, key, cname, uinfo):
-        # TODO:
-        # I'm not sure if we should generate the consistent uid matched with uinfo if it's not empty
-        return random.randrange(1000000)
+        if uinfo != '':
+            return self.generateSid(key, cname)
+        return uinfo
 
     def get(self):
         key = self.get_argument('key', '')
@@ -135,8 +137,8 @@ class JoinHandler(tornado.web.RequestHandler):
         mode = str(self.get_argument('mode', MODE_PPT))
         host = str(self.get_argument('host', '0'))
         ret = self.onSdkJoinChannelReq(key, cname, uinfo, vid, redis)
-        self.logger.info("join %s %s %s"%(cname, mode, host))
         self.finish(ret)
+        self.logger.info("[%s] JoinHandler from %s ret:%s"%(id(self), host,self.request.remote_ip, ret))
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", ret['sid'])
             JoinHandler.cookies[ret['sid']]={'room':cname,

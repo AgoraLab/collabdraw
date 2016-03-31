@@ -7,6 +7,8 @@ import redis
 
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..dbclient.mysqlclient import MysqlClientVendor
+from .ipip import IP
+
 
 class CommonData(object):
     """
@@ -24,8 +26,9 @@ class CommonData(object):
     def isEdgeServerValid(addr):
         now=time.time()
         if addr in CommonData.edge_servers :
-            if now-CommonData.edge_servers[addr]['ts'] <= 20 and \
-                CommonData.edge_servers[addr]['load']<500:
+            if now-CommonData.edge_servers[addr]['ts'] <= 20 \
+                and CommonData.edge_servers[addr]['ts'] > CommonData.edgeRedisUpdateTs\
+                and CommonData.edge_servers[addr]['load']<500:
                 return True
         return False
 

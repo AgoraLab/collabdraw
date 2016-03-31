@@ -58,7 +58,7 @@ def svgexport_svg_to_png(svg, dir_path, page_id):
     subprocess.call(["svgexport","%s/%d_thumbnail.svg"%(dir_path,page_id),"%s/%d_thumbnail.png"%(dir_path,page_id),"200:200"])
 
 def gen_svg_ex(room, page_id, path, url):
-    logger.info("gen_svg_ex start %s %d %s"%(room, page_id, url))
+    # logger.info("gen_svg_ex start %s %d %s"%(room, page_id, url))
     dir_path = os.path.join(config.ROOT_DIR, "files", room)
     os.makedirs(dir_path, exist_ok=True)
     ret="""<?xml version="1.0"?>

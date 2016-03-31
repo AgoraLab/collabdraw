@@ -171,8 +171,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         data = m.get('data', {})
         fromTs=time.time()
 
-        # self.logger.debug("Processing event %s from uid %s @%s" % (event, fromUid, self.request.remote_ip))
-        self.logger.info("Processing event %s %s %s %s" % (event, data['room'], data.get('page_id',None), data.get('page',None)))
+        self.logger.info("%s Processing event %s room %s page_id %s page %s" % (id(self), event, data['room'], data.get('page_id',None), data.get('page',None)))
 
         # needed when realse
         if event == "init" :
@@ -187,26 +186,26 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.get_room().init_room(cookie['redis'], self.room_topic(), data['room'])
 
         #
-        # if not self.verified:
-        #     self.close()
-        #     self.logger.error("sid not verified［ cookie:%s msg:%s ］" % (cookie, data))
-        #     return
+        if not self.verified:
+            self.close()
+            self.logger.error("sid not verified［ cookie:%s msg:%s ］" % (cookie, data))
+            return
 
 
         if self.room_name != data['room'] :
-            self.logger.error("Room name  %s doesn't match with current %s " % (data['room'],self.room_name))
+            self.logger.error("%s Room name  %s doesn't match with current %s " % (id(self), data['room'],self.room_name))
             return
 
         if event not in ['init', 'new-page'] and  self.page_id != data['page_id']:
             self.logger.error("Room page  %s doesn't match with current  %s " % (data['page_id'],self.page_id))
             return
+
         if event == "init":
             room_name = data.get('room', '')
             page_id = data.get('page_id', None)
-            self.logger.info("%s")
             if self.cookie['mode'] == MODE_PPT and self.cookie['host'] != '1' and self.get_room().host_page_id != 0:
                 page_id=self.get_room().host_page_id
-            self.logger.info("Initializing with room name %s %s" % (room_name,self.cookie))
+            self.logger.info("%s Initializing with room name %s cookie %s" % (id(self), room_name, self.cookie))
             page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
             # if not page_list:
             #     return self.on_db_error()
@@ -217,7 +216,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 if page_id not in page_list:
                     page_id = page_list[0]
             self.init_room_page(room_name, page_id)
-            if self.cookie['host']=='1' and self.cookie['mode'] == MODE_PPT:
+            if self.cookie['host'] == '1' and self.cookie['mode'] == MODE_PPT:
+                self.logger.info("broadcast %s"%self.cookie)
                 self.get_room().host_page_id=page_id
                 self.broadcast_message(self.room_topic(), self.construct_broadcast_message("change-page", {'page_id':page_id}))
 
@@ -287,7 +287,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     ## Higher lever methods
     def init_room_page(self, room_name, page_id):
-        self.logger.info("Initializing %s and %s" % (room_name, page_id))
+        self.logger.info("%s Initializing %s and %s" % (id(self), room_name, page_id))
         page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
         if not page_list:
             return self.on_db_error()
@@ -311,7 +311,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                                                  {'datas': path, 'pages':page_list}))
 
     def leave_room(self):
-        self.logger.info("Leaving room %s" % self.room_name)
+        self.logger.info("[%d] Leaving room %s" % (id(self),self.room_name))
         # if self.pubsub_client:
         #     self.pubsub_client.unsubscribe(self.page_list_key(), self)
         if self in self.topics[self.room_topic()]:
@@ -319,7 +319,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
 
     def join_room(self):
-        self.logger.info("Joining room %s %d %s" % (self.room_name, self.page_id,self))
+        self.logger.info("[%s] Joining room %s %d" % (id(self),self.room_name, self.page_id))
         # self.pubsub_client.subscribe(self.page_list_key(), self)
         # self.logger.info("before join clients:%s"%(self.topics[self.room_topic()]))
         if self not in self.topics[self.room_topic()]:

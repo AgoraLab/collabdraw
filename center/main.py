@@ -16,6 +16,8 @@ import struct
 from org.collabdraw.handler.centerhandler import CenterHandler
 from org.collabdraw.handler.edgehandler import EdgeHandler
 from org.collabdraw.handler.data import CommonData
+from org.collabdraw.handler.ipip import IP
+
 
 from org.collabdraw.dbclient.dbclientfactory import DbClientFactory
 from org.collabdraw.dbclient.mysqlclient import MysqlClientVendor
@@ -24,6 +26,7 @@ FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('web')
 logger.setLevel(logging.INFO)
+
 
 
 class Application(tornado.web.Application):
@@ -51,6 +54,8 @@ if __name__ == "__main__":
             "keyfile": config.SERVER_KEY,
         })
     CommonData.init()
+    IP.load("/etc/voice/mydata4vipweek_en.dat")
+    logger.info(IP.find("107.155.24.133"))
     MysqlClientVendor.loadVendors()
     logger.info("Listening on port %s" % config.APP_PORT)
     http_server.listen(config.APP_PORT)
