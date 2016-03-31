@@ -183,9 +183,15 @@
                 this.input.parentNode.removeChild(this.input);
             },
 
-            _handleKeyDown: function(e){
-                var tmp               = document.createElement("span");
+            _handleKeyDown: function(e) {
                 var text              = this.input.value;
+                // we only allow user enter less than 250 characters.
+                if (text.length >= 100) {
+                    text = text.substring(0, 100);
+                    this.input.value = text;
+                    return;
+                }
+                var tmp               = document.createElement("span");
                 tmp.setAttribute('style', this.input.style.cssText);
                 tmp.style.height      = null;
                 tmp.style.width       = null;
