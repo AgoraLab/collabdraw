@@ -58,13 +58,21 @@ enyo.kind({
                 _this.remotePages(_this, data);
                 break;
             case 'laser-move':
-                if (_this.uid == fromUid) {
+                if (_this.uid === fromUid) {
                     console.log("ignore message 'laser-move' from mine. uid " + fromUid);
                     break;
                 }
                 _this.remoteLaserMove(_this, data);
                 break;
             case 'change-page':
+                if (_this.uid === fromUid) {
+                    console.log("ignore message 'laser-move' from mine. uid " + fromUid);
+                    break;
+                }
+
+                if (data['page_id'] === _this.whiteboard.getCurrentPageId()) {
+                    break;
+                }
                 _this.changePage(data['page_id']);
                 break;
             }
@@ -110,7 +118,8 @@ enyo.kind({
     },
 
     changePage: function(pageId) {
-        this.whiteboard.gotoPage(pageId);
+        var page = this.whiteboard.getPageById(pageId);
+        this.whiteboard.gotoPage(page);
     },
 
     /**
