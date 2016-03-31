@@ -46,6 +46,8 @@ VENDOR_STATUS_DEPRECATED = 3
 
 COOKIE_EXPIRED_SECONDS=3600
 
+MODE_MEETING=1
+MODE_PPT=0
 class JoinHandler(tornado.web.RequestHandler):
     """
     Http request handler for join request.
@@ -131,16 +133,20 @@ class JoinHandler(tornado.web.RequestHandler):
         uinfo = self.get_argument('uinfo', '')
         vid = self.get_argument('vid', '')
         redis = str(self.get_argument('redis', ''))
+        mode = str(self.get_argument('mode', MODE_PPT))
+        host = str(self.get_argument('host', 0))
         ret = self.onSdkJoinChannelReq(key, cname, uinfo, vid, redis)
         self.finish(ret)
         if ret['code'] == OK_CODE:
             self.set_secure_cookie("loginId", ret['sid'])
-            self.logger.info("xxx %s"%config.EDGE_REDIS_URL[redis])
             JoinHandler.cookies[ret['sid']]={'room':cname,
                                              'expiredTs':time.time() + COOKIE_EXPIRED_SECONDS,
                                              'vid':vid,
                                              'sid':ret['sid'],
-                                             'redis':config.EDGE_REDIS_URL[redis]}
+                                             'host':host,
+                                             'mode':mode,
+                                             'redis':config.EDGE_REDIS_URL[redis]
+                                             }
 
 
     def post(self):

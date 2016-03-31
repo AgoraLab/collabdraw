@@ -29,6 +29,7 @@ class RoomData(object):
         self.db_client=None
         self.topic=None
         self.room=None
+        self.host_page_id=0
 
     def load_room_data(self):
         page_list = self.db_client.lrange("%s:page_list"%self.topic, 0, -1)
@@ -199,6 +200,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         if event == "init":
             room_name = data.get('room', '')
             page_id = data.get('page_id', None)
+            if cookie['mode'] == JoinHandler.MODE_PPT and self.get_room().host_page_id != 0:
+                page_id=self.get_room().host_page_id
             self.logger.info("Initializing with room name %s" % room_name)
             page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
             # if not page_list:
@@ -210,8 +213,14 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 if page_id not in page_list:
                     page_id = page_list[0]
             self.init_room_page(room_name, page_id)
+            if cookie['host']==1 and cookie['mode'] == JoinHandler.MODE_PPT:
+                self.get_room().host_page_id=page_id
+                self.broadcast_message(self.room_topic(), self.construct_broadcast_message("change-page", {'page_id':page_id}))
 
         elif event == "draw-click":
+            if cookie['host'] != 1:
+                logger.error("user not host")
+                return
             single_path = data['singlePath']
             ret=self.get_room().db_client.rpush(self.page_path_key(), [json.dumps(v) for v in single_path])
             if not ret:
@@ -223,6 +232,9 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("draw", msg))
 
         elif event == "delete-page":
+            if cookie['host'] != 1:
+                logger.error("user not host")
+                return
             self.get_room().db_client.lrem(self.page_list_key(), 0, self.page_id)
             self.get_room().db_client.delete(self.page_path_key())
             self.get_room().db_client.delete(self.page_image_key())
@@ -232,6 +244,9 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.get_room().delete_page(self.page_id)
 
         elif event == "clear":
+            if cookie['host'] != 1:
+                logger.error("user not host")
+                return
             self.get_room().db_client.delete(self.page_path_key())
             self.get_room().db_client.delete(self.page_image_key())
             self.get_room().set_page_path(self.page_id, [])
@@ -239,7 +254,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("clear",{}))
 
         elif event == "get-image":
-
             image_url, width, height = self.get_page_image_data()
             self.send_message(self.construct_message("image", {'url': image_url,
                                                                'width': width, 'height': height}))
@@ -247,12 +261,18 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         #     make_video(self.path_key())
 
         elif event == "new-page":
+            if cookie['host'] != 1:
+                logger.error("user not host")
+                return
             page_id = RealtimeHandler.gen_page_id()
             ret=self.get_room().db_client.rpush(self.page_list_key(),[page_id])
             if not ret:
                 return self.on_db_error()
             self.init_room_page(self.room_name, page_id)
         elif event == "laser-move":
+            if cookie['host'] != 1:
+                logger.error("user not host")
+                return
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message(event,data))
 
         self.logger.info("%s takes %.4f sec" %(event,(time.time() - fromTs)))
