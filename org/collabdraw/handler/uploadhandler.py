@@ -44,7 +44,7 @@ class UploadHandler(tornado.web.RequestHandler):
         if not self.room_name:
             self.logger.error("Unknown room name. Ignoring upload")
             response_str = "Room name not provided"
-            self.finish(return_str % (self.room_name, response_str))
+            self.finish(response_str)
             return
 
         cookie=JoinHandler.get_cookie(self.get_argument('sid', ''))
@@ -53,7 +53,7 @@ class UploadHandler(tornado.web.RequestHandler):
         if not (cookie and cookie['room'] == self.room_name and cookie['expiredTs'] >= now):
             self.logger.error("Not joined cookie. Ignoring upload %s", cookie)
             response_str = "Cookie Not Joined"
-            self.finish(return_str % (self.room_name, response_str))
+            self.finish(response_str)
             return
 
         fileinfo = self.request.files['myfile'][0]
@@ -62,7 +62,7 @@ class UploadHandler(tornado.web.RequestHandler):
         if fext.lower() not in ['.pdf','.png','.jpeg','.jpg']:
             self.logger.error("Extension is not pdf or png. It is %s" % fext)
             response_str = "Only pdf files are allowed"
-            self.finish(return_str % (self.room_name, response_str))
+            self.finish(response_str)
             return
 
         # write file

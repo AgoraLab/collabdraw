@@ -16,7 +16,7 @@ import tornado.ioloop
 from tornado.httpclient import AsyncHTTPClient
 from tornado.httpclient import HTTPClient
 import boto3
-
+import collections
 logger = logging.getLogger('websocket')
 
 def uploadfile(filename, data):
@@ -37,16 +37,17 @@ def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
     subprocess.call(['pdfseparate', file_path, "%s/%d_%%d.pdf"%(dir_path,tmp_name)])
     pages=len(glob.glob("%s/%d_*.pdf"%(dir_path,tmp_name)))
     page_list=[i+no for i in range(pages)]
+    # Convert the pdf files to png
     subprocess.call(['mogrify', '-format', 'png', '--', "%s/%d_*.pdf"%(dir_path,tmp_name)])
-    ret={}
+    ret=collections.OrderedDict()
     for i in page_list:
         filename="%d.png"%(i)
         data = open("%s/%d_%d.png"%(dir_path,tmp_name,i-tmp_name+1), 'rb')
         uploadfile(filename ,data)
         ret[i]=filename
-    # Convert the pdf files to png
     # Delete all the files
-    delete_files('%s/%d*pdf'%(dir_path , tmp_name))
+    delete_files('%s/%d_*.pdf'%(dir_path , tmp_name))
+    delete_files('%s/%d_*.png'%(dir_path , tmp_name))
     tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.on_uploadfile(room_topic,ret))
 
 def process_uploaded_file_image(ftype ,room_topic, data):

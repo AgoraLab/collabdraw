@@ -24,6 +24,7 @@ class RoomData(object):
     def __init__(self):
         self.page_path=defaultdict(list)
         self.page_image={}
+        self.page_update_ts={}
         self.pubsub_client=None
         self.db_client=None
         self.topic=None
@@ -44,21 +45,31 @@ class RoomData(object):
             image=self.db_client.get("%s:%d:page_image"%(self.topic, page_id))
             if image :
                 self.page_image[page_id]=image
+                self.page_update_ts[page_id]=time.time()
+
 
     def load_path(self,page_id):
         if page_id not in self.page_path:
             path=self.db_client.lrange("%s:%d:page_path"%(self.topic, page_id), 0, -1)
             if path :
                 self.page_path[page_id]=path
+                self.page_update_ts[page_id]=time.time()
+
 
     def timer_thumbnail(self):
+        logger.info("timer_thumbnail topic :%s users:%d"%(self.topic, len(RealtimeHandler.topics[self.topic])))
         if len(RealtimeHandler.topics[self.topic])>0:
             page_list = self.db_client.lrange("%s:page_list"%self.topic, 0, -1)
+            now=time.time()
+            plist=[]
             for k in page_list:
                 self.load_image(k)
                 self.load_path(k)
                 image=None if k not in  self.page_image else self.page_image[k]
-                gen_svg(self.room, k, self.page_path[k],image)
+                if now-self.page_update_ts[k]<20:
+                    plist.append((self.room, k, self.page_path[k],image))
+                    # gen_svg(self.room, k, self.page_path[k],image)
+                threading.Thread(target=gen_list_svg, args=(plist)).start()
             ioloop.IOLoop.instance().add_timeout(time.time()+20,self.timer_thumbnail)
 
     def init_room(self, url, topic, room):
@@ -75,9 +86,11 @@ class RoomData(object):
 
     def update_page_path(self, page_id, path):
         self.page_path[page_id].extend(path)
+        self.page_update_ts[page_id]=time.time()
 
     def set_page_path(self, page_id, path):
         self.page_path[page_id]=path
+        self.page_update_ts[page_id]=time.time()
 
     def get_page_path(self, page_id):
         return self.page_path[page_id]
@@ -95,6 +108,7 @@ class RoomData(object):
 
     def set_page_image(self, page_id, image):
         self.page_image[page_id]=image
+        self.page_update_ts[page_id]=time.time()
 
     def destroy(self):
         if self.topic and self.pubsub_client:
@@ -165,12 +179,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.vid=cookie['vid']
                 self.fromUid= fromUid
                 self.room_name=data['room']
-                # self.logger.info("xxxxx %s %s"%(cookie['redis'], self.room_topic()))
                 self.get_room().init_room(cookie['redis'], self.room_topic(), data['room'])
-                # self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,cookie['redis'])
-            # self.fromUid= fromUid
-            # self.room_name=data['room']
-            # self.get_room().init_room('redis://127.0.0.1:6301', self.room_topic())
 
         #
         # if not self.verified:
@@ -328,7 +337,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         RealtimeHandler.logger.info("on_uploadfile %s"%page_image_map)
         room=RealtimeHandler.room_data[room_topic]
         page_list_key="%s:page_list"%(room_topic)
-        for k,v in page_image_map.items():
+        for k in sorted(page_image_map.keys()):
+            v=page_image_map[k]
             room.db_client.set("%s:%d:page_image"%(room_topic,k), "http://userimg.collabdraw.agoralab.co/%s"%(v))
         room.db_client.rpush(page_list_key, list(page_image_map.keys()))
         page_list=room.db_client.lrange(page_list_key, 0, -1)
