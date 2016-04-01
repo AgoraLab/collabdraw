@@ -75,7 +75,7 @@ def serverKeepAliveCallBack(response):
             logger.error('serverKeepAlive return error')
             return
         config.EDGE_REDIS_URL=msg['redis']
-        # logger.info('update redis %s' , config.EDGE_REDIS_URL)
+        config.APP_IP_ADDRESS=msg['ip']
 
 http_client = AsyncHTTPClient()
 
@@ -103,5 +103,4 @@ if __name__ == "__main__":
     tornado.ioloop.PeriodicCallback(JoinHandler.clear_expired_cookies,60*1000).start()
     tornado.ioloop.PeriodicCallback(RealtimeHandler.clear_expired_data,60*1000).start()
     tornado.ioloop.PeriodicCallback(serverKeepAlive,3*1000).start()
-
     tornado.ioloop.IOLoop.instance().start()

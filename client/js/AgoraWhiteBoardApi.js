@@ -25,11 +25,12 @@ var ErrorTable = {
 
 function AgoraWhiteBoardApi() {
     this.canvasHeight = -1;
-    this.canvasWidth  = -1;
-    this.canvasNode   = null;
-    this.cname        = '';
-    this.uid          = '';
-    this.sid          = '';
+    this.canvasWidth = -1;
+    this.canvasNode = null;
+    this.cname = '';
+    this.uid = '';
+    this.sid = '';
+    this.vid='';
 
     this.defaultCanvasHeight = function() {
         return this.canvasNode ? $(this.canvasNode).height() : 600;
@@ -79,7 +80,8 @@ function AgoraWhiteBoardApi() {
                 if (result.code == 0) {
                     _this.uid = result['uid'].toString();
                     _this.sid = result['sid'];
-                    _this.render(ip, port, onConnectionLost);
+                    _this.vid = vid;
+                    _this.render(ip, port,  onConnectionLost);
                 }
             }).fail(function(xhr, textStatus, errorThrown) {
                 console.log("ajax fail to join channel");
@@ -101,6 +103,7 @@ function AgoraWhiteBoardApi() {
         app.setRoom(this.cname);
         app.setUid(this.uid);
         app.setSid(this.sid);
+        app.setVid(this.vid);
         if (onConnectionLost && $.isFunction(onConnectionLost)) {
             app.setConnectionLostCallback(onConnectionLost);
         }

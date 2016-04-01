@@ -17,12 +17,17 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.httpclient import HTTPClient
 import boto3
 import collections
+import traceback
+from ..handler.joinhandler import unsigned_hash
 logger = logging.getLogger('websocket')
 
-def uploadfile(filename, data):
-    s3 = boto3.resource('s3')
-    s3.Bucket(config.S3_BUCKET).put_object(Key=filename, Body=data, ContentType='image')
 
+def uploadfile(filename, data):
+    try:
+        s3 = boto3.resource('s3')
+        s3.Bucket(config.S3_BUCKET).put_object(Key=filename, Body=data, ContentType='image')
+    except:
+        traceback.print_exc()
 
 def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
     no=RealtimeHandler.gen_page_id()
@@ -40,8 +45,9 @@ def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
     # Convert the pdf files to png
     subprocess.call(['mogrify', '-format', 'png', '--', "%s/%d_*.pdf"%(dir_path,tmp_name)])
     ret=collections.OrderedDict()
+    prefix=unsigned_hash("%s:%s:%s"%(dir_path,config.APP_IP_ADDRESS,config.APP_PORT))
     for i in page_list:
-        filename="%d.png"%(i)
+        filename="%x%x.png"%(prefix, i)
         data = open("%s/%d_%d.png"%(dir_path,tmp_name,i-tmp_name+1), 'rb')
         uploadfile(filename ,data)
         ret[i]=filename
@@ -55,6 +61,7 @@ def process_uploaded_file_image(ftype ,room_topic, data):
         logger.error("room not exist:%s"%room_topic)
         return
     page_no=RealtimeHandler.gen_page_id()
-    filename="%d%s"%(page_no, ftype)
+    prefix=unsigned_hash("%s:%s:%s"%(room_topic,config.APP_IP_ADDRESS,config.APP_PORT))
+    filename="%x%x%s"%(prefix, page_no, ftype)
     uploadfile(filename ,data)
     tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.on_uploadfile(room_topic,{page_no:filename}))

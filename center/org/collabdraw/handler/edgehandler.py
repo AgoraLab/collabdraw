@@ -36,4 +36,5 @@ class EdgeHandler(tornado.web.RequestHandler):
         now= time.time()
         CommonData.edge_servers[addr]={'ts':now,'load':int(load),"ip":remote_ip,"port":port}
         ret['redis']=CommonData.edgeRedis
+        ret['ip']=remote_ip
         self.finish(json.dumps(ret))

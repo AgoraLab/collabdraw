@@ -37,6 +37,7 @@ enyo.kind({
         },
         uid: 'test',
         sid: '',
+        vid:'',
         room: 'one',
         canvasWidth: 800,
         canvasHeight: 550,
@@ -1136,7 +1137,7 @@ enyo.kind({
         this.pagePreviewContainer = [];
         for (index = 0; index < Math.min(6, totalPages-this.pagePreviewNum); index += 1) {
             var page=this.pagePreviewNum+index+1;
-            var url="http://"+this.appIpAddress+":"+this.appPort+"/files/"+this.room+"/"+this.whiteboard.getPageIdByPage(page)+"_thumbnail.png?version="+ $.now();
+            var url="http://"+this.appIpAddress+":"+this.appPort+"/files/"+this.vid+"_"+this.room+"/"+this.whiteboard.getPageIdByPage(page)+"_thumbnail.png?version="+ $.now();
             var comp = this.createComponent({
                 container: this.$.previewPagesPopup,
                 style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;;margin:10px;color:#000;background:url(" + url + ") center center no-repeat #FFF;background-size:contain;cursor:pointer;",

@@ -9,7 +9,7 @@ from ..dbclient.dbclientfactory import DbClientFactory
 from ..dbclient.mysqlclient import MysqlClientVendor
 from ..tools.tools import hash_password
 from enum import Enum
-
+import ctypes
 OK_CODE = 0
 VOM_SERVICE_UNAVAILABLE = 1
 NO_CHANNEL_AVAILABLE_CODE = 2
@@ -47,6 +47,10 @@ COOKIE_EXPIRED_SECONDS=3600
 
 MODE_MEETING='1'
 MODE_PPT='0'
+
+def unsigned_hash(v):
+    return ctypes.c_ulong(hash(v)).value
+
 class JoinHandler(tornado.web.RequestHandler):
     """
     Http request handler for join request.
@@ -75,8 +79,8 @@ class JoinHandler(tornado.web.RequestHandler):
     def onSdkJoinChannelReq(self, key, cname, uinfo, vid, redis):
         self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
         code = self.checkLoginRequest(key, cname, vid, redis)
-        uid = self.generateUid(key, cname, uinfo)
-        sid= self.generateSid(key, cname)
+        uid = self.generateUid(vid, cname, uinfo)
+        sid= self.generateSid(vid, cname)
         res = {'code': code, 'cname': cname, 'uid': uid, 'sid':sid}
         return res
 
@@ -87,45 +91,45 @@ class JoinHandler(tornado.web.RequestHandler):
         if redis not in config.EDGE_REDIS_URL.keys():
             return INVALID_REDIS
         return OK_CODE
-        if (len(key) == 0 or len(key) > 128):
-            return INVALID_CHANNEL_NAME, -1
-        if (len(key) == STATIC_KEY_LENGTH):
-            return self.checkStaticVendorKey(key)
-        if (len(key) == DYNAMIC_KEY_LENGTH):
-            return self.checkDynamicVendorKey(key, cname)
-        self.logger.warn('invalid vendor key %s with size %u' % (key, len(key)))
-        return INVALID_VENDOR_KEY, -1
+        # if (len(key) == 0 or len(key) > 128):
+        #     return INVALID_CHANNEL_NAME, -1
+        # if (len(key) == STATIC_KEY_LENGTH):
+        #     return self.checkStaticVendorKey(key)
+        # if (len(key) == DYNAMIC_KEY_LENGTH):
+        #     return self.checkDynamicVendorKey(key, cname)
+        # self.logger.warn('invalid vendor key %s with size %u' % (key, len(key)))
+        # return INVALID_VENDOR_KEY, -1
 
-    def checkStaticVendorKey(self, staticKeyString):
-        if not staticKeyString in JoinHandler.mysqlClient.vendorKeys:
-            self.logger.warn('invalid login: fail to find static vendor key %s' % staticKeyString)
-            return INVALID_VENDOR_KEY, -1
+    # def checkStaticVendorKey(self, staticKeyString):
+    #     if not staticKeyString in JoinHandler.mysqlClient.vendorKeys:
+    #         self.logger.warn('invalid login: fail to find static vendor key %s' % staticKeyString)
+    #         return INVALID_VENDOR_KEY, -1
+    #
+    #     vid = JoinHandler.mysqlClient.vendorKeys[staticKeyString]
+    #     if not vid in JoinHandler.mysqlClient.vendorInfos:
+    #         self.logger.warn('invalid login: fail to find vendor info for vendor %u' % vid)
+    #         return INTERNAL_ERROR, -1
+    #
+    #     vinfo = JoinHandler.mysqlClient.vendorInfos[vid]
+    #     if (len(vinfo['signkey']) > 0):
+    #         self.logger.warn('invalid login: dynamic key is expected for vendor %u' % vid)
+    #         return NO_AUTHORIZED, -1
+    #     if (vinfo['status'] != VENDOR_STATUS_ACTIVE):
+    #         self.logger.warn('invalid login: status %u found for vendor %u' % (vinfo['status'], vid))
+    #         return NO_ACTIVE_STATUS, -1
+    #
+    #     self.logger.info('login succeed. static key %s vid %u ' % (staticKeyString, vid))
+    #     return OK_CODE, vid
 
-        vid = JoinHandler.mysqlClient.vendorKeys[staticKeyString]
-        if not vid in JoinHandler.mysqlClient.vendorInfos:
-            self.logger.warn('invalid login: fail to find vendor info for vendor %u' % vid)
-            return INTERNAL_ERROR, -1
+    # def checkDynamicVendorKey(self, key, cname):
+    #     return -100, -1
 
-        vinfo = JoinHandler.mysqlClient.vendorInfos[vid]
-        if (len(vinfo['signkey']) > 0):
-            self.logger.warn('invalid login: dynamic key is expected for vendor %u' % vid)
-            return NO_AUTHORIZED, -1
-        if (vinfo['status'] != VENDOR_STATUS_ACTIVE):
-            self.logger.warn('invalid login: status %u found for vendor %u' % (vinfo['status'], vid))
-            return NO_ACTIVE_STATUS, -1
+    def generateSid(self, vid, cname):
+        return "%.8x%x"%(unsigned_hash("%s:%s:%s:%s"%(vid,cname,config.APP_IP_ADDRESS,config.APP_PORT)),id(self))
 
-        self.logger.info('login succeed. static key %s vid %u ' % (staticKeyString, vid))
-        return OK_CODE, vid
-
-    def checkDynamicVendorKey(self, key, cname):
-        return -100, -1
-
-    def generateSid(self, key, cname):
-        return "%.8x%x"%(hash("%s:%s:%s:%s"%(key,cname,config.get_ip_address('eth0'),config.APP_PORT)),id(self))
-
-    def generateUid(self, key, cname, uinfo):
+    def generateUid(self, vid, cname, uinfo):
         if uinfo != '':
-            return self.generateSid(key, cname)
+            return self.generateSid(vid, cname)
         return uinfo
 
     def get(self):
