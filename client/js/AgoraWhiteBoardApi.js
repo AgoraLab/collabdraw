@@ -8,28 +8,28 @@
  */
 
 var ErrorTable = {
-     0: 'ok',
-     1: 'agora vom service unavailable',
-     2: 'no channel available',
-     4: 'too many users',
-     5: 'invalid vendor key',
-     6: 'agora master vocs unavailable',
-     7: 'invalid channel name',
-     8: 'agora internal error',
-     9: 'no authorized',
-     10: 'dynamic key timeout',
-     11: 'no active status',
-     12: 'timeout',
-     13: 'canceled'
+    0: 'ok',
+    1: 'agora vom service unavailable',
+    2: 'no channel available',
+    4: 'too many users',
+    5: 'invalid vendor key',
+    6: 'agora master vocs unavailable',
+    7: 'invalid channel name',
+    8: 'agora internal error',
+    9: 'no authorized',
+    10: 'dynamic key timeout',
+    11: 'no active status',
+    12: 'timeout',
+    13: 'canceled'
  };
 
 function AgoraWhiteBoardApi() {
     this.canvasHeight = -1;
-    this.canvasWidth = -1;
-    this.canvasNode = null;
-    this.cname = '';
-    this.uid = '';
-    this.sid = '';
+    this.canvasWidth  = -1;
+    this.canvasNode   = null;
+    this.cname        = '';
+    this.uid          = '';
+    this.sid          = '';
 
     this.defaultCanvasHeight = function() {
         return this.canvasNode ? $(this.canvasNode).height() : 600;
@@ -39,19 +39,19 @@ function AgoraWhiteBoardApi() {
     }
 
     this.join = function(params) {
-        var key = params.key,
-            cname = params.cname,
-            uinfo = params.uinfo,
-            host = params.host,
-            mode = params.mode,
-            onJoin = params.onJoin,
+        var key              = params.key,
+            cname            = params.cname,
+            uinfo            = params.uinfo,
+            host             = params.host,
+            mode             = params.mode,
+            onJoin           = params.onJoin,
             onConnectionLost = params.onConnectionLost;
 
         this.cname = cname;
         _this = this;
         $.get('http://collabdraw.agoralab.co:5555/getEdgeServer', {
-            key: key,
-            cname: cname
+            key   : key,
+            cname : cname
         }, function (result, status) {
             if (!result || result.length == 0) {
                 onJoin(-10, 'empty result from center server', cname, uinfo, uid)
