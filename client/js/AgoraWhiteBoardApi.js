@@ -89,9 +89,6 @@ function AgoraWhiteBoardApi() {
         });
     }
 
-    this.quit = function() {
-    }
-
     this.render = function(ip, port, onConnectionLost) {
         if (!this.canvasNode || (this.cname == '' || this.uid == '' || this.sid == '')) {
             return;
