@@ -38,10 +38,12 @@ def generateSvgXml(data):
 def gen_svg(room, page_id, path, url):
     threading.Thread(target=gen_svg_ex, args=(room, page_id, path, url)).start()
 
-def gen_list_svg(list):
+def gen_list_svg(room, list):
     # list=data["data"]
+    dir_path = os.path.join(config.ROOT_DIR, "files", room)
+    os.makedirs(dir_path, exist_ok=True)
     for x in list:
-        gen_svg_ex(x[0],x[1],x[2],x[3])
+        gen_svg_ex(dir_path,x[0],x[1],x[2])
 
 def cairosvg_svg_to_png(svg,dir_path, page_id):
     fout = open("%s/%d_thumbnail.png"%(dir_path,page_id),'wb')
@@ -57,10 +59,8 @@ def svgexport_svg_to_png(svg, dir_path, page_id):
     f.close() # you can omit in most cases as the destructor will call it
     subprocess.call(["svgexport","%s/%d_thumbnail.svg"%(dir_path,page_id),"%s/%d_thumbnail.png"%(dir_path,page_id),"200:200"])
 
-def gen_svg_ex(room, page_id, path, url):
+def gen_svg_ex(dir_path, page_id, path, url):
     # logger.info("gen_svg_ex start %s %d %s"%(room, page_id, url))
-    dir_path = os.path.join(config.ROOT_DIR, "files", room)
-    os.makedirs(dir_path, exist_ok=True)
     ret="""<?xml version="1.0"?>
         <svg height="768" version="1.1" width="1024" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 768" fill='white'>
     """

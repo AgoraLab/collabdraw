@@ -66,7 +66,7 @@ class UploadHandler(tornado.web.RequestHandler):
             return
 
         # write file
-        dir_path = os.path.join(config.ROOT_DIR, "files", self.room_name)
+        dir_path = os.path.join(config.ROOT_DIR, "files", "%s_%s"%(cookie['vid'],self.room_name))
         # os.makedirs(dir_path, exist_ok=True)
         # file_path = os.path.join(dir_path, fname)
         # fh = open(file_path, 'wb')

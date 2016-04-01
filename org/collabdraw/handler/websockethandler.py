@@ -33,6 +33,7 @@ class RoomData(object):
         self.topic=None
         self.room=None
         self.host_page_id=0
+        self.vid=0
 
     def load_room_data(self):
         page_list = self.db_client.lrange("%s:page_list"%self.topic, 0, -1)
@@ -71,18 +72,20 @@ class RoomData(object):
                 self.load_path(k)
                 image=None if k not in  self.page_image else self.page_image[k]
                 if now-self.page_update_ts[k]<20:
-                    plist.append((self.room, k, self.page_path[k],image))
+                    plist.append((k, self.page_path[k],image))
                     # gen_svg(self.room, k, self.page_path[k],image)
-                threading.Thread(target=gen_list_svg, args=(plist,)).start()
+            roomname="%s_%s"%(self.vid,self.room)
+            threading.Thread(target=gen_list_svg, args=(roomname,plist,)).start()
             ioloop.IOLoop.instance().add_timeout(time.time()+20,self.timer_thumbnail)
 
-    def init_room(self, url, topic, room):
+    def init_room(self, url, topic, room, vid):
         if not self.pubsub_client:
             self.db_client = DbClientFactory.getDbClient(config.DB_CLIENT_TYPE, url)
             self.pubsub_client = PubSubClientFactory.getPubSubClient(config.PUBSUB_CLIENT_TYPE,self.db_client)
             self.pubsub_client.subscribe(topic, self, RealtimeHandler.on_broadcast_message)
             self.topic=topic
             self.room=room
+            self.vid=vid
             ioloop.IOLoop.instance().add_timeout(time.time(),self.timer_thumbnail)
 
     def publish(self, m):
@@ -183,7 +186,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.fromUid= fromUid
                 self.room_name=data['room']
                 self.cookie=cookie
-                self.get_room().init_room(cookie['redis'], self.room_topic(), data['room'])
+                self.get_room().init_room(cookie['redis'], self.room_topic(), data['room'], cookie['vid'])
 
         #
         if not self.verified:
