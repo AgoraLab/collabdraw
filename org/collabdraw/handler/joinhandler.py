@@ -128,7 +128,7 @@ class JoinHandler(tornado.web.RequestHandler):
         return "%.8x%x"%(unsigned_hash("%s:%s:%s:%s"%(vid,cname,config.APP_IP_ADDRESS,config.APP_PORT)),id(self))
 
     def generateUid(self, vid, cname, uinfo):
-        if uinfo != '':
+        if uinfo == '':
             return self.generateSid(vid, cname)
         return uinfo
 
