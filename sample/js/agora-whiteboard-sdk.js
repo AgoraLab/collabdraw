@@ -77,6 +77,7 @@
                     uinfo     = params.uinfo,
                     host      = params.host || "0",
                     mode      = params.mode,
+                    expire    = params.expire,
                     width     = params.width,
                     height    = params.height,
                     container = params.container,
@@ -93,6 +94,10 @@
 
                 if (mode) {
                     source += "&mode=" + mode;
+                }
+
+                if (expire) {
+                    source += "&expire=" + expire;
                 }
 
                 if (width) {
@@ -119,7 +124,8 @@
              * mode:        Play mode: 0
              * width:       Container width
              * height:      Container height
-             * iframeTagId: iframe tag id
+             * expire:      Expire time for the meeting room, the room will be destroyed after this time,
+             *              it would never be destroyed without this parameter
              */
             function join(params) {
                 if (!params.key || !params.cname) {
