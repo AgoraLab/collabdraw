@@ -80,7 +80,7 @@
                     width     = params.width,
                     height    = params.height,
                     container = params.container,
-                    source    = "http://119.9.75.121:8081/client/html/agora-wb.html",
+                    source    = "http://wb.agorabeckon.com:8081/client/html/agora-wb.html",
                     iframe    = $("<iframe></iframe>");
 
                 source += "?key=" + key;
