@@ -29,7 +29,6 @@ function AgoraWhiteBoardApi() {
     this.canvasNode = null;
     this.cname = '';
     this.uid = '';
-    this.sid = '';
     this.vid='';
 
     this.defaultCanvasHeight = function() {
@@ -52,7 +51,8 @@ function AgoraWhiteBoardApi() {
         _this = this;
         $.get('http://collabdraw.agoralab.co:5555/getEdgeServer', {
             key   : key,
-            cname : cname
+            cname : cname,
+            uinfo : uinfo
         }, function (result, status) {
             if (!result || result.length == 0) {
                 onJoin(-10, 'empty result from center server', cname, uinfo, uid)
@@ -60,15 +60,17 @@ function AgoraWhiteBoardApi() {
             }
             var ip       = result['server'].substring(0, result['server'].indexOf(':'));
             var port     = result['server'].substring(result['server'].indexOf(':')+1);
-            var redis_id = result['redis']
-            var vid      = result['vid']
+            var redis_id = result['redis'];
+            var vid      = result['vid'];
+            var ticket   = result['ticket'];
+            uinfo  = result['uinfo'].toString();
             console.log('ws '+ip+' '+port);
             $.get('http://'+ip + ':' + port + '/join', {
-                key   : key,
                 cname : cname,
-                uinfo : uinfo,
                 redis : redis_id,
                 vid   : vid,
+                uinfo : uinfo,
+                'ticket': ticket,
                 host  : host
             }, function (result, status) {
                 if (!result || result.length == 0) {
@@ -78,13 +80,12 @@ function AgoraWhiteBoardApi() {
                 console.log(JSON.stringify(result));
                 onJoin(result.code, ErrorTable[result['code'].toString()], cname, uinfo);
                 if (result.code == 0) {
-                    _this.uid = result['uid'].toString();
-                    _this.sid = result['sid'];
+                    _this.uid = uinfo;
                     _this.vid = vid;
                     _this.render(ip, port,  onConnectionLost);
                 }
             }).fail(function(xhr, textStatus, errorThrown) {
-                console.log("ajax fail to join channel");
+                console.log("ajax fail to join edge server");
             });
         }).fail(function(xhr, textStatus, errorThrown) {
             console.log("ajax fail to get edge server");
@@ -92,7 +93,7 @@ function AgoraWhiteBoardApi() {
     }
 
     this.render = function(ip, port, onConnectionLost) {
-        if (!this.canvasNode || (this.cname == '' || this.uid == '' || this.sid == '')) {
+        if (!this.canvasNode || (this.cname == '' || this.uid == '')) {
             return;
         }
         var app = new App();
@@ -102,7 +103,6 @@ function AgoraWhiteBoardApi() {
         app.setCanvasWidth(this.canvasWidth == -1 ? this.defaultCanvasWidth() : this.canvasWidth);
         app.setRoom(this.cname);
         app.setUid(this.uid);
-        app.setSid(this.sid);
         app.setVid(this.vid);
         if (onConnectionLost && $.isFunction(onConnectionLost)) {
             app.setConnectionLostCallback(onConnectionLost);

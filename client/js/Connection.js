@@ -18,7 +18,6 @@ enyo.kind({
         this.uid = uid;
         this.page = 1;
         this.touchMove=undefined;
-
         _this = this;
         this.socket.onmessage = function(evt) {
             var message = JSON.parse(JXG.decompress(evt.data)),
@@ -112,7 +111,7 @@ enyo.kind({
         this.whiteboard.clear(false, false);
         this.sendMessage("init", {
             "room": room,
-            "sid": this.whiteboard.sid,
+            "vid": this.whiteboard.vid,
             "page": currentPage
         });
     },
@@ -136,7 +135,7 @@ enyo.kind({
         console.log("Sending init for room " + room+' '+page);
         this.sendMessage("init", {
             "room": this.room,
-            "sid": this.whiteboard.sid
+            "vid": this.whiteboard.vid,
         });
     },
 
@@ -236,7 +235,6 @@ enyo.kind({
         // else if (data.type == 'touchmove') self.whiteboard.continuePath(data.oldx, data.oldy, data.x, data.y, data.lineColor, data.lineWidth, false);
         else if (data.type == 'touchmove'){
           if(data.path){
-            // console.log("xxxxx", data.path);
             for(i in data.path){
                 self.whiteboard.continuePath(data.oldx, data.oldy, data.path[i][0], data.path[i][1], data.lineColor, data.lineWidth, false);
             }

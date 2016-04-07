@@ -11,6 +11,9 @@ from ..dbclient.mysqlclient import MysqlClientVendor
 from .data import CommonData
 from .ipip import IP
 from enum import Enum
+import hmac
+from hashlib import sha1
+from urllib.parse import quote
 
 OK_CODE = 0
 VOM_SERVICE_UNAVAILABLE = 1
@@ -49,6 +52,9 @@ COOKIE_EXPIRED_SECONDS=3600
 def getCountry(ip):
     loc=IP.find(ip)
     return loc.split('  ')[0]
+
+def unsigned_hash(v):
+    return ctypes.c_ulong(hash(v)).value
 
 class CenterHandler(tornado.web.RequestHandler):
     """
@@ -96,13 +102,29 @@ class CenterHandler(tornado.web.RequestHandler):
         self.logger = logging.getLogger('web')
         self.set_header("Access-Control-Allow-Origin", "*")
 
-    def onSdkJoinChannelReq(self, key, cname, uinfo=None):
-        self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
+    def generateTicket(self ,cname, redis, vid, uinfo):
+        content="%s-%s-%s-%s"%(cname, redis, vid, uinfo)
+        self.logger.info(content)
+        ticket = hmac.new(bytes('agorabestvoip', 'utf-8'), content.encode('utf-8'), sha1).hexdigest()
+        self.logger.info(ticket)
+
+        # ticket = unsigned_hash(content)
+        return ticket
+
+    def generateUid(self, vid, cname, uinfo):
+        if uinfo == '':
+            return "%x%x"%(unsigned_hash("%s:%s"%(vid,cname)),int(time.time()*10000000))
+        else:
+            return uinfo
+
+    def onSdkJoinChannelReq(self, key, cname, uinfo):
+        # self.logger.debug('http request get: key %s cname %s uinfo %s' % (key, cname, uinfo))
         code, vid = self.checkLoginRequest(key, cname)
         addr=self.getEdgeServer(vid, cname)
         redis=self.getRedisServer(vid, cname)
-        res = {'code': code, 'server':addr, 'redis':redis, 'vid':vid}
-        return res, vid;
+        uinfo = self.generateUid(vid, cname, uinfo)
+        res = {'code': code, 'server':addr, 'redis':redis, 'vid':vid,'uinfo':uinfo,'ticket': self.generateTicket(cname, redis, vid, uinfo)}
+        return res;
 
     # return [ErrorCode, VendorID]
     def checkLoginRequest(self, key, cname):
@@ -145,13 +167,15 @@ class CenterHandler(tornado.web.RequestHandler):
     def get(self):
         key = self.get_argument('key', '')
         cname = self.get_argument('cname', '')
-        ret, vid = self.onSdkJoinChannelReq(key, cname)
+        uinfo = self.get_argument('uinfo', '')
+        ret = self.onSdkJoinChannelReq(key, cname, uinfo)
         self.finish(ret)
         self.logger.info("CenterHandler from %s ret %s"%(self.request.remote_ip,ret))
 
     def post(self):
         key = self.get_argument('key', '')
         cname = self.get_argument('cname', '')
-        ret = self.onSdkJoinChannelReq(key, cname)
+        uinfo = self.get_argument('uinfo', '')
+        ret = self.onSdkJoinChannelReq(key, cname, uinfo)
         self.finish(ret)
         self.logger.info("CenterHandler from %s ret %s"%(self.request.remote_ip,ret))

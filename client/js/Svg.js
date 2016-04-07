@@ -46,7 +46,7 @@ enyo.kind({
     constructor: function(name, parent, page, websocketAddress, callback, connLostCallback) {
         this.parent_         = parent;
         this.uid             = parent.uid;
-        this.sid             = parent.sid;
+        this.vid             = parent.vid;
         this.room            = parent.room;
         this.cvs             = new ScaleRaphael(name, parent.canvasWidth, parent.canvasHeight);
         this.d3SVG           = d3.select(this.cvs.canvas);

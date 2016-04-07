@@ -178,8 +178,9 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         # needed when realse
         if event == "init" :
-            sid = data.get('sid', '')
-            cookie=JoinHandler.get_cookie(sid)
+            vid = data.get('vid', '')
+            key="%s:%s:%s"%(data['vid'],data['room'],fromUid)
+            cookie=JoinHandler.get_cookie(key)
             if cookie and 'room' in data and cookie['room'] == data['room'] and cookie['expiredTs'] >= fromTs:
                 self.verified=True
                 self.vid=cookie['vid']
@@ -188,12 +189,14 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.cookie=cookie
                 self.get_room().init_room(cookie['redis'], self.room_topic(), data['room'], cookie['vid'])
 
-        #
+        if self.cookie['expiredTs'] < fromTs:
+            self.verified=False
+            self.logger.error("cookie expired now %s expiredTs %s ］" % (fromTs, self.cookie['expiredTs']))
+
         if not self.verified:
             self.close()
-            self.logger.error("sid not verified［ cookie:%s msg:%s ］" % (cookie, data))
+            self.logger.error("cookie not verified［ cookie:%s msg:%s ］" % (cookie, data))
             return
-
 
         if self.room_name != data['room'] :
             self.logger.error("%s Room name  %s doesn't match with current %s " % (id(self), data['room'],self.room_name))

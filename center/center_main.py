@@ -27,8 +27,6 @@ logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('web')
 logger.setLevel(logging.INFO)
 
-
-
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [

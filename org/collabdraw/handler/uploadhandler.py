@@ -46,8 +46,8 @@ class UploadHandler(tornado.web.RequestHandler):
             response_str = "Room name not provided"
             self.finish(response_str)
             return
-
-        cookie=JoinHandler.get_cookie(self.get_argument('sid', ''))
+        key="%s:%s:%s"%(self.get_argument('vid', ''),self.get_argument('room', ''),self.get_argument('uid', ''))
+        cookie=JoinHandler.get_cookie(key)
         self.logger.info(self.get_secure_cookie("loginId"))
         now = time.time()
         if not (cookie and cookie['room'] == self.room_name and cookie['expiredTs'] >= now):

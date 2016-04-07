@@ -36,7 +36,7 @@ enyo.kind({
             previousDrawingItem: 'pen'
         },
         uid: 'test',
-        sid: '',
+        // sid: '',
         vid:'',
         room: 'one',
         canvasWidth: 800,
@@ -625,7 +625,8 @@ enyo.kind({
             fileName     : "myfile",
             formData: {
                 room : this.whiteboard.room,
-                sid  : this.whiteboard.sid
+                vid  : this.whiteboard.vid,
+                uid  : this.whiteboard.uid
             },
             onSuccess: function(files, data, xhr, pd) {
                 setTimeout(function() {

@@ -12,7 +12,7 @@ if [ "$pid" != "" ] ; then
   # exit
 fi
 # nohup python main.py > output.`date +"%y-%m-%d"`.log 2>&1 &
-nohup python main.py > output_$port.log 2>&1 &
+nohup python center_main.py > output_$port.log 2>&1 &
 sleep 5
 for x in `seq 0 5`
 do
