@@ -12,8 +12,8 @@ for i in $@; do
       # exit
     fi
     # nohup python main.py > output.`date +"%y-%m-%d"`.log 2>&1 &
-    nohup python main.py > output_$port.log 2>&1 &
-    sleep 5
+    nohup python edge_main.py > output_$port.log 2>&1 &
+    sleep 2
     for x in `seq 0 5`
     do
       pid=`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}' | awk -F/ '{print $1}'`
