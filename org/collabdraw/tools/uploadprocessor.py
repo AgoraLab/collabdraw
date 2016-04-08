@@ -23,10 +23,21 @@ logger = logging.getLogger('websocket')
 
 
 def uploadfile(filename, data):
+    http_client = HTTPClient()
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    msg={"fname":filename,"fbody":data.decode("latin-1")}
+    url = "http://119.9.92.228:5000/innerupload"
+    ret=http_client.fetch(url, method='POST', headers=headers, body=msg)
+    logger.info(ret)
+    return
     try:
         s3 = boto3.resource('s3')
-        s3.Bucket(config.S3_BUCKET).put_object(Key=filename, Body=data, ContentType='image')
+        b=s3.Bucket(config.S3_BUCKET)
+        logger.info("upload s3 create bucket %s"%(filename))
+        ret=b.put_object(Key=filename, Body=data, ContentType='image')
+        logger.info("upload s3 %s %s"%(filename, ret))
     except:
+        logger.info("upload s3 error %s"%(filename))
         traceback.print_exc()
 
 def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):

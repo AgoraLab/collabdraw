@@ -195,7 +195,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         if not self.verified:
             self.close()
-            self.logger.error("cookie not verified［ cookie:%s msg:%s ］" % (cookie, data))
+            self.logger.error("cookie not verified［ cookie:%s msg:%s ］" % (self.cookie, data))
             return
 
         if self.room_name != data['room'] :

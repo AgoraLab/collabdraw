@@ -18,8 +18,8 @@ import hmac
 import base64
 from org.collabdraw.handler.websockethandler import RealtimeHandler
 from org.collabdraw.handler.uploadhandler import UploadHandler
+from org.collabdraw.handler.inneruploadhandler import InnerUploadHandler
 from org.collabdraw.handler.joinhandler import JoinHandler
-# from org.collabdraw.handler.centerhandler import CenterHandler
 from org.collabdraw.dbclient.dbclientfactory import DbClientFactory
 from org.collabdraw.dbclient.mysqlclient import MysqlClientVendor
 
@@ -53,9 +53,9 @@ class Application(tornado.web.Application):
             (r'/files/(.*)', tornado.web.StaticFileHandler, dict(path=config.FILES_DIR)),
             (r'/join', JoinHandler),
             (r'/upload', UploadHandler),
+            (r'/innerupload', InnerUploadHandler),
             # (r'/getEdgeServer', CenterHandler),
         ]
-
         settings = dict(
             auto_reload=True,
             gzip=True,

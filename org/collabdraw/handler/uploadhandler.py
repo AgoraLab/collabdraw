@@ -48,7 +48,7 @@ class UploadHandler(tornado.web.RequestHandler):
             return
         key="%s:%s:%s"%(self.get_argument('vid', ''),self.get_argument('room', ''),self.get_argument('uid', ''))
         cookie=JoinHandler.get_cookie(key)
-        self.logger.info(self.get_secure_cookie("loginId"))
+        self.logger.info("uploadFile %s"%(key))
         now = time.time()
         if not (cookie and cookie['room'] == self.room_name and cookie['expiredTs'] >= now):
             self.logger.error("Not joined cookie. Ignoring upload %s", cookie)
