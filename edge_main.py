@@ -54,7 +54,6 @@ class Application(tornado.web.Application):
             (r'/join', JoinHandler),
             (r'/upload', UploadHandler),
             (r'/innerupload', InnerUploadHandler),
-            # (r'/getEdgeServer', CenterHandler),
         ]
         settings = dict(
             auto_reload=True,
@@ -84,7 +83,7 @@ def serverKeepAlive():
     msg={"port":config.PUBLIC_LISTEN_PORT, "load":RealtimeHandler.clientCount(), "key":"bestvoip"}
     body = urllib.parse.urlencode(msg) #Make it into a post request
     try :
-        for x in socket.gethostbyname_ex('collabdraw.agoralab.co')[2]:
+        for x in socket.gethostbyname_ex('wb.agorabeckon.com')[2]:
             url = "http://%s:5555/registerEdgeServer"%(x)
             http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)
     except:
@@ -102,5 +101,5 @@ if __name__ == "__main__":
     http_server.listen(config.APP_PORT)
     tornado.ioloop.PeriodicCallback(JoinHandler.clear_expired_cookies,60*1000).start()
     tornado.ioloop.PeriodicCallback(RealtimeHandler.clear_expired_data,60*1000).start()
-    tornado.ioloop.PeriodicCallback(serverKeepAlive,3*1000).start()
+    tornado.ioloop.PeriodicCallback(serverKeepAlive,2*1000).start()
     tornado.ioloop.IOLoop.instance().start()

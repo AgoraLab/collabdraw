@@ -23,13 +23,13 @@ logger = logging.getLogger('websocket')
 
 
 def uploadfile(filename, data):
-    http_client = HTTPClient()
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    msg={"fname":filename,"fbody":data.decode("latin-1")}
-    url = "http://119.9.92.228:5000/innerupload"
-    ret=http_client.fetch(url, method='POST', headers=headers, body=msg)
-    logger.info(ret)
-    return
+    # http_client = HTTPClient()
+    # headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    # msg={"fname":filename,"fbody":data.decode("latin-1")}
+    # url = "http://119.9.92.228:5000/innerupload"
+    # ret=http_client.fetch(url, method='POST', headers=headers, body=msg)
+    # logger.info(ret)
+    # return
     try:
         s3 = boto3.resource('s3')
         b=s3.Bucket(config.S3_BUCKET)

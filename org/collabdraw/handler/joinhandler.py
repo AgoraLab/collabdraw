@@ -129,7 +129,6 @@ class JoinHandler(tornado.web.RequestHandler):
         self.finish(ret)
         self.logger.info("[%d] JoinHandler from %s ret:%s"%(id(self), self.request.remote_ip, ret))
         if ret['code'] == OK_CODE:
-            # self.set_secure_cookie("loginId", ret['ticket'])
             key="%s:%s:%s"%(vid,cname,uinfo)
             JoinHandler.cookies[key]={'room':cname,
                                      'expiredTs':expiredTs,
