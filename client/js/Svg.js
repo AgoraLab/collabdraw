@@ -1082,6 +1082,8 @@ enyo.kind({
     },
 
     appclicked: function(x, y) {
+        x=this.zoomConvert(x);
+        y=this.zoomConvert(y);
         if (this.addingText) {
             this.executeAddText(x, y);
             this.connection.sendPath({
@@ -1206,6 +1208,7 @@ enyo.kind({
 
     executeAddText: function(x, y) {
         // Top banner is 60px height
+
         var yPosition = y - 60;
         var text = this.cvs.text(x, yPosition, 'Adding text here')
             .attr({
@@ -1225,6 +1228,8 @@ enyo.kind({
     },
 
     executeEditText: function(x, y, value) {
+        x=this.zoomConvert(x);
+        y=this.zoomConvert(y);
         var id = x.toString() + '-' + y.toString();
         if (id in this.textEdits) {
             var t = this.textEdits[id];

@@ -1126,16 +1126,16 @@ enyo.kind({
     previewMouseOut: function(inSender, inEvent) {
         this.$.previewPages.applyStyle("background-image", "url(../images/btn_thumbnails_gray.png)");
     },
-
-    selectPreviewPages: function(inSender, inEvent) {
-        var totalPages = this.whiteboard.getNumPages(),
-            index;
+    selectPreviewPages: function(inSender, inEvent, flag) {
+        var totalPages = this.whiteboard.getNumPages(),index;
         // Minus left and right arrows
-        // if (this.pagePreviewNum == 0) {
         for (index = 0; index < this.pagePreviewContainer.length; index += 1) {
             this.pagePreviewContainer[index].destroy();
         }
         this.pagePreviewContainer = [];
+        if(!flag){
+            this.pagePreviewNum= (Math.ceil(this.whiteboard.getCurrentPage()/6)-1)*6;
+        }
         for (index = 0; index < Math.min(6, totalPages-this.pagePreviewNum); index += 1) {
             var page=this.pagePreviewNum+index+1;
             var url="http://"+this.appIpAddress+":"+this.appPort+"/files/"+this.vid+"_"+this.room+"/"+this.whiteboard.getPageIdByPage(page)+"_thumbnail.png?version="+ $.now();
@@ -1190,7 +1190,7 @@ enyo.kind({
         this.closeEraser();
         this.cancelSelect();
         this.pagePreviewNum = this.pagePreviewNum + 6;
-        this.selectPreviewPages(inSender, inEvent)
+        this.selectPreviewPages(inSender, inEvent, 1);
     },
 
     gotoNextPageMouseOver: function(inSender, inEvent) {
@@ -1228,13 +1228,14 @@ enyo.kind({
     },
 
     selectPrevious: function(inSender, inEvent) {
+        console.log("selectPrevious",this.pagePreviewNum);
         if(this.pagePreviewNum==0){
             return;
         }
         this.cancelSelect();
         this.closeEraser();
         this.pagePreviewNum = this.pagePreviewNum - 6;
-        this.selectPreviewPages(inSender, inEvent, -1)
+        this.selectPreviewPages(inSender, inEvent, 1);
     },
 
     selectCreateJoinRoomPopupCancel: function(inSender, inEvent) {
