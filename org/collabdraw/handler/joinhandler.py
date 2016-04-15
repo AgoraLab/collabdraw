@@ -133,7 +133,7 @@ class JoinHandler(tornado.web.RequestHandler):
             JoinHandler.cookies[key]={'room':cname,
                                      'expiredTs':expiredTs,
                                      'vid':vid,
-                                     'host':1 if role == 'host' else 0,
+                                     'host': '1' if role == 'host' else '0',
                                      'mode':mode,
                                      'redis':config.EDGE_REDIS_URL[redis]
                                      }
