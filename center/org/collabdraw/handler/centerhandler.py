@@ -14,6 +14,7 @@ from enum import Enum
 import hmac
 from hashlib import sha1
 from urllib.parse import quote
+import ctypes
 
 OK_CODE = 0
 VOM_SERVICE_UNAVAILABLE = 1
