@@ -30,15 +30,11 @@ def uploadfile(filename, data):
     # ret=http_client.fetch(url, method='POST', headers=headers, body=msg)
     # logger.info(ret)
     # return
-    try:
-        s3 = boto3.resource('s3')
-        b=s3.Bucket(config.S3_BUCKET)
-        logger.info("upload s3 create bucket %s"%(filename))
-        ret=b.put_object(Key=filename, Body=data, ContentType='image')
-        logger.info("upload s3 %s %s"%(filename, ret))
-    except:
-        logger.info("upload s3 error %s"%(filename))
-        traceback.print_exc()
+    s3 = boto3.resource('s3')
+    b=s3.Bucket(config.S3_BUCKET)
+    logger.info("upload s3 create bucket %s"%(filename))
+    ret=b.put_object(Key=filename, Body=data, ContentType='image')
+
 
 def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
     no=RealtimeHandler.gen_page_id()

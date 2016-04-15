@@ -75,8 +75,12 @@ class UploadHandler(tornado.web.RequestHandler):
         db_key = "%s:%s" % (cookie['vid'], self.room_name)
         # split and convert pdf to png
         if fext.lower() == '.pdf':
-            threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname,db_key ,fileinfo['body'])).start()
+            t=threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname,db_key ,fileinfo['body']))
         else:
-            threading.Thread(target=process_uploaded_file_image, args=(fext.lower(), db_key, fileinfo['body'])).start()
+            t=threading.Thread(target=process_uploaded_file_image, args=(fext.lower(), db_key, fileinfo['body']))
+        t.start()
+        # logger.info("thread start")
+        t.join()
+        # logger.info("thread end")
         response_str = "Upload finished successfully"
         self.finish(response_str)

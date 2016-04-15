@@ -83,9 +83,9 @@ def serverKeepAlive():
     msg={"port":config.PUBLIC_LISTEN_PORT, "load":RealtimeHandler.clientCount(), "key":"bestvoip"}
     body = urllib.parse.urlencode(msg) #Make it into a post request
     try :
-        for x in socket.gethostbyname_ex('wb.agorabeckon.com')[2]:
-            url = "http://%s:5555/registerEdgeServer"%(x)
-            http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)
+        # for x in socket.gethostbyname_ex('wb.agorabeckon.com')[2]:
+        url = "https://wb.agorabeckon.com:5555/registerEdgeServer"
+        http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)
     except:
         logger.info("gethostbyname error")
 

@@ -42,8 +42,7 @@ HASH_SALT = "bollacboard"
 
 # Enable SSL/TLS
 ENABLE_SSL = False
-SERVER_CERT = os.path.join(os.getcwd(), "server.crt")
-SERVER_KEY = os.path.join(os.getcwd(), "server.key")
-
+SERVER_CERT = os.path.join(os.getcwd(), "agorabeckon.com.chained.crt")
+SERVER_KEY = os.path.join(os.getcwd(), "agorabeckon-com.nopass.key")
 # Demo mode disables login requirement
 # DEMO_MODE = False

@@ -49,7 +49,7 @@ function AgoraWhiteBoardApi() {
 
         this.cname = cname;
         _this = this;
-        $.get('http://wb.agorabeckon.com:5555/getEdgeServer', {
+        $.get('https://wb.agorabeckon.com:5555/getEdgeServer', {
             key   : key,
             cname : cname,
             uinfo : uinfo
