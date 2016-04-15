@@ -123,7 +123,7 @@ class JoinHandler(tornado.web.RequestHandler):
         expiredTs = self.get_argument('expired', time.time() + COOKIE_EXPIRED_SECONDS)
         redis = str(self.get_argument('redis', ''))
         mode = str(self.get_argument('mode', MODE_PPT))
-        host = str(self.get_argument('host', '0'))
+        role = str(self.get_argument('role', 'guest'))
         ret = self.onSdkJoinChannelReq(cname, uinfo, vid, redis, ticket)
         self.logger.info(self.request.body)
         self.finish(ret)
@@ -133,7 +133,7 @@ class JoinHandler(tornado.web.RequestHandler):
             JoinHandler.cookies[key]={'room':cname,
                                      'expiredTs':expiredTs,
                                      'vid':vid,
-                                     'host':host,
+                                     'host':1 if role == 'host' else 0,
                                      'mode':mode,
                                      'redis':config.EDGE_REDIS_URL[redis]
                                      }
