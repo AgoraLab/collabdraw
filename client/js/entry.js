@@ -17,7 +17,7 @@
         var key    = getParameterByName('key');
         var uinfo  = getParameterByName('uinfo');
         var cname  = getParameterByName('cname');
-        var host   = getParameterByName('host');
+        var role   = getParameterByName('role');
         var mode   = getParameterByName('mode');
 
         /* Call AgoraWhiteBoardApi */
@@ -29,7 +29,7 @@
             key   : key,
             cname : cname,
             uinfo : uinfo,
-            host  : host || 0,
+            role  : role|| 'host',
             onJoin: function (ec, em, cname, uinfo) {
                 console.log('[onJoin] ec: ' + ec + ' em: ' + em + ' cname: ' + cname + ' uinfo: ' + uinfo);
             }
