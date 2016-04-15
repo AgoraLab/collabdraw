@@ -129,7 +129,7 @@
              */
             function join(params) {
                 if (!params.key || !params.cname) {
-                    console.log("Missing required paramsters, please check if key, cname or uinfo is null or undefined.");
+                    console.log("Missing required paramsters, please check if key, cname is null or undefined.");
                     return;
                 }
                 createWhiteboardContainer(params);

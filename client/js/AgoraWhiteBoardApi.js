@@ -55,7 +55,7 @@ function AgoraWhiteBoardApi() {
             onConnectionLost = params.onConnectionLost;
 
         this.cname = cname;
-        this.role = host;
+        this.role = host || 1;
         _this = this;
         $.get('https://wb.agorabeckon.com:5555/getEdgeServer', {
             key   : key,
