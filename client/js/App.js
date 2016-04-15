@@ -43,6 +43,8 @@ enyo.kind({
         canvasHeight: 550,
         appIpAddress: "",
         appPort: "",
+        // Host: 1, Guest: 0
+        role: 1,
         pagePreviewNum: 0,
         pagePreviewContainer: [],
         connectionLostCallback: function() {
@@ -82,6 +84,7 @@ enyo.kind({
         }, {
             kind: "onyx.TooltipDecorator",
             style: "float:right;",
+            name: "uploadAndNewPageBtn",
             components: [{
                 kind: "onyx.PickerDecorator",
                 style: "margin-top:0;",
@@ -114,6 +117,7 @@ enyo.kind({
         }
     }, {
         kind: "FittableRows",
+        name: "middleFittableRows",
         fit: true,
         style: "text-align: center;background-color: #5b5b5b; z-index: 0;",
         components: [{
@@ -574,8 +578,12 @@ enyo.kind({
 
     rendered: function() {
         this.inherited(arguments);
-        if (this.isMobile()) {
+        if (this.isMobile() || this.isGuest()) {
             this.$.bottomToolbar.hide();
+            this.$.uploadAndNewPageBtn.hide();
+            this.$.gotoPreviousPage.hide();
+            this.$.gotoNextPage.hide();
+            this.$.middleFittableRows.parent.resize();
         }
     },
 
@@ -729,6 +737,9 @@ enyo.kind({
     },
 
     appclicked: function(inSender, inEvent) {
+        if (this.isGuest()) {
+            return;
+        }
         var canvasBounds = this.$.canvasContainer.getBounds();
         var x = inEvent.pageX - canvasBounds.left;
         var y = inEvent.pageY - canvasBounds.top;
@@ -742,6 +753,9 @@ enyo.kind({
     },
 
     touchstart: function(inSender, inEvent) {
+        if (this.isGuest()) {
+            return;
+        }
         var canvasBounds = this.$.canvasContainer.getBounds();
         this.curves.oldx = inEvent.pageX - canvasBounds.left;
         this.curves.oldy = inEvent.pageY - canvasBounds.top - 60;
@@ -749,6 +763,9 @@ enyo.kind({
     },
 
     touchmove: function(inSender, inEvent) {
+        if (this.isGuest()) {
+            return;
+        }
         if (this.curves.oldx != -1 && this.curves.oldy != -1) {
             var canvasBounds = this.$.canvasContainer.getBounds();
             x = inEvent.pageX - canvasBounds.left;
@@ -760,6 +777,9 @@ enyo.kind({
     },
 
     touchend: function(inSender, inEvent) {
+        if (this.isGuest()) {
+            return;
+        }
         if (this.curves.oldx != -1 && this.curves.oldy != -1) {
             var canvasBounds = this.$.canvasContainer.getBounds();
             x = inEvent.pageX - canvasBounds.left;
@@ -1337,6 +1357,10 @@ enyo.kind({
         //this.whiteboard.drawingItem = this.selecting.previousDrawingItem;
         this.whiteboard.cancelSelect();
         this.whiteboard.stopDoingSelect();
+    },
+
+    isGuest: function() {
+        return this.role === 0 || this.role === '0';
     },
 
     isMobile: function() {

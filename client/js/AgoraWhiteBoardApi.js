@@ -36,6 +36,7 @@ function AgoraWhiteBoardApi() {
     this.cname = '';
     this.uid = '';
     this.vid='';
+    this.role = ''
 
     this.defaultCanvasHeight = function() {
         return this.canvasNode ? $(this.canvasNode).height() : 600;
@@ -54,6 +55,7 @@ function AgoraWhiteBoardApi() {
             onConnectionLost = params.onConnectionLost;
 
         this.cname = cname;
+        this.role = host;
         _this = this;
         $.get('https://wb.agorabeckon.com:5555/getEdgeServer', {
             key   : key,
@@ -112,6 +114,7 @@ function AgoraWhiteBoardApi() {
         app.setRoom(this.cname);
         app.setUid(this.uid);
         app.setVid(this.vid);
+        app.setRole(this.role);
         if (onConnectionLost && $.isFunction(onConnectionLost)) {
             app.setConnectionLostCallback(onConnectionLost);
         }
