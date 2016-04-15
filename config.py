@@ -41,7 +41,7 @@ HTML_ROOT = os.path.join(RESOURCE_DIR, 'html')
 HASH_SALT = "bollacboard"
 
 # Enable SSL/TLS
-ENABLE_SSL = False
+ENABLE_SSL = True
 SERVER_CERT = os.path.join(os.getcwd(), "agorabeckon.com.chained.crt")
 SERVER_KEY = os.path.join(os.getcwd(), "agorabeckon-com.nopass.key")
 # Demo mode disables login requirement

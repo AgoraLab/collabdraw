@@ -23,6 +23,12 @@ var ErrorTable = {
     13: 'canceled'
  };
 
+function ip2int(dot)
+{
+ var d = dot.split('.');
+ return ((((((+d[0])*256)+(+d[1]))*256)+(+d[2]))*256)+(+d[3]);
+}
+
 function AgoraWhiteBoardApi() {
     this.canvasHeight = -1;
     this.canvasWidth = -1;
@@ -64,8 +70,10 @@ function AgoraWhiteBoardApi() {
             var vid      = result['vid'];
             var ticket   = result['ticket'];
             uinfo  = result['uinfo'].toString();
+            console.log('ws '+ip+' '+port+'  '+ip2int(ip));
+            ip='wbedge'+ip2int(ip)+'.agorabeckon.com';
             console.log('ws '+ip+' '+port);
-            $.get('http://'+ip + ':' + port + '/join', {
+            $.get('https://'+ip+ ':' + port + '/join', {
                 cname : cname,
                 redis : redis_id,
                 vid   : vid,

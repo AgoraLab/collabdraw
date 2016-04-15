@@ -143,6 +143,7 @@ enyo.kind({
                 } else {
                     var websocketAddress = 'ws://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
                 }
+                var websocketAddress = 'wss://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
                 if (this.hasNode()) {
                     var _this = this;
                     this.owner.$.loadingPopup.show();
