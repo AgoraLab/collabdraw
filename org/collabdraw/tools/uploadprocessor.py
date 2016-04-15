@@ -36,7 +36,7 @@ def uploadfile(filename, data):
     ret=b.put_object(Key=filename, Body=data, ContentType='image')
 
 
-def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
+def process_uploaded_file_pdf(dir_path ,fname, room_topic, body, queue):
     no=RealtimeHandler.gen_page_id()
     tmp_name=no
     os.makedirs(dir_path, exist_ok=True)
@@ -56,19 +56,30 @@ def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
     for i in page_list:
         filename="%x%x.png"%(prefix, i)
         data = open("%s/%d_%d.png"%(dir_path,tmp_name,i-tmp_name+1), 'rb')
-        uploadfile(filename ,data)
+        try:
+            uploadfile(filename ,data)
+        except:
+            queue.put("fail")
+            return
         ret[i]=filename
     # Delete all the files
     delete_files('%s/%d_*.pdf'%(dir_path , tmp_name))
     delete_files('%s/%d_*.png'%(dir_path , tmp_name))
     tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.on_uploadfile(room_topic,ret))
+    queue.put("succ")
 
-def process_uploaded_file_image(ftype ,room_topic, data):
+
+def process_uploaded_file_image(ftype ,room_topic, data, queue):
     if room_topic not in RealtimeHandler.room_data:
         logger.error("room not exist:%s"%room_topic)
         return
     page_no=RealtimeHandler.gen_page_id()
     prefix=unsigned_hash("%s:%s:%s"%(room_topic,config.APP_IP_ADDRESS,config.APP_PORT))
     filename="%x%x%s"%(prefix, page_no, ftype)
-    uploadfile(filename ,data)
+    try:
+        uploadfile(filename ,data)
+    except:
+        queue.put("fail")
+        return
     tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.on_uploadfile(room_topic,{page_no:filename}))
+    queue.put("succ")

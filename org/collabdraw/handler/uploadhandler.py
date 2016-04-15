@@ -8,7 +8,7 @@ import tornado.web
 import tornado.template as template
 from .joinhandler import JoinHandler
 from ..dbclient.dbclientfactory import DbClientFactory
-
+import queue
 from ..tools.uploadprocessor import *
 
 
@@ -74,13 +74,14 @@ class UploadHandler(tornado.web.RequestHandler):
         # fh.close()
         db_key = "%s:%s" % (cookie['vid'], self.room_name)
         # split and convert pdf to png
+        q = queue.Queue()
         if fext.lower() == '.pdf':
-            t=threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname,db_key ,fileinfo['body']))
+            t=threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname,db_key ,fileinfo['body'],q))
         else:
-            t=threading.Thread(target=process_uploaded_file_image, args=(fext.lower(), db_key, fileinfo['body']))
+            t=threading.Thread(target=process_uploaded_file_image, args=(fext.lower(), db_key, fileinfo['body'],q))
         t.start()
         # logger.info("thread start")
         t.join()
         # logger.info("thread end")
-        response_str = "Upload finished successfully"
+        response_str = q.get()
         self.finish(response_str)

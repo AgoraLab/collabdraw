@@ -632,8 +632,10 @@ enyo.kind({
                 setTimeout(function() {
                     $(".ajax-file-upload-container").empty();
                 }, 3000);
+                console.log(data);
             },
             afterUploadAll: function(obj) {
+                console.log(obj);
                 // TODO
             },
             onError: function(files, status, errMsg, pd) {
