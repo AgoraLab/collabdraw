@@ -49,13 +49,13 @@ function AgoraWhiteBoardApi() {
         var key              = params.key,
             cname            = params.cname,
             uinfo            = params.uinfo,
-            host             = params.host,
+            role             = params.role,
             mode             = params.mode,
             onJoin           = params.onJoin,
             onConnectionLost = params.onConnectionLost;
 
         this.cname = cname;
-        this.role = host || 1;
+        this.role = role || 'host';
         _this = this;
         $.get('https://wb.agorabeckon.com:5555/getEdgeServer', {
             key   : key,
@@ -76,12 +76,12 @@ function AgoraWhiteBoardApi() {
             ip='wbedge'+ip2int(ip)+'.agorabeckon.com';
             console.log('ws '+ip+' '+port);
             $.get('https://'+ip+ ':' + port + '/join', {
-                cname : cname,
-                redis : redis_id,
-                vid   : vid,
-                uinfo : uinfo,
-                'ticket': ticket,
-                host  : host
+                cname    : cname,
+                redis    : redis_id,
+                vid      : vid,
+                uinfo    : uinfo,
+                ticket   : ticket,
+                role     : role
             }, function (result, status) {
                 if (!result || result.length == 0) {
                     onJoin(-10, 'empty result from agora server', cname, uinfo, uid)

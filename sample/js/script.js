@@ -3,7 +3,7 @@
         var hostParams = {
             key        : 'f4637604af81440596a54254d53ade20',
             cname      : 'PES-2017',
-            host       : 1,
+            role       : 'host',
             width      : 800,
             height     : 600,
             container  : "wbHost"
@@ -14,7 +14,7 @@
         var guestParams = {
             key        : 'f4637604af81440596a54254d53ade20',
             cname      : 'PES-2017',
-            host       : 0,
+            role       : 'guest',
             width      : 800,
             height     : 600,
             container  : "wbGuest"

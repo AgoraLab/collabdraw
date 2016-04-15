@@ -75,7 +75,7 @@
                 var key       = params.key,
                     cname     = params.cname,
                     uinfo     = params.uinfo,
-                    host      = params.host || "0",
+                    role      = params.role || "host",
                     mode      = params.mode,
                     expire    = params.expire,
                     width     = params.width,
@@ -86,7 +86,7 @@
 
                 source += "?key=" + key;
                 source += "&cname=" + cname;
-                source += "&host=" + host;
+                source += "&role=" + role;
 
                 if (uinfo) {
                     source += "&uinfo=" + uinfo;
@@ -120,7 +120,7 @@
              * key:         Agora vendor key
              * cname:       Room name
              * uinfo:       User info
-             * host:        Host: 1, Guest: 0
+             * role:        Host: host, Guest: guest
              * mode:        Play mode: 0
              * width:       Container width
              * height:      Container height

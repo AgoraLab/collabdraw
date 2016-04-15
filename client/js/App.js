@@ -43,8 +43,7 @@ enyo.kind({
         canvasHeight: 550,
         appIpAddress: "",
         appPort: "",
-        // Host: 1, Guest: 0
-        role: 1,
+        role: 'host',
         pagePreviewNum: 0,
         pagePreviewContainer: [],
         connectionLostCallback: function() {
@@ -1360,7 +1359,7 @@ enyo.kind({
     },
 
     isGuest: function() {
-        return this.role === 0 || this.role === '0';
+        return this.role === 'guest';
     },
 
     isMobile: function() {
