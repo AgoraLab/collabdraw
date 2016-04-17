@@ -17,7 +17,8 @@
             resolution   = "480p",
             maxFrameRate = 15,
             maxBitRate   = 750,
-            client       = AgoraRTC.Client({});
+            client       = AgoraRTC.Client({}),
+            remoteStreamList = [];
 
         /* Joining channel */
         (function initAgoraRTC() {
@@ -33,6 +34,31 @@
         subscribeStreamEvents();
 
         // Utility function begin
+        function removeStreamFromList(id) {
+            var index, tmp;
+            for (index = 0; index < remoteStreamList.length; index += 1) {
+                var tmp = remoteStreamList[index];
+                if (tmp.id === id) {
+                    var toRemove = remoteStreamList.splice(index, 1);
+                    if (toRemove.length === 1) {
+                        //delete toRemove[1];
+                        console.log("stream stopping..." + toRemove[0].stream.getId());
+                        toRemove[0].stream.stop();
+                    }
+                }
+            }
+        }
+
+        function addToRemoteStreamList(stream) {
+            if (stream) {
+                remoteStreamList.push({
+                    id: stream.getId(),
+                    stream: stream
+                });
+            }
+        }
+
+
         function subscribeStreamEvents() {
             client.on('stream-added', function (evt) {
                 var stream = evt.stream;
@@ -66,24 +92,27 @@
             });
         }
 
-        function showStreamOnPeerLeave(stream) {
-            //displayStream('agora-local', stream, 160, 120, 'host-stream');
-            $("#videoContainer").empty();
+        function showStreamOnPeerLeave(streamId) {
+            removeStreamFromList(Number(streamId));
+            if (remoteStreamList.size === 0) {
+                $("#videoContainer").empty();
+            }
         }
 
         function showStreamOnPeerAdded(stream) {
+            addToRemoteStreamList(stream);
             displayStream('agora-local', stream, 160, 120, 'host-stream');
         }
 
         function removeElementIfExist(tagId, uid) {
-            $("#" + tagId + uid).remove();
+            $("#videoContainer").empty();
         }
 
         function displayStream(tagId, stream, width, height, className) {
             // cleanup, if network connection interrupted, user cannot receive any events.
             // after reconnecting, the same node id is reused,
             // so remove html node with same id if exist.
-            removeElementIfExist(tagId, stream.getId());
+            removeElementIfExist();
 
             var $container = $("#videoContainer");
             $container.append('<div id="' + tagId + stream.getId() + '" class="' + className + '" data-stream-id="' + stream.getId() + '"></div>');
