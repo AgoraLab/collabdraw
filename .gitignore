@@ -8,3 +8,4 @@ venv
 .DS_Store
 dump.rdb
 files/
+node_modules/
