@@ -3,21 +3,16 @@ import json
 from zlib import compress
 from urllib.parse import quote
 import config
-import traceback
-import os
 from base64 import b64encode
 import time
-from datetime import datetime
 import tornado.websocket
 import tornado.web
-from pystacia import read
 from .joinhandler import JoinHandler
 from .joinhandler import MODE_PPT
 from collections import defaultdict
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..pubsub.pubsubclientfactory import PubSubClientFactory
-from ..tools.videomaker import make_video
-from ..tools.svg import gen_svg
+# from ..tools.svg import gen_svg
 from ..tools.svg import gen_list_svg
 from tornado import ioloop
 import threading
@@ -119,7 +114,7 @@ class RoomData(object):
 
     def destroy(self):
         if self.topic and self.pubsub_client:
-            self.pubsub_client.unsubscribe(topic, self)
+            self.pubsub_client.unsubscribe(self.topic, self)
         self.page_path=None
         self.page_image=None
         self.pubsub_client=None
@@ -178,7 +173,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         # needed when realse
         if event == "init" :
-            vid = data.get('vid', '')
+            # vid = data.get('vid', '')
             key="%s:%s:%s"%(data['vid'],data['room'],fromUid)
             cookie=JoinHandler.get_cookie(key)
             if cookie and 'room' in data and cookie['room'] == data['room'] and cookie['expiredTs'] >= fromTs:
@@ -279,7 +274,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             if not ret:
                 return self.on_db_error()
             self.init_room_page(self.room_name, page_id)
-        elif event == "laser-move":
+        elif event == "laser-move" or event == "laser-draw" or event == "laser-remove":
             if self.cookie['host'] != '1':
                 logger.error("user not host :%s"%(self.cookie))
                 return

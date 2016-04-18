@@ -608,6 +608,8 @@ enyo.kind({
         if (this.laserPen){
             this.laserPen.remove();
             this.laserPen = null;
+
+            this.connection.sendLaserEvent('laser-remove');
         }
     },
 
@@ -636,10 +638,10 @@ enyo.kind({
                         cy: ny
                     });
                     if(Math.abs(self.laserPen.attrs.cx - nx) > 2 || Math.abs(self.laserPen.attrs.cx - ny) > 2){
-                        self.connection.sendLaserMove({
+                        self.connection.sendLaserEvent('laser-move', {
                             x: nx,
                             y: ny,
-                        })
+                        });
                     }
                 },
                 function(x, y, e) {
@@ -649,6 +651,12 @@ enyo.kind({
                     this.attr("fill", "red");
                 });
             }
+
+            // create remote laser
+            self.connection.sendLaserEvent('laser-draw', {
+                x: x,
+                y: y
+            });
         }
     },
 

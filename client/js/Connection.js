@@ -63,9 +63,23 @@ enyo.kind({
                 }
                 _this.remoteLaserMove(_this, data);
                 break;
+            case 'laser-draw':
+                if (_this.uid === fromUid) {
+                    console.log("ignore message 'laser-draw' from mine. uid " + fromUid);
+                    break;
+                }
+                _this.remoteLaserDraw(_this, data);
+                break;
+            case 'laser-remove':
+                if (_this.uid === fromUid) {
+                    console.log("ignore message 'laser-remove' from mine. uid " + fromUid);
+                    break;
+                }
+                _this.remoteLaserRemove(_this, data);
+                break;
             case 'change-page':
                 if (_this.uid === fromUid) {
-                    console.log("ignore message 'laser-move' from mine. uid " + fromUid);
+                    console.log("ignore message 'change-page' from mine. uid " + fromUid);
                     break;
                 }
 
@@ -186,19 +200,23 @@ enyo.kind({
         this.currentPathLength = 0;
         this.sendMessage("clear", {});
     },
-    sendLaserMove: function(data) {
-        data["room"]=  this.whiteboard.room
-        data["page_id"]=  this.whiteboard.getCurrentPageId()
+
+    sendLaserEvent: function(eventName, data) {
+        data = data || {};
+        data["room"] =  this.whiteboard.room;
+        data["page_id"] =  this.whiteboard.getCurrentPageId();
         message = JSON.stringify({
             "uid": this.uid,
-            "event": 'laser-move',
+            "event": eventName,
             "data": data
         });
         this.socket.send(message);
     },
+
     deletePage: function() {
         this.sendMessage("delete-page", {});
     },
+
     getImage: function() {
         //console.log("Getting image for page " + this.page);
         this.sendMessage("get-image", {
@@ -344,15 +362,25 @@ enyo.kind({
           self.whiteboard.gotoPage(self.whiteboard.getPageById(cur_id));
         }
     },
+
     remotePages: function(self, data) {
         console.log("receive cmd 'pages' from server. data " + data);
         var npages = data['pages'];
         // TODO update total pages in UI
         self.whiteboard.setTotalPages(npages);
     },
+
     remoteLaserMove: function(self, data) {
         self.whiteboard.removeLaser();
         self.whiteboard.drawLaser(data.x, data.y)
+    },
+
+    remoteLaserDraw: function(self, data) {
+        self.whiteboard.drawLaser(data.x, data.y)
+    },
+
+    remoteLaserRemove: function(self, data) {
+        self.whiteboard.removeLaser();
     }
 
 });
