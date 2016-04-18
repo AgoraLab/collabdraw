@@ -43,7 +43,7 @@ enyo.kind({
      * @param parent: Class canvasContainer
      * @param callback: called once the page is rendered
      */
-    constructor: function(name, parent, page, websocketAddress, callback, connLostCallback) {
+    constructor: function(name, parent, page, websocketAddress, userRole, callback, connLostCallback) {
         this.parent_         = parent;
         this.uid             = parent.uid;
         this.vid             = parent.vid;
@@ -67,6 +67,7 @@ enyo.kind({
         this.penPathID       = 10000;
         this.currentSelected = null;
         this.laserPen        = null;
+        this.userRole = userRole;
     },
 
     /**
@@ -625,27 +626,29 @@ enyo.kind({
                 fill: "red",
                 opacity: "0.5"
             });
-            this.laserPen.drag(function(x, y, dx, dy, e) {
-                var nx = self.zoomConvert(dx) - self.zoomConvert(canvasBounds.left);
-                // We have a 60px header bar
-                var ny = self.zoomConvert(dy - 60);
-                this.attr({
-                    cx: nx,
-                    cy: ny
+            if (!this.isGuest()) {
+                this.laserPen.drag(function(x, y, dx, dy, e) {
+                    var nx = self.zoomConvert(dx) - self.zoomConvert(canvasBounds.left);
+                    // We have a 60px header bar
+                    var ny = self.zoomConvert(dy - 60);
+                    this.attr({
+                        cx: nx,
+                        cy: ny
+                    });
+                    if(Math.abs(self.laserPen.attrs.cx - nx) > 2 || Math.abs(self.laserPen.attrs.cx - ny) > 2){
+                        self.connection.sendLaserMove({
+                            x: nx,
+                            y: ny,
+                        })
+                    }
+                },
+                function(x, y, e) {
+                    this.attr("fill", "red");
+                },
+                function(e) {
+                    this.attr("fill", "red");
                 });
-                if(Math.abs(self.laserPen.attrs.cx - nx) > 2 || Math.abs(self.laserPen.attrs.cx - ny) > 2){
-                    self.connection.sendLaserMove({
-                        x: nx,
-                        y: ny,
-                    })
-                }
-            },
-            function(x, y, e) {
-                this.attr("fill", "red");
-            },
-            function(e) {
-                this.attr("fill", "red");
-            });
+            }
         }
     },
 
@@ -1265,5 +1268,8 @@ enyo.kind({
             a.remove();
             canvas_tag.remove();
         }, 500);
+    },
+    isGuest: function() {
+         return this.userRole === 'guest';
     }
 });

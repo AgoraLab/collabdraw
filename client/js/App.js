@@ -155,6 +155,7 @@ enyo.kind({
                         this.owner,
                         1,
                         websocketAddress,
+                        this.owner.role,
                         function(numPages, currentPage) {
                             // update button status after being initialized.
                             _this.owner.updatePageInfo();
