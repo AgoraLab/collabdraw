@@ -1,5 +1,5 @@
 #!/bin/sh
-deployDir=/home/devops/web_demo/project/videocall
+deployDir=/home/devops/web_demo/project/whiteboard
 ServerName=${@:$OPTIND:1}
 
 Rev="$(git rev-parse HEAD)"
