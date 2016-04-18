@@ -1,24 +1,23 @@
 (function($) {
     $(function() {
+        var key              = "74a0b7bb5d3e47c7abca0533d17b0afa",
+            resolution       = Cookies.get("resolution") || "480p",
+            maxFrameRate     = Number(Cookies.get("maxFrameRate") || 15),
+            maxBitRate       = Number(Cookies.get("maxBitRate") || 750),
+            channel          = Cookies.get("roomName"),
+            client           = AgoraRTC.Client({}),
+            remoteStreamList = [],
+            localStream;
         var hostParams = {
             key        : 'f4637604af81440596a54254d53ade20',
-            cname      : 'PES-2017',
+            cname      : channel,
             role       : 'host',
-            width      : 800,
-            height     : 600,
+            width      : 1024,
+            height     : 768,
             container  : "wbHost"
         };
         /* Call AgoraWhiteBoardApi */
         Agora.Whiteboard.join(hostParams);
-
-        // Initialize RTC SDK
-        var localStream,
-            key          = "74a0b7bb5d3e47c7abca0533d17b0afa",
-            channel      = 'PES-2017',
-            resolution   = "480p",
-            maxFrameRate = 15,
-            maxBitRate   = 750,
-            client       = AgoraRTC.Client({});
 
         /* Joining channel */
         (function initAgoraRTC() {

@@ -9,3 +9,4 @@ venv
 dump.rdb
 files/
 node_modules/
+dist/

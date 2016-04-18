@@ -1,5 +1,10 @@
 (function($) {
     $(function() {
+
+        // Setting default value
+        Cookies.set("role", "host");
+        Cookies.set("mode", "lesson");
+
         var maxRateSlider = createSlider();
 
         $("#videoOptionsModal").on("hide.bs.modal", function() {
@@ -12,12 +17,24 @@
             Cookies.set("maxBitRate", maxBitRate);
         });
 
+        $("input[type='radio']").change(function(e) {
+            var name = $(e.target).prop("name"),
+                value = $(e.target).val();
+
+            Cookies.set(name, value);
+        });
+
         $("#join-meeting").click(function(e) {
             e.preventDefault();
-            var roomName = $("#room-name").val();
+            var roomName = $("#room-name").val(),
+                role = Cookies.get("role");
             if (roomName) {
                 Cookies.set("roomName", roomName);
-                window.location.href="meeting.html";
+                if (role === 'host') {
+                    window.location.href="whiteboard-host.html";
+                } else {
+                    window.location.href="whiteboard-guest.html";
+                }
             } else {
                 $("#room-name").addClass("required-field");
             }
