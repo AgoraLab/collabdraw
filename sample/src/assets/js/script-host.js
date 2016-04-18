@@ -36,35 +36,48 @@
         // Utility function begin
         function subscribeStreamEvents() {
             client.on('stream-added', function (evt) {
-                //var stream = evt.stream;
-                //console.log("New stream added: " + stream.getId());
-                //console.log("Timestamp: " + Date.now());
-                //client.subscribe(stream, function (err) {
-                    //console.log("Subscribe stream failed", err);
-                //});
+                var stream = evt.stream;
+                console.log("New stream added: " + stream.getId());
+                console.log("Timestamp: " + Date.now());
+                client.subscribe(stream, function (err) {
+                    console.log("Subscribe stream failed", err);
+                });
             });
 
             client.on('peer-leave', function(evt) {
-                //console.log("Peer has left: " + evt.uid);
-                //console.log("Timestamp: " + Date.now());
-                //showStreamOnPeerLeave(evt.uid);
+                console.log("Peer has left: " + evt.uid);
+                console.log("Timestamp: " + Date.now());
+                showStreamOnPeerLeave(evt.uid);
             });
 
             client.on('stream-subscribed', function (evt) {
-                //var stream = evt.stream;
-                //console.log("Got stream-subscribed event");
-                //console.log("Timestamp: " + Date.now());
-                //console.log("Subscribe remote stream successfully: " + stream.getId());
-                //showStreamOnPeerAdded(stream);
+                var stream = evt.stream;
+                console.log("Got stream-subscribed event");
+                console.log("Timestamp: " + Date.now());
+                console.log("Subscribe remote stream successfully: " + stream.getId());
+                showStreamOnPeerAdded(stream);
             });
 
             client.on("stream-removed", function(evt) {
-                //var stream = evt.stream;
-                //console.log("Stream removed: " + evt.stream.getId());
-                //console.log("Timestamp: " + Date.now());
-                //console.log(evt);
-                //showStreamOnPeerLeave(evt.stream.getId());
+                var stream = evt.stream;
+                console.log("Stream removed: " + evt.stream.getId());
+                console.log("Timestamp: " + Date.now());
+                showStreamOnPeerLeave(evt.stream.getId());
             });
+        }
+
+        function showStreamOnPeerLeave(streamId) {
+            removeStreamFromList(Number(streamId));
+            removeElementIfExist('agora-video-parent', streamId);
+            if (remoteStreamList.size === 0) {
+                $("#videoContainer").empty();
+            }
+        }
+
+        function showStreamOnPeerAdded(stream) {
+            addToRemoteStreamList(stream);
+            removeElementIfExist('agora-video-parent', stream.getId());
+            displayStream('agora-video-parent', stream, 160, 120, 'host-stream');
         }
 
         function initLocalStream(uid, callback) {
@@ -87,7 +100,7 @@
 
             localStream.init(function() {
                 console.log("Get UserMedia successfully");
-                displayStream('agora-local', localStream, 160, 120, 'host-local-stream');
+                displayStream('agora-video-parent', localStream, 160, 120, 'host-local-stream');
 
                 client.publish(localStream, function (err) {
                     console.log("Timestamp: " + Date.now());
@@ -100,6 +113,30 @@
                 //$(".info").append("<div class='back'><a href='index.html'>Back</a></div>");
             });
             return localStream;
+        }
+
+        function addToRemoteStreamList(stream) {
+            if (stream) {
+                remoteStreamList.push({
+                    id: stream.getId(),
+                    stream: stream
+                });
+            }
+        }
+
+        function removeStreamFromList(id) {
+            var index, tmp;
+            for (index = 0; index < remoteStreamList.length; index += 1) {
+                var tmp = remoteStreamList[index];
+                if (tmp.id === id) {
+                    var toRemove = remoteStreamList.splice(index, 1);
+                    if (toRemove.length === 1) {
+                        //delete toRemove[1];
+                        console.log("stream stopping..." + toRemove[0].stream.getId());
+                        toRemove[0].stream.stop();
+                    }
+                }
+            }
         }
 
         function removeElementIfExist(tagId, uid) {

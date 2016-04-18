@@ -94,6 +94,7 @@
 
         function showStreamOnPeerLeave(streamId) {
             removeStreamFromList(Number(streamId));
+            removeElementIfExist('agora-video-parent', streamId);
             if (remoteStreamList.size === 0) {
                 $("#videoContainer").empty();
             }
@@ -101,18 +102,19 @@
 
         function showStreamOnPeerAdded(stream) {
             addToRemoteStreamList(stream);
-            displayStream('agora-local', stream, 160, 120, 'host-stream');
+            removeElementIfExist('agora-video-parent', stream.getId());
+            displayStream('agora-video-parent', stream, 160, 120, 'host-stream');
         }
 
         function removeElementIfExist(tagId, uid) {
-            $("#videoContainer").empty();
+            $("#" + tagId + uid).remove();
         }
 
         function displayStream(tagId, stream, width, height, className) {
             // cleanup, if network connection interrupted, user cannot receive any events.
             // after reconnecting, the same node id is reused,
             // so remove html node with same id if exist.
-            removeElementIfExist();
+            removeElementIfExist('agora-video-parent', stream.getId());
 
             var $container = $("#videoContainer");
             $container.append('<div id="' + tagId + stream.getId() + '" class="' + className + '" data-stream-id="' + stream.getId() + '"></div>');
