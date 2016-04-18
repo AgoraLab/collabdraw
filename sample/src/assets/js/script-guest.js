@@ -121,7 +121,7 @@
                 width: String(width) + "px",
                 height: String(height)+ "px"
             });
-            stream.play(tagId + stream.getId());
+            stream.play(tagId + stream.getId(), "images");
         }
         // Utility functions end
     });

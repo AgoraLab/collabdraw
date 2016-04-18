@@ -15,7 +15,7 @@ gulp.task('clean', function () {
 
 gulp.task('images', function() {
     gulp.src(['src/assets/*.png'])
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest('dist/images/assets/'));
 
     gulp.src('src/assets/css/images/*')
     .pipe(gulp.dest('dist/css/images'));
@@ -26,7 +26,7 @@ gulp.task('images', function() {
         svgoPlugins: [{removeViewBox: false}],
         use: [pngquant()]
     }))
-    .pipe(gulp.dest('dist/images'));
+    .pipe(gulp.dest('dist/images/'));
 });
 
 gulp.task('fonts', function() {
