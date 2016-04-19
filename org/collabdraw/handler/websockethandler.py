@@ -217,10 +217,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 if page_id not in page_list:
                     page_id = page_list[0]
             self.init_room_page(room_name, page_id)
-            if self.cookie['host'] == '1' and self.cookie['mode'] == MODE_PPT:
-                self.logger.info("broadcast %s"%self.cookie)
-                self.get_room().host_page_id=page_id
-                self.broadcast_message(self.room_topic(), self.construct_broadcast_message("change-page", {'page_id':page_id}))
 
         elif event == "draw-click":
             if self.cookie['host'] != '1':
@@ -310,6 +306,10 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         path=self.get_page_path_data()
         self.send_message(self.construct_message("draw-many",
                                                  {'datas': path, 'pages':page_list}))
+        if self.cookie['host'] == '1' and self.cookie['mode'] == MODE_PPT:
+            self.logger.info("broadcast %s"%self.cookie)
+            self.get_room().host_page_id=page_id
+            self.broadcast_message(self.room_topic(), self.construct_broadcast_message("change-page", {'page_id':page_id}))
 
     def leave_room(self):
         self.logger.info("[%d] Leaving room %s" % (id(self),self.room_name))
