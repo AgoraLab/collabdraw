@@ -625,7 +625,7 @@ enyo.kind({
         if (!x || x.length === 0) {
             $(document.body).append("<span id='file-upload-root' style='z-index:-1000;position:relative;'></span>");
         }
-        var u ='http://' + this.appIpAddress + ':' + this.appPort + '/upload';
+        var u ='https://' + this.appIpAddress + ':' + this.appPort + '/upload';
         $("#file-upload-root").uploadFile({
             url          : u,
             multiple     : false,
