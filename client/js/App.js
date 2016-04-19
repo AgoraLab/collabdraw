@@ -854,6 +854,7 @@ enyo.kind({
         this.cancelEditingText();
         this.dimPenPicker();
         //this.highlighter.on ? this.closeHighlighter() : this.openHighlighter();
+        this.hideLaser();
         this.openHighlighter();
     },
 
@@ -891,6 +892,7 @@ enyo.kind({
         this.closePen();
         this.closeHighlighter();
         this.dimPenPicker();
+        this.hideLaser();
 
         //this.textEditing.on ? this.cancelEditingText() : this.startEditingText();
         this.startEditingText();
