@@ -39,7 +39,7 @@ enyo.kind({
                 break;
             case 'draw-many':
                 if (_this.uid == fromUid) {
-                    console.log("ignore message 'draw' from mine. uid " + fromUid);
+                    console.log("ignore message 'draw-many' from mine. uid " + fromUid);
                     break;
                 }
                 _this.remoteDrawMany(_this, data);
@@ -86,6 +86,8 @@ enyo.kind({
                 if (data['page_id'] === _this.whiteboard.getCurrentPageId()) {
                     break;
                 }
+
+                _this.whiteboard.setTotalPages(data['page_list']);
                 _this.changePage(data['page_id']);
                 break;
             }
@@ -321,6 +323,9 @@ enyo.kind({
     remoteDrawMany: function(self, data) {
         console.log(data);
         self.whiteboard.setTotalPages(data.pages);
+
+        var pageId = self.whiteboard.getPageById(data["page_id"]);
+        self.whiteboard.setCurrentPage(pageId);
         ds = data.datas;
         for (d in ds) {
             self.drawEx(self, ds[d])

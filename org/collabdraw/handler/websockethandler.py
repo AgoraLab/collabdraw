@@ -309,7 +309,10 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         if self.cookie['host'] == '1' and self.cookie['mode'] == MODE_PPT:
             self.logger.info("broadcast %s"%self.cookie)
             self.get_room().host_page_id=page_id
-            self.broadcast_message(self.room_topic(), self.construct_broadcast_message("change-page", {'page_id':page_id}))
+            self.broadcast_message(self.room_topic(), self.construct_broadcast_message("change-page", {
+                'page_id'   : page_id,
+                'page_list' : page_list
+            }))
 
     def leave_room(self):
         self.logger.info("[%d] Leaving room %s" % (id(self),self.room_name))

@@ -18,9 +18,17 @@ enyo.kind({
     getNumPages: function() {
         return this.totalPages;
     },
+
     getCurrentPage: function() {
         return this.currentPage;
     },
+
+    setCurrentPage: function(pageId) {
+        this.currentPage = pageId;
+        // update page info
+        this.callback(this.totalPages, this.currentPage);
+    },
+
     getPageById: function(pageid) {
         var index, length;
         for (index = 0, length = this.page_list.length; index < length; index += 1) {
@@ -567,6 +575,7 @@ enyo.kind({
     gotoPage: function(pageNum) {
         this.currentPage = pageNum;
         this.connection.init(this.uid, this.room, pageNum);
+        this.callback(this.totalPages, this.currentPage);
     },
 
     newPage: function() {
