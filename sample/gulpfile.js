@@ -37,7 +37,11 @@ gulp.task('fonts', function() {
 
 gulp.task('jsmin', function() {
 
-    gulp.src('./src/assets/js/*.js')
+    gulp.src(['./src/assets/js/*.js', '!./src/assets/js/agora-whiteboard-sdk.js'])
+    //.pipe(uglify())
+    .pipe(gulp.dest('./dist/js'));
+
+    gulp.src('./src/assets/js/agora-whiteboard-sdk.js')
     .pipe(uglify())
     .pipe(gulp.dest('./dist/js'));
 
@@ -49,7 +53,7 @@ gulp.task('jsmin', function() {
         '*.js'
     ]))
     .pipe(concat("vendor-all.js"))
-    .pipe(uglify())
+    //.pipe(uglify())
     .pipe(rename('vendor-bundle.js'))
     .pipe(gulp.dest('./dist/js'));
 });
