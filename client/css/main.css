@@ -16,3 +16,8 @@
     /*display: none;*/
     position: relative;
 }
+
+.onyx-toolbar, .onyx-toolbar-inline {
+    white-space: normal !important;
+}
+
