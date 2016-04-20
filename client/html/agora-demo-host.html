@@ -31,6 +31,21 @@
 </head>
 <body class="enyo-unselectable">
 <script>
+
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)", "i"),
+            results = regex.exec(url);
+
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    var room = getParameterByName("room");
+
     /* Call AgoraWhiteBoardApi */
     var api = new AgoraWhiteBoardApi();
     api.canvasWidth = 1024;
@@ -38,7 +53,7 @@
     api.canvasNode = document.body;
     var params = {
         key: 'f4637604af81440596a54254d53ade20',
-        cname: 'PES-2017',
+        cname: room || 'PES-2017',
         uinfo: 'Demba Ba',
         role: 'host',
         onJoin: function (ec, em, cname, uinfo) {
