@@ -38,7 +38,7 @@ gulp.task('fonts', function() {
 gulp.task('jsmin', function() {
 
     gulp.src('./src/assets/js/*.js')
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(gulp.dest('./dist/js'));
 
     return gulp.src('./src/assets/vendor/*.js')
@@ -49,7 +49,7 @@ gulp.task('jsmin', function() {
         '*.js'
     ]))
     .pipe(concat("vendor-all.js"))
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(rename('vendor-bundle.js'))
     .pipe(gulp.dest('./dist/js'));
 });
