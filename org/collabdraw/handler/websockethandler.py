@@ -204,7 +204,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         if event == "init":
             room_name = data.get('room', '')
             page_id = data.get('page_id', None)
-            if self.cookie['mode'] == MODE_PPT and self.cookie['host'] != '1' and self.get_room().host_page_id != 0:
+            if self.cookie['mode'] == MODE_PPT and self.get_room().host_page_id != 0:
                 page_id=self.get_room().host_page_id
             self.logger.info("%s Initializing with room name %s cookie %s" % (id(self), room_name, self.cookie))
             page_list = self.get_room().db_client.lrange(self.page_list_key(), 0, -1)
