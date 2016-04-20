@@ -998,15 +998,22 @@ enyo.kind({
         }
     },
     deletePage:function(inSender, inEvent){
-        var totalPagesNum = this.whiteboard.getNumPages();
+        var totalPagesNum = this.whiteboard.getNumPages(),
+            self = this;
         if (totalPagesNum <= 1) {
-            alert("The last page cannot deleted.");
+            $.alert("The last page cannot deleted.");
             return;
         }
-        var yes = confirm("Do you want to delete this page?");
-        if (yes) {
-            this.whiteboard.deletePage();
-        }
+        var yes = $.confirm({
+            title: "Confirm",
+            content: "Do you want to delete this page?",
+            confirm: function() {
+                self.whiteboard.deletePage();
+            },
+            cancel: function() {
+                // do nothing.
+            }
+        });
     },
     deleteButtonMouseOver: function(inSender, inEvent) {
         this.$.deletePage.applyStyle("background-image", "url(../images/btn_del.png)");
@@ -1183,11 +1190,18 @@ enyo.kind({
     },
 
     selectClear: function(inSender, inEvent) {
-        this.cancelSelect();
-        var yes = confirm("Do you want to clear this page?")
-        if (yes) {
-            this.whiteboard.clear(true);
-        }
+        var self = this;
+        self.cancelSelect();
+        var yes = $.confirm({
+            title: "Confirm",
+            content: "Do you want to clear this page?",
+            confirm: function() {
+                self.whiteboard.clear(true);
+            },
+            cancel: function() {
+                // do nothing.
+            }
+        });
     },
 
     selectCreateJoinRoom: function(inSender, inEvent) {

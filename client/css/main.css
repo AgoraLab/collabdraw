@@ -21,3 +21,7 @@
     white-space: normal !important;
 }
 
+.jconfirm-box {
+    width: 320px;
+    margin: 0 auto;
+}
