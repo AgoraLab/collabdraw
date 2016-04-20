@@ -10,3 +10,4 @@ dump.rdb
 files/
 node_modules/
 dist/
+public/
