@@ -925,6 +925,11 @@ enyo.kind({
 
         for (index = 0, length = stack.length; index < length; index += 1) {
             var obj = stack[index];
+            if (!obj || !obj.type) {
+                // remove invalid obj in undo/redo stack
+                stack.splice(index, 1);
+                continue;
+            }
             if (obj.type === 'path-line') {
                 if (obj.pathID === guid) {
                     clone = $.extend({}, obj);
