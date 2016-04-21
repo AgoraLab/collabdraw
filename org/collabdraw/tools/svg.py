@@ -4,6 +4,10 @@ import subprocess
 import os
 import config
 import cairosvg
+import traceback
+import mimetypes
+import base64
+import urllib.request
 logger = logging.getLogger('websocket')
 
 def generateSvgXml(data):
@@ -45,12 +49,28 @@ def gen_list_svg(room, list):
     for x in list:
         gen_svg_ex(dir_path,x[0],x[1],x[2])
 
-def cairosvg_svg_to_png(svg,dir_path, page_id):
+
+def img_to_datauri(image_file, image_url):
+    """Convert a file (specified by a path) into a data URI."""
+    logger.info("%s %s",image_file, image_url);
+
+    if not os.path.exists(image_file):
+        logger.info("from url");
+        urllib.request.urlretrieve(image_url,image_file)
+
+    mime, _ = mimetypes.guess_type(image_file)
+    with open(image_file, 'rb') as fp:
+        data = fp.read()
+        data64 = u''.join([str(x, encoding = "utf-8") for x in base64.encodestring(data).splitlines()])
+        return u'data:%s;base64,%s' % (mime, data64)
+
+def cairosvg_svg_to_png(svg, dir_path, page_id):
     fout = open("%s/%d_thumbnail.png"%(dir_path,page_id),'wb')
     try:
         cairosvg.svg2png(bytestring=bytes(svg,'utf-8'),write_to=fout)
     except:
-        pass
+        logger.error(svg)
+        traceback.print_exc()
     fout.close()
 
 def svgexport_svg_to_png(svg, dir_path, page_id):
@@ -60,36 +80,18 @@ def svgexport_svg_to_png(svg, dir_path, page_id):
     subprocess.call(["svgexport","%s/%d_thumbnail.svg"%(dir_path,page_id),"%s/%d_thumbnail.png"%(dir_path,page_id),"200:200"])
 
 def gen_svg_ex(dir_path, page_id, path, url):
-    # logger.info("gen_svg_ex start %s %d %s"%(room, page_id, url))
+    logger.info("gen_svg_ex start %s %d %s"%(dir_path, page_id, url))
     ret="""<?xml version="1.0"?>
-        <svg height="768" version="1.1" width="1024" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 768" fill='white'>
+        <svg height="200" version="1.1" width="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 768" fill='white'>
     """
     if url:
-        ret+="""<image x="0" y="0" width="1024" height="768" preserveAspectRatio="none" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="%s"></image>
+        # strs=url.split("/")
+        # image_name=strs[len(strs)-1]
+        # image_data=img_to_datauri("%s/%s"%(dir_path,image_name), url)
+        ret+="""<image x="0" y="0" width="1024" height="768" xlink:href="%s"></image>
 """%url
     for i in path:
         ret+=generateSvgXml(i)+"\n"
     ret+="</svg>"
     # svgexport_svg_to_png(ret, dir_path, page_id)
     cairosvg_svg_to_png(ret, dir_path, page_id)
-
-# path=[
-#     {"drawingItem": "pen", "lineColor": "black", "oldy": 360, "lineWidth": "3px", "type": "touchmovement", "oldx": 672, "path": [[672, 360], [722, 412], [748, 421], [773, 415], [797, 385], [812, 356], [814, 346], [815, 331], [815, 315], [813, 298], [809, 276], [798, 252], [762, 223], [715, 209], [705, 199], [721, 172], [762, 144], [801, 132], [802, 131]]},
-# {"drawingItem": "rectangle", "lineColor": "black", "oldy": 515, "lineWidth": "3px", "type": "touchmovement", "oldx": 508, "path": [[508, 515], [607, 546]]},
-# {"drawingItem": "square", "lineColor": "black", "oldy": 588, "lineWidth": "3px", "type": "touchmovement", "oldx": 505, "path": [[505, 588], [610, 627]]},
-# {"drawingItem": "circle", "lineColor": "black", "oldy": 512, "lineWidth": "3px", "type": "touchmovement", "oldx": 677, "path": [[677, 512], [718, 532]]},
-# {"drawingItem": "triangle", "lineColor": "black", "oldy": 624, "lineWidth": "3px", "type": "touchmovement", "oldx": 656, "path": [[656, 624], [721, 657]]},
-# {"drawingItem": "line", "lineColor": "black", "oldy": 492, "lineWidth": "3px", "type": "touchmovement", "oldx": 844, "path": [[844, 492], [802, 555]]},
-# {"drawingItem": "arrow", "lineColor": "black", "oldy": 626, "lineWidth": "3px", "type": "touchmovement", "oldx": 802, "path": [[802, 626], [893, 627]]},
-# {"drawingItem": "ellipse", "lineColor": "black", "oldy": 679, "lineWidth": "3px", "type": "touchmovement", "oldx": 798, "path": [[798, 679], [848, 694]]},
-# {"drawingItem": "pen", "lineColor": "black", "oldy": 600, "lineWidth": "10px", "type": "touchmovement", "oldx": 224, "path": [[224, 600], [274, 599], [302, 606], [310, 619], [312, 639], [304, 658], [254, 672], [220, 674], [216, 634], [220, 609], [222, 605]]},
-# {"drawingItem": "highlighter", "lineColor": "black", "oldy": 175, "lineWidth": "10px", "type": "touchmovement", "oldx": 389, "path": [[389, 175], [505, 326], [531, 356], [549, 374], [562, 387], [567, 391]]},
-# {"drawingItem": "highlighter", "lineColor": "black", "oldy": 385, "lineWidth": "10px", "type": "touchmovement", "oldx": 342, "path": [[342, 385], [535, 565], [535, 565]]},
-# {"drawingItem": "highlighter", "lineColor": "black", "oldy": 250, "lineWidth": "10px", "type": "touchmovement", "oldx": 627, "path": [[627, 250], [541, 406], [430, 404], [442, 282], [573, 149], [713, 337], [715, 345]]},
-# {"drawingItem": "rectangle", "lineColor": "black", "oldy": 295, "lineWidth": "10px", "type": "touchmovement", "oldx": 262, "path": [[262, 295], [381, 349]]},
-# {"drawingItem": "circle", "lineColor": "black", "oldy": 99, "lineWidth": "6px", "type": "touchmovement", "oldx": 199, "path": [[199, 99], [354, 123]]},
-# {"drawingItem": "triangle", "lineColor": "black", "oldy": 56, "lineWidth": "6px", "type": "touchmovement", "oldx": 493, "path": [[493, 56], [556, 86]]},
-# {"drawingItem": "triangle", "lineColor": "black", "oldy": 59, "lineWidth": "6px", "type": "touchmovement", "oldx": 426, "path": [[426, 59], [422, 69]]},
-# {"drawingItem": "pen", "lineColor": "red", "oldy": 408, "lineWidth": "6px", "type": "touchmovement", "oldx": 167, "path": [[167, 408], [184, 486], [221, 536], [256, 546], [351, 509], [417, 465]]}
-# ]
-# gen_svg_ex('',123,path,None)

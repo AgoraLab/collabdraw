@@ -90,15 +90,16 @@ def serverKeepAlive():
         logger.info("gethostbyname error")
 
 if __name__ == "__main__":
-    if not config.ENABLE_SSL:
-        http_server = tornado.httpserver.HTTPServer(Application())
-    else:
-        http_server = tornado.httpserver.HTTPServer(Application(), ssl_options={
+    # if not config.ENABLE_SSL:
+    http_server = tornado.httpserver.HTTPServer(Application())
+    # else:
+    https_server = tornado.httpserver.HTTPServer(Application(), ssl_options={
             "certfile": config.SERVER_CERT,
             "keyfile": config.SERVER_KEY,
         })
     logger.info("Listening on port %s" % config.APP_PORT)
-    http_server.listen(config.APP_PORT)
+    https_server.listen(config.APP_PORT)
+    http_server.listen(int(config.APP_PORT)+10000)
     tornado.ioloop.PeriodicCallback(JoinHandler.clear_expired_cookies,60*1000).start()
     tornado.ioloop.PeriodicCallback(RealtimeHandler.clear_expired_data,60*1000).start()
     tornado.ioloop.PeriodicCallback(serverKeepAlive,2*1000).start()

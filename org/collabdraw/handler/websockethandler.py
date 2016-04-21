@@ -66,12 +66,12 @@ class RoomData(object):
                 self.load_image(k)
                 self.load_path(k)
                 image=None if k not in  self.page_image else self.page_image[k]
-                if now-self.page_update_ts[k]<20:
+                if k in self.page_update_ts and now-self.page_update_ts[k]<10:
                     plist.append((k, self.page_path[k],image))
                     # gen_svg(self.room, k, self.page_path[k],image)
             roomname="%s_%s"%(self.vid,self.room)
             threading.Thread(target=gen_list_svg, args=(roomname,plist,)).start()
-            ioloop.IOLoop.instance().add_timeout(time.time()+20,self.timer_thumbnail)
+        ioloop.IOLoop.instance().add_timeout(time.time()+10,self.timer_thumbnail)
 
     def init_room(self, url, topic, room, vid):
         if not self.pubsub_client:
@@ -253,9 +253,9 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 logger.error("user not host :%s"%(self.cookie))
                 return
             self.get_room().db_client.delete(self.page_path_key())
-            self.get_room().db_client.delete(self.page_image_key())
+            # self.get_room().db_client.delete(self.page_image_key())
             self.get_room().set_page_path(self.page_id, [])
-            self.get_room().set_page_image(self.page_id, None)
+            # self.get_room().set_page_image(self.page_id, None)
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("clear",{}))
 
         elif event == "get-image":
@@ -382,7 +382,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             pass
         elif m['event'] == 'clear':
             RealtimeHandler.room_data[topic].set_page_path(m['data']['page_id'], [])
-            RealtimeHandler.room_data[topic].set_page_image(m['data']['page_id'], None)
+            # RealtimeHandler.room_data[topic].set_page_image(m['data']['page_id'], None)
         elif m['event'] == 'delete-page':
             RealtimeHandler.room_data[topic].delete_page(m['data']['page_id'])
         # RealtimeHandler.logger.info("broadcast %s to %d clients"%(m['event'], len(RealtimeHandler.topics[topic])))
