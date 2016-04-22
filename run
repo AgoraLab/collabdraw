@@ -3,6 +3,8 @@ cd `dirname $0`
 for i in $@; do
     port=$i
     source venv/bin/activate
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
     export PORT=$port
     pid=`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}'| awk -F/ '{print $1}'`
     if [ "$pid" != "" ] ; then

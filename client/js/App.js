@@ -1169,7 +1169,7 @@ enyo.kind({
         }
         for (index = 0; index < Math.min(6, totalPages-this.pagePreviewNum); index += 1) {
             var page=this.pagePreviewNum+index+1;
-            var port=this.appPort+10000;
+            var port=Number(this.appPort)+10000;
             var url="http://"+this.appIpAddress+":"+port+"/files/"+this.vid+"_"+this.room+"/"+this.whiteboard.getPageIdByPage(page)+"_thumbnail.png?version="+ $.now();
             var comp = this.createComponent({
                 container: this.$.previewPagesPopup,

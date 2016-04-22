@@ -18,6 +18,7 @@ def generateSvgXml(data):
         opacity=0.5
     color=data['lineColor']
     width=data['lineWidth']
+    middle=''
     if data['drawingItem'] in ['pen','line','arrow','highlighter']:
         head='path'
         path=" L".join(["%d,%d"%(x[0],x[1]) for x in data['path']])
@@ -36,7 +37,12 @@ def generateSvgXml(data):
     elif data['drawingItem'] == 'ellipse':
         head='ellipse'
         other=" cx='%d' cy='%d' rx='%d' ry='%d'"%(data['path'][0][0],data['path'][0][1],abs(data['path'][0][0]-data['path'][1][0]),abs(data['path'][0][1]-data['path'][1][1]))
-    return_str="<%s stroke='%s' stroke-width='%s' fill='none' opacity='%s' %s></%s>"%(head,color,width,opacity,other,head)
+    elif data['drawingItem'] == 'edittext':
+        head='text'
+        other=" x='%d' cy='%d'"%(data['oldx',data['oldy']])
+        middle=data['value']
+
+    return_str="<%s stroke='%s' stroke-width='%s' fill='none' opacity='%s' %s>%s</%s>"%(head,color,width,opacity,other,middle,head)
     return return_str
 
 def gen_svg(room, page_id, path, url):
