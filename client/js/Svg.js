@@ -710,6 +710,9 @@ enyo.kind({
     },
 
     zoomIn: function() {
+        if (this.zoomRatio >= 2) {
+            return;
+        }
         this.zoomRatio += 0.1;
         this.cvs.scaleAll(this.zoomRatio);
 
@@ -721,6 +724,9 @@ enyo.kind({
     },
 
     zoomOut: function() {
+        if (this.zoomRatio <= 0.5) {
+            return;
+        }
         this.zoomRatio -= 0.1;
         this.cvs.scaleAll(this.zoomRatio);
         // redrew the laser pen, or there will be offset while been dragging around,
