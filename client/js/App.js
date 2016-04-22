@@ -49,6 +49,7 @@ enyo.kind({
         connectionLostCallback: function() {
             alert("Your connection is lost, please refresh to rejoin.");
         },
+        parentContainer: "",
     },
 
     components: [{
@@ -1288,8 +1289,23 @@ enyo.kind({
         }
         this.$.createJoinRoomPopup.hide();
     },
+
+    inIframe: function() {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    },
+
     logout: function() {
-        window.location = "./logout.html";
+        if (this.inIframe()) {
+            // Remove DOM elements inside parent container
+            $(window.document).find("body").empty();
+        } else {
+            // We are not in a iframe
+            window.location = "./logout.html";
+        }
     },
 
     selectNewPage: function(inSender, inEvent) {
