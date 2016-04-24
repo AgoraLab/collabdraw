@@ -10,16 +10,39 @@ enyo.kind({
     room: 'undefined',
     page: 1,
 
-    constructor: function(address, whiteboard, room, uid, connLostCallback) {
+    constructor: function(address, whiteboard, room, uid) {
         this.whiteboard = whiteboard;
         //console.log("Connecting to address " + address);
-        this.socket = new WebSocket(address);
+        //this.socket = new WebSocket(address);
+        this.socket = this.createSocket(address);
         this.room = room;
         this.uid = uid;
         this.page = 1;
         this.touchMove=undefined;
+        this.attempts = 1;
         _this = this;
-        this.socket.onmessage = function(evt) {
+    },
+
+    createSocket: function(address) {
+        var generateInterval = function(k) {
+            var maxInterval = (Math.pow(2, k) - 1) * 1000;
+
+            if (maxInterval > 30*1000) {
+                maxInterval = 30*1000; // If the generated interval is more than 30 seconds, truncate it down to 30 seconds.
+            }
+
+            // generate the interval to a random number between 0 and the maxInterval determined from above
+            return Math.random() * maxInterval;
+        };
+
+        var connection = new WebSocket(address);
+        connection.onopen = function() {
+            // reset attempts of retry
+            this.attempts = 1;
+            console.log("WebSocket connection established @" + Date.now());
+        };
+
+        connection.onmessage = function(evt) {
             var message = JSON.parse(JXG.decompress(evt.data)),
                 fromUid = message['fromUid'],
                 evnt    = message['event'],
@@ -94,21 +117,31 @@ enyo.kind({
             }
         };
 
-        this.socket.onerror = function(err) {
-            alert("error occured, please refresh your browser to rejoin.");
-            console.log(err);
-        }
+        var reconnectWebSocket = function() {
+            var time = generateInterval(_this.attempts);
+            console.log("Re-connecting after: " + time + " miliseconds...");
 
-        this.socket.onclose = function(event) {
-            var code = event.code;
-            var reason = event.reason;
-            var wasClean = event.wasClean;
-
-            console.log("Connection lost @ " + Date.now());
-            if (connLostCallback && $.isFunction(connLostCallback)) {
-                connLostCallback();
-            }
+            setTimeout(function () {
+                // We've tried to reconnect so increment the attempts by 1
+                _this.attempts += 1;
+                // Connection has closed so try to reconnect.
+                _this.socket = _this.createSocket(address);
+            }, time);
         };
+
+        connection.onerror = function(err) {
+            console.log(err);
+            console.log("WebSocket connection lost @ " + Date.now());
+
+            reconnectWebSocket();
+        };
+
+        connection.onclose = function(event) {
+            console.log(event);
+            console.log("Connection was closed @ " + Date.now());
+            reconnectWebSocket();
+        };
+        return connection;
     },
 
     sendMessage: function(evt, data) {

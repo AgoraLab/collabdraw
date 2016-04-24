@@ -61,9 +61,6 @@
         role: 'host',
         onJoin: function (ec, em, cname, uinfo) {
             console.log('[onJoin] ec: ' + ec + ' em: ' + em + ' cname: ' + cname + ' uinfo: ' + uinfo);
-        },
-        onConnectionLost: function() {
-            $.alert("Your connection is lost, please refresh to rejoin.");
         }
     };
     api.join(params);

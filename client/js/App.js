@@ -46,9 +46,6 @@ enyo.kind({
         role: 'host',
         pagePreviewNum: 0,
         pagePreviewContainer: [],
-        connectionLostCallback: function() {
-            alert("Your connection is lost, please refresh to rejoin.");
-        },
         parentContainer: "",
     },
 
@@ -163,8 +160,7 @@ enyo.kind({
                             _this.owner.$.channelId.content = "Page " + _this.owner.whiteboard.getCurrentPage();
                             // render the change on the fly.
                             _this.owner.$.channelId.render();
-                        },
-                        this.owner.connectionLostCallback
+                        }
                     );
                 }
             },
