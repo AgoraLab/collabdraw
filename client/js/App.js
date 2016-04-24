@@ -221,19 +221,10 @@ enyo.kind({
                 onmouseout: "zoomOutMouseOut",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Zoon Out",
+                content: "Zoom Out",
                 classes: "above"
             }]
         },
-        //{
-            //kind: "onyx.PickerDecorator",
-            //components: [{}, {
-                //kind: "onyx.IntegerPicker",
-                //name: "currentPage",
-                //onSelect: "gotoPage",
-                //min: 1,
-            //}, ],
-        //},
         {
             kind: "onyx.TooltipDecorator",
             style: "float: right",
@@ -1158,6 +1149,7 @@ enyo.kind({
     previewMouseOut: function(inSender, inEvent) {
         this.$.previewPages.applyStyle("background-image", "url(../images/btn_thumbnails_gray.png)");
     },
+
     selectPreviewPages: function(inSender, inEvent, flag) {
         var totalPages = this.whiteboard.getNumPages(),index;
         // Minus left and right arrows
@@ -1169,18 +1161,22 @@ enyo.kind({
             this.pagePreviewNum= (Math.ceil(this.whiteboard.getCurrentPage()/6)-1)*6;
         }
         for (index = 0; index < Math.min(6, totalPages-this.pagePreviewNum); index += 1) {
-            var page=this.pagePreviewNum+index+1;
-            var port=Number(this.appPort)+10000;
-            var url="http://"+this.appIpAddress+":"+port+"/files/"+this.vid+"_"+this.room+"/"+this.whiteboard.getPageIdByPage(page)+"_thumbnail.png?version="+ $.now();
+            var page = this.pagePreviewNum + index + 1;
+            var port = Number(this.appPort) + 10000;
+            var url = "http://" + this.appIpAddress + ":" + port + "/files/" + this.vid + "_"+this.room + "/" + this.whiteboard.getPageIdByPage(page) + "_thumbnail.png?version=" + $.now();
             var comp = this.createComponent({
                 container: this.$.previewPagesPopup,
-                style: "display:inline-block;float:left;border:4px solid rgb(17, 158, 235);width:120px;height:118px;;margin:10px;color:#000;background:url(" + url + ") center center no-repeat #FFF;background-size:contain;cursor:pointer;",
+                style: "display:inline-block;float:left;width:120px;height:118px;;margin:10px;color:#000;background:url(" + url + ") center center no-repeat #FFF;background-size:contain;cursor:pointer;",
                 content: "<div style='text-align:center;height: 100%;font-size:3em;'> " + page +" </div>",
                 allowHtml: true,
                 ontap: "gotoPage",
                 // page index starts with 1
-                index: index + 1
+                index: index + 1,
+                pageNum: page,
             });
+            if (this.whiteboard.getCurrentPage() === page) {
+                comp.applyStyle("border", "4px solid rgb(17, 158, 235)");
+            }
             this.pagePreviewContainer.push(comp);
         }
         this.$.previewPagesPopup.render();
@@ -1315,6 +1311,20 @@ enyo.kind({
         this.updatePageInfo();
     },
 
+    updatePreviewPageBorder: function() {
+        var subComponents = this.$.previewPagesPopup.children,
+            index, length, pageNum;
+
+        for (index = 0, length = subComponents.length; index < length; index += 1) {
+            pageNum = subComponents[index].pageNum;
+            if (pageNum === this.whiteboard.getCurrentPage()) {
+                subComponents[index].applyStyle("border", "4px solid rgb(17, 158, 235)");
+            } else {
+                subComponents[index].applyStyle("border", "none");
+            }
+        }
+    },
+
     updatePageInfo: function() {
         // restore button status
         this.closeEraser();
@@ -1362,6 +1372,7 @@ enyo.kind({
         var result = this.whiteboard.gotoPage(this.pagePreviewNum+inSender.index);
         if (!result) this.$.loadingPopup.hide();
         this.updatePageInfo();
+        this.updatePreviewPageBorder();
     },
 
     doSelect: function(inSender, inEvent) {

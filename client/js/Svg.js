@@ -75,7 +75,7 @@ enyo.kind({
         this.penPathID       = 10000;
         this.currentSelected = null;
         this.laserPen        = null;
-        this.userRole = userRole;
+        this.userRole        = userRole;
     },
 
     /**
