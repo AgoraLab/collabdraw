@@ -21,6 +21,12 @@ import traceback
 from ..handler.joinhandler import unsigned_hash
 logger = logging.getLogger('websocket')
 
+import oss2
+aliyun_auth = oss2.Auth('Lx9RJ90JpE9dvatH', 'vUrtgWOdmUzhGjXBMcJhwX2aZhoqls')
+
+def uploadfile_aliyun(filename, data):
+    bucket = oss2.Bucket(aliyun_auth, 'oss-cn-shanghai.aliyuncs.com', 'whiteboard-image')
+    bucket.put_object(filename, data)
 
 def uploadfile(filename, data):
     # http_client = HTTPClient()
@@ -57,7 +63,7 @@ def process_uploaded_file_pdf(dir_path ,fname, room_topic, body, queue):
         filename="%x%x.png"%(prefix, i)
         data = open("%s/%d_%d.png"%(dir_path,tmp_name,i-tmp_name+1), 'rb')
         try:
-            uploadfile(filename ,data)
+            uploadfile_aliyun(filename ,data)
         except:
             queue.put("fail")
             return
@@ -77,7 +83,7 @@ def process_uploaded_file_image(ftype ,room_topic, data, queue):
     prefix=unsigned_hash("%s:%s:%s"%(room_topic,config.APP_IP_ADDRESS,config.APP_PORT))
     filename="%x%x%s"%(prefix, page_no, ftype)
     try:
-        uploadfile(filename ,data)
+        uploadfile_aliyun(filename ,data)
     except:
         queue.put("fail")
         return

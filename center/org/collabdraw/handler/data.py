@@ -28,7 +28,7 @@ class CommonData(object):
         if addr in CommonData.edge_servers :
             if now-CommonData.edge_servers[addr]['ts'] <= 20 \
                 and CommonData.edge_servers[addr]['ts'] > CommonData.edgeRedisUpdateTs\
-                and CommonData.edge_servers[addr]['load']<500:
+                and CommonData.edge_servers[addr]['load']<300:
                 return True
         return False
 

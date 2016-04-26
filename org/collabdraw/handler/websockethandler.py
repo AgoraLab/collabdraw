@@ -82,6 +82,8 @@ class RoomData(object):
             self.room=room
             self.vid=vid
             ioloop.IOLoop.instance().add_timeout(time.time(),self.timer_thumbnail)
+            image=self.db_client.hsetnx("room_create_time",self.topic,int(time.time()))
+
 
     def publish(self, m):
         self.pubsub_client.publish(self.topic, m, self)
@@ -186,7 +188,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
         if self.cookie['expiredTs'] < fromTs:
             self.verified=False
-            self.logger.error("cookie expired now %s expiredTs %s ］" % (fromTs, self.cookie['expiredTs']))
+            self.logger.error("cookie expired now %s expiredTs %s " % (fromTs, self.cookie['expiredTs']))
 
         if not self.verified:
             self.close()
@@ -371,7 +373,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         page_list_key="%s:page_list"%(room_topic)
         for k in sorted(page_image_map.keys()):
             v=page_image_map[k]
-            room.db_client.set("%s:%d:page_image"%(room_topic,k), "http://userimg.collabdraw.agoralab.co/%s"%(v))
+            room.db_client.set("%s:%d:page_image"%(room_topic,k), "http://wbimage.agora.io/%s"%(v))
         room.db_client.rpush(page_list_key, list(page_image_map.keys()))
         page_list=room.db_client.lrange(page_list_key, 0, -1)
         room.publish(json.dumps({'event':'pages', 'data':{'pages':page_list}}))
@@ -398,21 +400,12 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     def get_page_image_data(self):
         image=self.get_room().get_page_image(self.page_id)
-        # self.logger.info("xxx %s"%image)
         if not image:
-            # self.logger.info("xxx222 %s"%image)
             image=self.get_room().db_client.get(self.page_image_key())
-            # self.logger.info("xxx333 %s %s"%(self.page_image_key(),image))
             if image :
-                # self.logger.info("xxx444 %s %s"%(self.page_image_key(),image))
-                # image=str(image, encoding='utf-8')
                 self.get_room().set_page_image(self.page_id, image)
-                # self.logger.info("xxx555 %s %s"%(self.page_image_key(),image))
-                # self.logger.info("xxxxxxxxx %d %s"%(self.page_id,image))
             else:
                 image=''
-        # self.logger.info("xxx6666 %s %s"%(self.page_image_key(),image))
-        # width, height = image.size
         return image, 100, 100
 
     def get_page_path_data(self):
