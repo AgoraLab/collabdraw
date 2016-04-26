@@ -355,12 +355,12 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
     def construct_message(self, event, data={}):
         data['room']=self.room_name
         data['page_id']=self.page_id
-        return {"event": event, "data": data}
+        return {"event": event, "data": data, "ts":int(time.time()*1000)}
 
     def construct_broadcast_message(self, event, data={}):
         data['room']=self.room_name
         data['page_id']=self.page_id
-        return {"fromUid": self.fromUid, "event": event, "data": data}
+        return {"fromUid": self.fromUid, "event": event, "data": data, "ts":int(time.time()*1000)}
 
 
     def broadcast_message(self, topic, message):

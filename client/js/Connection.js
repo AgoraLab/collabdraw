@@ -24,8 +24,9 @@ enyo.kind({
                 fromUid = message['fromUid'],
                 evnt    = message['event'],
                 data    = message['data'];
+                ts      = message['ts'];
 
-            console.log('receive msg from server. uid ' + fromUid + ' event ' + evnt + ' data ' + JSON.stringify(data));
+            console.log('receive msg from server. uid:' + fromUid + ' event:' + evnt + ' elapse:'+(Date.now()-ts)+'ms data:' + JSON.stringify(data));
             switch (evnt) {
             case 'ready':
                 _this.init(_this.uid, _this.room, _this.page);
