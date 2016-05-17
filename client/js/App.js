@@ -65,7 +65,7 @@ enyo.kind({
             style: "text-transform: uppercase;letter-spacing:0.1em;font-size: 0.8em;font-weight:normal;"
         }, {
             kind: "onyx.TooltipDecorator",
-            style: "float: right;",
+            style: "float: right;display:none;",
             components: [{
                 kind: "onyx.Button",
                 name: "logoutButton",
