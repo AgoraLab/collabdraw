@@ -914,6 +914,9 @@ enyo.kind({
     onTextClicked: function(t) {
         var input = t.inlineTextEditing.startEditing();  // Retrieve created <input type=text> field
         var _this = this;
+        var prevDrawingItem = this.drawingItem;
+        // stop drawing while we're editing text
+        this.drawingItem = '';
         input.addEventListener("blur", function(e) {
             // Stop inline editing after blur on the text field
             t.inlineTextEditing.stopEditing();
@@ -923,6 +926,8 @@ enyo.kind({
                 oldy: t.attrs.y,
                 value: t.inlineTextEditing.input.value
             });
+            // restore previous drawing item.
+            _this.drawingItem = prevDrawingItem;
         });
     },
 
