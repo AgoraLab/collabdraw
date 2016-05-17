@@ -1,5 +1,5 @@
 decorator==3.4.0
-pystacia==0.1
+#pystacia==0.1
 pymysql
 cairosvg
 redis==2.7.2

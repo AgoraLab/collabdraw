@@ -18,7 +18,7 @@ for i in $@; do
       kill $pid
       # exit
     fi
-    nohup python edge_server/edge_main.py > edge_$port.log 2>&1 &
+    nohup python edge_main.py > edge_$port.log 2>&1 &
     sleep 1
     for x in `seq 0 5`
     do

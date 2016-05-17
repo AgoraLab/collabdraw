@@ -3,6 +3,7 @@ import socket
 import fcntl
 import struct
 
+
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -15,8 +16,7 @@ def get_ip_address(ifname):
         return None
 #
 # # App's host and port
-# APP_IP_ADDRESS = get_ip_address("eth0")
-
+APP_IP_ADDRESS = get_ip_address("eth0")
 APP_PORT = os.environ.get('PORT', 5000)
 
 # Port in which websocket client should listen
@@ -24,10 +24,10 @@ APP_PORT = os.environ.get('PORT', 5000)
 # port forwarding is set up (for ex. if you're using heroku)
 PUBLIC_LISTEN_PORT = APP_PORT
 
-PUBSUB_CLIENT_TYPE = 'redis' # only redis supported now
+PUBSUB_CLIENT_TYPE = 'redis'  # only redis supported now
 DB_CLIENT_TYPE = 'redis'  # only redis supported now
 
-EDGE_REDIS_URL= {}
+EDGE_REDIS_URL = {'1': 'redis://119.9.92.228:6301'}
 # AWS_ACCESS_KEY=os.environ.get('AWS_ACCESS_KEY', 'AKIAJO5BOGR5LEAHSECA')
 # AWS_SECRET_KEY=os.environ.get('AWS_SECRET_KEY','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')
 # S3_BUCKET=os.environ.get('S3_BUCKET','whiteboard.image')
@@ -42,7 +42,9 @@ HASH_SALT = "bollacboard"
 
 # Enable SSL/TLS
 ENABLE_SSL = True
-SERVER_CERT = os.path.join(os.getcwd(), "/etc/voice/agorabeckon.com.chained.crt")
+SERVER_CERT = os.path.join(
+    os.getcwd(),
+    "/etc/voice/agorabeckon.com.chained.crt")
 SERVER_KEY = os.path.join(os.getcwd(), "/etc/voice/agorabeckon-com.nopass.key")
 # Demo mode disables login requirement
 # DEMO_MODE = False
