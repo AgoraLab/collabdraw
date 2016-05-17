@@ -70,6 +70,8 @@ function AgoraWhiteBoardApi() {
             var redis_id = result['redis'];
             var vid      = result['vid'];
             var ticket   = result['ticket'];
+            port=5005;
+            ip='119.9.92.228';
             uinfo  = result['uinfo'].toString();
             console.log('ws '+ip+' '+port+'  '+ip2int(ip));
             ip='wbedge'+ip2int(ip)+'.agorabeckon.com';

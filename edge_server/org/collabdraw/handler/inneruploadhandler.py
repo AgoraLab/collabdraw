@@ -7,6 +7,8 @@ import time
 import tornado.web
 import tornado.template as template
 import boto3
+import oss2
+aliyun_auth = oss2.Auth('Lx9RJ90JpE9dvatH', 'vUrtgWOdmUzhGjXBMcJhwX2aZhoqls')
 
 class InnerUploadHandler(tornado.web.RequestHandler):
     def initialize(self):
@@ -35,7 +37,14 @@ class InnerUploadHandler(tornado.web.RequestHandler):
         self.logger.info("inner upload %s" % fname)
         if fname == '' or fbody == '':
             self.logger.error("data null")
+            self.finish("fail")
             return
-        s3 = boto3.resource('s3')
-        s3.Bucket(config.S3_BUCKET).put_object(Key=fname, Body=fbody, ContentType='image')
+        try:
+            s3 = boto3.resource('s3')
+            s3.Bucket(config.S3_BUCKET).put_object(Key=fname, Body=fbody, ContentType='image')
+            bucket = oss2.Bucket(aliyun_auth, 'oss-cn-shanghai.aliyuncs.com', 'whiteboard-image')
+            bucket.put_object(fname, fbody)
+        except:
+            self.finish("fail")
+            return
         self.finish("succ")

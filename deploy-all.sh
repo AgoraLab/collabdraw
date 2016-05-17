@@ -7,3 +7,5 @@ sh deploy-client.sh
 sh deploy-center.sh
 
 sh deploy-edge.sh
+
+sh deploy-upload.sh

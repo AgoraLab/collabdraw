@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo apt-get install -y python-software-properties software-properties-common
 sudo add-apt-repository -y ppa:fkrull/deadsnakes
 sudo apt-get update
 sudo apt-get install -y python3.5 poppler-utils imagemagick ffmpeg git pkg-config libcairo2-dev libpython3.5-dev libffi-dev libtiff4-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.5-dev tk8.5-dev

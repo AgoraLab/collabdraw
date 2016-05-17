@@ -10,9 +10,7 @@ from .joinhandler import JoinHandler
 from ..dbclient.dbclientfactory import DbClientFactory
 import queue
 from ..tools.uploadprocessor import *
-
-
-
+from multiprocessing import Process
 class UploadHandler(tornado.web.RequestHandler):
     def initialize(self):
         self.logger = logging.getLogger('websocket')
@@ -34,11 +32,12 @@ class UploadHandler(tornado.web.RequestHandler):
         self.finish(return_str)
 
     def options(self):
-        self.logger.warn("upload handler options requested")
+        self.logger.info("upload handler options requested")
         pass
 
     # @tornado.web.authenticated
     def post(self):
+        startts=time.time()
         self.room_name = self.get_argument('room', '')
         self.logger.info("Room name is %s" % self.room_name)
         if not self.room_name:
@@ -67,21 +66,16 @@ class UploadHandler(tornado.web.RequestHandler):
 
         # write file
         dir_path = os.path.join(config.ROOT_DIR, "files", "%s_%s"%(cookie['vid'],self.room_name))
-        # os.makedirs(dir_path, exist_ok=True)
-        # file_path = os.path.join(dir_path, fname)
-        # fh = open(file_path, 'wb')
-        # fh.write(fileinfo['body'])
-        # fh.close()
+
         db_key = "%s:%s" % (cookie['vid'], self.room_name)
         # split and convert pdf to png
-        q = queue.Queue()
         if fext.lower() == '.pdf':
-            t=threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname,db_key ,fileinfo['body'],q))
+            # t=threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname,db_key ,fileinfo['body'],q))
+            ret=process_uploaded_file_pdf(dir_path, fname,db_key ,fileinfo['body'])
         else:
-            t=threading.Thread(target=process_uploaded_file_image, args=(fext.lower(), db_key, fileinfo['body'],q))
-        t.start()
-        # logger.info("thread start")
-        t.join()
-        # logger.info("thread end")
-        response_str = q.get()
-        self.finish(response_str)
+            # t=threading.Thread(target=process_uploaded_file_image, args=(fext.lower(), db_key, fileinfo['body'],q))
+            # t.start()
+            # t.join()
+            ret=process_uploaded_file_image(fext.lower(), db_key, fileinfo['body'])
+        logger.info("upload %.1f sec"%(time.time()-startts))
+        self.finish(ret)

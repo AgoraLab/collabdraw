@@ -1,0 +1,31 @@
+#!/bin/bash
+cd `dirname $0`
+port=5100
+source ../venv/bin/activate
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export PORT=$port
+pid=`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}'| awk -F/ '{print $1}'`
+if [ "$pid" != "" ] ; then
+    echo "start fail : port $port already occupied"
+    echo "kill "+`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}'`
+    kill $pid
+fi
+nohup python upload_main.py > upload.log 2>&1 &
+sleep 1
+for x in `seq 0 5`
+do
+    pid=`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}' | awk -F/ '{print $1}'`
+    if [ "$pid" != "" ] ; then
+        break
+    else
+        sleep 1
+    fi
+done
+if [ "$pid" != "" ] ; then
+    echo "start succ ; pid:$pid"
+else
+    echo "start failed"
+    tail upload.log
+fi
+deactivate

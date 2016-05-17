@@ -44,10 +44,10 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, handlers, **settings)
 
 if __name__ == "__main__":
-    if not config.ENABLE_SSL:
-        http_server = tornado.httpserver.HTTPServer(Application())
-    else:
-        http_server = tornado.httpserver.HTTPServer(Application(), ssl_options={
+    # if not config.ENABLE_SSL:
+    http_server = tornado.httpserver.HTTPServer(Application())
+    # else:
+    https_server = tornado.httpserver.HTTPServer(Application(), ssl_options={
             "certfile": config.SERVER_CERT,
             "keyfile": config.SERVER_KEY,
         })
@@ -55,7 +55,8 @@ if __name__ == "__main__":
     IP.load("/etc/voice/mydata4vipweek_en.dat")
     MysqlClientVendor.loadVendors()
     logger.info("Listening on port %s" % config.APP_PORT)
-    http_server.listen(config.APP_PORT)
+    https_server.listen(config.APP_PORT)
+    http_server.listen(int(config.APP_PORT)+10000)
     tornado.ioloop.PeriodicCallback(CommonData.loadEdgeRedisServers,60*1000).start()
     tornado.ioloop.PeriodicCallback(MysqlClientVendor.onTimer,100*1000).start()
     tornado.ioloop.PeriodicCallback(CommonData.redis_keep_alive,15*1000).start()

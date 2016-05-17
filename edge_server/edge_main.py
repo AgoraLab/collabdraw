@@ -76,7 +76,6 @@ def serverKeepAliveCallBack(response):
         config.EDGE_REDIS_URL=msg['redis']
         config.APP_IP_ADDRESS=msg['ip']
 
-http_client = AsyncHTTPClient()
 
 def serverKeepAlive():
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -84,7 +83,8 @@ def serverKeepAlive():
     body = urllib.parse.urlencode(msg) #Make it into a post request
     try :
         # for x in socket.gethostbyname_ex('wb.agorabeckon.com')[2]:
-        url = "https://wb.agorabeckon.com:5555/registerEdgeServer"
+        url = "http://wb.agorabeckon.com:15555/registerEdgeServer"
+        http_client = AsyncHTTPClient()
         http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)
     except:
         logger.info("gethostbyname error")

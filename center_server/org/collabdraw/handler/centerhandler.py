@@ -52,7 +52,7 @@ COOKIE_EXPIRED_SECONDS=3600
 
 def getCountry(ip):
     loc=IP.find(ip)
-    return loc.split('  ')[0]
+    return loc.split('	')[0]
 
 def unsigned_hash(v):
     return ctypes.c_ulong(hash(v)).value

@@ -153,6 +153,8 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
     def get_room(self):
         return self.room_data[self.room_topic()]
 
+    def check_origin(self, origin):
+        return True
     # @Override
     def open(self):
         self.room_name = None
@@ -186,9 +188,9 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
                 self.cookie=cookie
                 self.get_room().init_room(cookie['redis'], self.room_topic(), data['room'], cookie['vid'])
 
-        if self.cookie['expiredTs'] < fromTs:
+        if not self.cookie or  self.cookie['expiredTs'] < fromTs:
             self.verified=False
-            self.logger.error("cookie expired now %s expiredTs %s " % (fromTs, self.cookie['expiredTs']))
+            self.logger.error("cookie expired now %s  " % (fromTs))
 
         if not self.verified:
             self.close()

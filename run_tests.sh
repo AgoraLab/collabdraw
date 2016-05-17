@@ -1,3 +1,0 @@
-pushd test
-nosetests
-popd

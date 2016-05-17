@@ -28,9 +28,9 @@ PUBSUB_CLIENT_TYPE = 'redis' # only redis supported now
 DB_CLIENT_TYPE = 'redis'  # only redis supported now
 
 EDGE_REDIS_URL= {}
-AWS_ACCESS_KEY=os.environ.get('AWS_ACCESS_KEY', 'AKIAJO5BOGR5LEAHSECA')
-AWS_SECRET_KEY=os.environ.get('AWS_SECRET_KEY','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')
-S3_BUCKET=os.environ.get('S3_BUCKET','whiteboard.image')
+# AWS_ACCESS_KEY=os.environ.get('AWS_ACCESS_KEY', 'AKIAJO5BOGR5LEAHSECA')
+# AWS_SECRET_KEY=os.environ.get('AWS_SECRET_KEY','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')
+# S3_BUCKET=os.environ.get('S3_BUCKET','whiteboard.image')
 # Full path of "collabdraw" directory
 ROOT_DIR = "/".join(os.path.realpath(__file__).split('/')[:-1])
 RESOURCE_DIR = os.path.join(ROOT_DIR, 'client')
@@ -42,7 +42,7 @@ HASH_SALT = "bollacboard"
 
 # Enable SSL/TLS
 ENABLE_SSL = True
-SERVER_CERT = os.path.join(os.getcwd(), "agorabeckon.com.chained.crt")
-SERVER_KEY = os.path.join(os.getcwd(), "agorabeckon-com.nopass.key")
+SERVER_CERT = os.path.join(os.getcwd(), "/etc/voice/agorabeckon.com.chained.crt")
+SERVER_KEY = os.path.join(os.getcwd(), "/etc/voice/agorabeckon-com.nopass.key")
 # Demo mode disables login requirement
 # DEMO_MODE = False

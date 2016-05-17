@@ -1,10 +1,15 @@
 #!/bin/bash
 cd `dirname $0`
+if [ $# == 0 ] ; then
+    echo "USAGE: ./run_edge port1 port2"
+    echo "run fail"
+    exit 1;
+fi
+source ../venv/bin/activate
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 for i in $@; do
     port=$i
-    source venv/bin/activate
-    export LC_ALL=en_US.UTF-8
-    export LANG=en_US.UTF-8
     export PORT=$port
     pid=`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}'| awk -F/ '{print $1}'`
     if [ "$pid" != "" ] ; then
@@ -13,8 +18,7 @@ for i in $@; do
       kill $pid
       # exit
     fi
-    # nohup python main.py > output.`date +"%y-%m-%d"`.log 2>&1 &
-    nohup python edge_main.py > output_$port.log 2>&1 &
+    nohup python edge_server/edge_main.py > edge_$port.log 2>&1 &
     sleep 1
     for x in `seq 0 5`
     do
@@ -29,7 +33,7 @@ for i in $@; do
       echo "start succ ; pid:$pid"
     else
       echo "start failed"
-      tail output_$port.log
+      tail edge_$port.log
     fi
     deactivate
 done

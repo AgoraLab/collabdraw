@@ -21,8 +21,8 @@ HASH_SALT = "bollacboard"
 
 # Enable SSL/TLS
 ENABLE_SSL = True
-SERVER_CERT = os.path.join(os.getcwd(), "agorabeckon.com.chained.crt")
-SERVER_KEY = os.path.join(os.getcwd(), "agorabeckon-com.nopass.key")
+SERVER_CERT = os.path.join(os.getcwd(), "/etc/voice/agorabeckon.com.chained.crt")
+SERVER_KEY = os.path.join(os.getcwd(), "/etc/voice/agorabeckon-com.nopass.key")
 
 # Demo mode disables login requirement
 # DEMO_MODE = False
