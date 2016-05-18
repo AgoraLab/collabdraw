@@ -4,12 +4,7 @@ import logging
 import pymysql
 import _thread
 import threading
-VENDOR_HOST = '119.9.92.49'
-# VENDOR_HOST = '127.0.0.1'
-VENDOR_PORT = 3313
-VENDOR_USER = 'webquery'
-VENDOR_PASSWORD = 'bestvoip'
-VENDOR_DB = 'vendors'
+import config
 
 class MysqlClientVendor:
     vendorKeys = {}
@@ -19,9 +14,6 @@ class MysqlClientVendor:
 
     def __init__(self):
         pass
-        # self.vendorKeys = {}
-        # self.vendorInfos = {}
-        # self.onTimer()
 
     def getVendorKeys(self):
         with MysqlClientVendor.vendor_lock:
@@ -35,7 +27,7 @@ class MysqlClientVendor:
         threading.Thread(target=MysqlClientVendor.loadVendors, args=()).start()
 
     def loadVendors():
-        conn = pymysql.connect(host=VENDOR_HOST, port=VENDOR_PORT, user=VENDOR_USER, passwd=VENDOR_PASSWORD, db=VENDOR_DB, connect_timeout=5)
+        conn = pymysql.connect(host=config.VENDOR_HOST, port=config.VENDOR_PORT, user=config.VENDOR_USER, passwd=config.VENDOR_PASSWORD, db=config.VENDOR_DB, connect_timeout=5)
         cur = conn.cursor()
         cur.execute("SELECT vendor_id, name, `key`, signkey, status  FROM vendor_info")
         vendorKeys={}

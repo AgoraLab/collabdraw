@@ -49,11 +49,11 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r'/realtime/', RealtimeHandler),
-            (r'/client/(.*)', tornado.web.StaticFileHandler, dict(path=config.RESOURCE_DIR)),
+            # (r'/client/(.*)', tornado.web.StaticFileHandler, dict(path=config.RESOURCE_DIR)),
             (r'/files/(.*)', tornado.web.StaticFileHandler, dict(path=config.FILES_DIR)),
             (r'/join', JoinHandler),
             (r'/upload', UploadHandler),
-            (r'/innerupload', InnerUploadHandler),
+            # (r'/innerupload', InnerUploadHandler),
         ]
         settings = dict(
             auto_reload=True,
@@ -67,7 +67,7 @@ class Application(tornado.web.Application):
 
 def serverKeepAliveCallBack(response):
     if response.error:
-        logger.error(response.error)
+        logger.error("serverKeepAliveCallBack %s"%response.error)
     else:
         msg=json.loads(str(bytes.decode(response.body, 'utf-8')))
         if msg["ret"] != 0:
@@ -79,20 +79,18 @@ def serverKeepAliveCallBack(response):
 
 def serverKeepAlive():
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    msg={"port":config.PUBLIC_LISTEN_PORT, "load":RealtimeHandler.clientCount(), "key":"bestvoip"}
+    msg={"port":config.APP_PORT, "load":RealtimeHandler.clientCount(), "key":"bestvoip"}
     body = urllib.parse.urlencode(msg) #Make it into a post request
     try :
-        # for x in socket.gethostbyname_ex('wb.agorabeckon.com')[2]:
-        url = "http://wb.agorabeckon.com:15555/registerEdgeServer"
-        http_client = AsyncHTTPClient()
-        http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)
+        for x in config.CENTER_ADDRESSES:
+            url = "http://%s/registerEdgeServer"%x
+            http_client = AsyncHTTPClient()
+            http_client.fetch(url, serverKeepAliveCallBack, method='POST', headers=headers, body=body)
     except:
         logger.info("gethostbyname error")
 
 if __name__ == "__main__":
-    # if not config.ENABLE_SSL:
     http_server = tornado.httpserver.HTTPServer(Application())
-    # else:
     https_server = tornado.httpserver.HTTPServer(Application(), ssl_options={
             "certfile": config.SERVER_CERT,
             "keyfile": config.SERVER_KEY,

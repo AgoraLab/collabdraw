@@ -2,7 +2,7 @@ import os
 import socket
 import fcntl
 import struct
-
+import json
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -19,18 +19,11 @@ def get_ip_address(ifname):
 APP_IP_ADDRESS = get_ip_address("eth0")
 APP_PORT = os.environ.get('PORT', 5000)
 
-# Port in which websocket client should listen
-# Usually same as APP_PORT unless some other
-# port forwarding is set up (for ex. if you're using heroku)
-PUBLIC_LISTEN_PORT = APP_PORT
-
 PUBSUB_CLIENT_TYPE = 'redis'  # only redis supported now
 DB_CLIENT_TYPE = 'redis'  # only redis supported now
 
-EDGE_REDIS_URL = {'1': 'redis://119.9.92.228:6301'}
-# AWS_ACCESS_KEY=os.environ.get('AWS_ACCESS_KEY', 'AKIAJO5BOGR5LEAHSECA')
-# AWS_SECRET_KEY=os.environ.get('AWS_SECRET_KEY','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')
-# S3_BUCKET=os.environ.get('S3_BUCKET','whiteboard.image')
+EDGE_REDIS_URL = {}
+CENTER_ADDRESSES=[]
 # Full path of "collabdraw" directory
 ROOT_DIR = "/".join(os.path.realpath(__file__).split('/')[:-1])
 RESOURCE_DIR = os.path.join(ROOT_DIR, 'client')
@@ -41,10 +34,11 @@ HTML_ROOT = os.path.join(RESOURCE_DIR, 'html')
 HASH_SALT = "bollacboard"
 
 # Enable SSL/TLS
-ENABLE_SSL = True
-SERVER_CERT = os.path.join(
-    os.getcwd(),
-    "/etc/voice/agorabeckon.com.chained.crt")
-SERVER_KEY = os.path.join(os.getcwd(), "/etc/voice/agorabeckon-com.nopass.key")
-# Demo mode disables login requirement
-# DEMO_MODE = False
+SERVER_CERT = ''
+SERVER_KEY = ''
+with open('config.json') as data_file:
+    data = json.load(data_file)
+    EDGE_REDIS_URL = data["EDGE_REDIS_URL"]
+    SERVER_CERT=data["SERVER_CERT"]
+    SERVER_KEY=data["SERVER_KEY"]
+    CENTER_ADDRESSES=data["CENTER_ADDRESSES"]
