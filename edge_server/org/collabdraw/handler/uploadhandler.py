@@ -58,9 +58,9 @@ class UploadHandler(tornado.web.RequestHandler):
         fileinfo = self.request.files['myfile'][0]
         fname = fileinfo['filename']
         fext = os.path.splitext(fname)[1]
-        if fext.lower() not in ['.pdf','.png','.jpeg','.jpg']:
-            self.logger.error("Extension is not pdf or png. It is %s" % fext)
-            response_str = "Only pdf files are allowed"
+        if fext.lower() not in ['.xlsx','.xls','.docx','.doc','.pptx','.ppt','.pdf','.png','.jpeg','.jpg']:
+            self.logger.error("Extension is not office, pdf or png. It is %s" % fext)
+            response_str = "Only office/pdf/image files are allowed"
             self.finish(response_str)
             return
 
@@ -69,13 +69,9 @@ class UploadHandler(tornado.web.RequestHandler):
 
         db_key = "%s:%s" % (cookie['vid'], self.room_name)
         # split and convert pdf to png
-        if fext.lower() == '.pdf':
-            # t=threading.Thread(target=process_uploaded_file_pdf, args=(dir_path, fname,db_key ,fileinfo['body'],q))
+        if fext.lower() in ['.xlsx','.xls','.docx','.doc','.pptx','.ppt','.pdf']:
             ret=process_uploaded_file_pdf(dir_path, fname,db_key ,fileinfo['body'])
         else:
-            # t=threading.Thread(target=process_uploaded_file_image, args=(fext.lower(), db_key, fileinfo['body'],q))
-            # t.start()
-            # t.join()
             ret=process_uploaded_file_image(fext.lower(), db_key, fileinfo['body'])
         logger.info("upload %.1f sec"%(time.time()-startts))
         self.finish(ret)

@@ -67,12 +67,22 @@ def uploadfile(filename, data,q):
 def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
     no=RealtimeHandler.gen_page_id()
     tmp_name=no
-    # save pdf
+    # save target file
     os.makedirs(dir_path, exist_ok=True)
     file_path = os.path.join(dir_path, "%d.pdf"%tmp_name)
-    fh = open(file_path, 'wb')
-    fh.write(body)
-    fh.close()
+    # get file extension
+    fext = os.path.splitext(fname)[1]
+    # Convert the ppt files to pdf
+    if fext.lower() != '.pdf':
+        src_file = os.path.join(dir_path, "%d%s"%(tmp_name,fext.lower()))
+        fh = open(src_file, 'wb')
+        fh.write(body)
+        fh.close()
+        subprocess.call(['soffice', '--headless', '--invisible', '--convert-to', 'pdf', src_file, '--outdir', dir_path])
+    else:
+        fh = open(file_path, 'wb')
+        fh.write(body)
+        fh.close()
     # Split the pdf files by pages
     subprocess.call(['pdfseparate', file_path, "%s/%d_%%d.pdf"%(dir_path,tmp_name)])
     pages=len(glob.glob("%s/%d_*.pdf"%(dir_path,tmp_name)))
