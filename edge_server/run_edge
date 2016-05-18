@@ -5,10 +5,10 @@ if [ $# == 0 ] ; then
     echo "run fail"
     exit 1;
 fi
-source ../venv/bin/activate
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 for i in $@; do
+    source ../venv/bin/activate
     port=$i
     export PORT=$port
     pid=`sudo netstat -lnp  | grep $port  | grep -v tcp6 | awk '{print $7}'| awk -F/ '{print $1}'`
@@ -18,7 +18,7 @@ for i in $@; do
       kill $pid
       # exit
     fi
-    nohup python edge_server/edge_main.py > edge_$port.log 2>&1 &
+    nohup python edge_main.py > edge_$port.log 2>&1 &
     sleep 1
     for x in `seq 0 5`
     do
