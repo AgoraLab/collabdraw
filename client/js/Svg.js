@@ -1086,8 +1086,8 @@ enyo.kind({
     selectSvgElementByPoint: function(x, y) {
         var indexX, indexY, element;
 
-        for (indexX = x - 3; indexX < x + 3; indexX += 1) {
-            for (indexY = y - 3; indexY < y + 3; indexY += 1) {
+        for (indexX = x - 10; indexX < x + 10; indexX += 1) {
+            for (indexY = y - 10; indexY < y + 10; indexY += 1) {
                 element = this.cvs.getElementByPoint(indexX, indexY);
                 if (element) {
                     if (element.type === 'image') {
@@ -1105,8 +1105,8 @@ enyo.kind({
     selectDomElementByPoint: function(x, y) {
         var indexX, indexY, element;
 
-        for (indexX = x - 3; indexX < x + 3; indexX += 1) {
-            for (indexY = y - 3; indexY < y + 3; indexY += 1) {
+        for (indexX = x - 10; indexX < x + 10; indexX += 1) {
+            for (indexY = y - 10; indexY < y + 10; indexY += 1) {
 
                 element = document.elementFromPoint(indexX, indexY);
                 if (element && (element.id.indexOf('path-') > -1)) {
