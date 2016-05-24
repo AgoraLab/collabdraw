@@ -632,6 +632,7 @@ enyo.kind({
                 setTimeout(function() {
                     $(".ajax-file-upload-container").empty();
                 }, 3000);
+                $.notify("File uploaded.", "success");
                 console.log(data);
             },
             afterUploadAll: function(obj) {
