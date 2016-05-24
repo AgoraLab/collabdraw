@@ -527,17 +527,21 @@ enyo.kind({
             }
             if (y >= 30) { y = y - 30; }
             var img = _this.cvs.image(url, 0, 0, w, h);
-            _this.changeCanvasSize(x, y, w, h);
+            _this.changeCanvasSize(x, y, w, h, 60);
             img.toBack();
             //_this.cvs.image(url, 0, 0, _this.parent_.canvasWidth, _this.parent_.canvasHeight);
         });
     },
 
-    changeCanvasSize(x, y, width, height) {
+    changeCanvasSize(x, y, width, height, extraY) {
         this.parent_.$.canvasContainer.applyStyle("width", String(width) + "px");
         this.parent_.$.canvasContainer.applyStyle("height", String(height) + "px");
         // Since thiere is 60px header bar.
-        this.parent_.$.canvasContainer.applyStyle("margin-top", String(y + 60) + "px");
+        if (extraY) {
+            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y + extraY) + "px");
+        } else {
+            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y) + "px");
+        }
         this.parent_.$.canvasContainer.applyStyle("margin-left", String(x) + "px");
         //_this.cvs.changeSize(w, h, false, false);
     },

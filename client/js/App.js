@@ -104,7 +104,7 @@ enyo.kind({
             }, {
                 kind:'onyx.Tooltip',
                 classes:'above',
-                content:'Add New'
+                content:'Attach a file or create a new page.'
             }]
         }],
         rendered: function() {
