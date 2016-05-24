@@ -527,7 +527,7 @@ enyo.kind({
             }
             if (y >= 30) { y = y - 30; }
             var img = _this.cvs.image(url, 0, 0, w, h);
-            _this.changeCanvasSize(x, y, w, h, 60);
+            _this.changeCanvasSize(x, y, w, h, 30);
             img.toBack();
             //_this.cvs.image(url, 0, 0, _this.parent_.canvasWidth, _this.parent_.canvasHeight);
         });
@@ -538,9 +538,9 @@ enyo.kind({
         this.parent_.$.canvasContainer.applyStyle("height", String(height) + "px");
         // Since thiere is 60px header bar.
         if (extraY) {
-            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y + extraY) + "px");
+            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y / 2 + extraY) + "px");
         } else {
-            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y) + "px");
+            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y / 2) + "px");
         }
     },
 
