@@ -533,7 +533,7 @@ enyo.kind({
         });
     },
 
-    changeCanvasSize(x, y, width, height, extraY) {
+    changeCanvasSize: function(x, y, width, height, extraY) {
         this.parent_.$.canvasContainer.applyStyle("width", String(width) + "px");
         this.parent_.$.canvasContainer.applyStyle("height", String(height) + "px");
         // Since thiere is 60px header bar.
