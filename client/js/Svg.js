@@ -526,10 +526,20 @@ enyo.kind({
                 }
             }
             if (y >= 30) { y = y - 30; }
-            var img = _this.cvs.image(url, x, y, w, h);
+            var img = _this.cvs.image(url, 0, 0, w, h);
+            _this.changeCanvasSize(x, y, w, h);
             img.toBack();
             //_this.cvs.image(url, 0, 0, _this.parent_.canvasWidth, _this.parent_.canvasHeight);
         });
+    },
+
+    changeCanvasSize(x, y, width, height) {
+        this.parent_.$.canvasContainer.applyStyle("width", String(width) + "px");
+        this.parent_.$.canvasContainer.applyStyle("height", String(height) + "px");
+        // Since thiere is 60px header bar.
+        this.parent_.$.canvasContainer.applyStyle("margin-top", String(y + 60) + "px");
+        this.parent_.$.canvasContainer.applyStyle("margin-left", String(x) + "px");
+        //_this.cvs.changeSize(w, h, false, false);
     },
 
     getImage: function() {
@@ -551,6 +561,7 @@ enyo.kind({
             // Blank canvas
             return false;
         } else {
+            this.changeCanvasSize(0, 0, this.parent_.canvasWidth, this.parent_.canvasHeight);
             this.currentPage += 1;
             this.connection.init(this.uid, this.room, this.currentPage);
             return true;
@@ -561,11 +572,11 @@ enyo.kind({
      * Go to the previous page
      */
     prevPage: function() {
-
         if (this.currentPage - 1 <= 0) {
             // do nothing
             return false;
         } else {
+            this.changeCanvasSize(0, 0, this.parent_.canvasWidth, this.parent_.canvasHeight);
             this.currentPage -= 1;
             this.connection.init(this.uid, this.room, this.currentPage);
             return true;
@@ -573,6 +584,7 @@ enyo.kind({
     },
 
     gotoPage: function(pageNum) {
+        this.changeCanvasSize(0, 0, this.parent_.canvasWidth, this.parent_.canvasHeight);
         this.currentPage = pageNum;
         this.connection.init(this.uid, this.room, pageNum);
         this.callback(this.totalPages, this.currentPage);
