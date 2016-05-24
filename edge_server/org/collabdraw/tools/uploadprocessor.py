@@ -87,8 +87,8 @@ def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
     subprocess.call(['pdfseparate', file_path, "%s/%d_%%d.pdf"%(dir_path,tmp_name)])
     pages=len(glob.glob("%s/%d_*.pdf"%(dir_path,tmp_name)))
     page_list=[i+no for i in range(pages)]
-    # Convert the pdf files to png
-    subprocess.call(['mogrify', '-format', 'png', '--', "%s/%d_*.pdf"%(dir_path,tmp_name)])
+    # Convert the pdf files to jpg
+    subprocess.call(['mogrify', '-format', 'jpg', '--', "%s/%d_*.pdf"%(dir_path,tmp_name)])
 
     ret=collections.OrderedDict()
     prefix=unsigned_hash("%s:%s:%s"%(dir_path,config.APP_IP_ADDRESS,config.APP_PORT))
@@ -96,9 +96,9 @@ def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
     res='succ'
     with ThreadPoolExecutor(max_workers=100) as executor:
         for i in page_list:
-            filename="%x%x.png"%(prefix, i)
+            filename="%x%x.jpg"%(prefix, i)
             ret[i]=filename
-            localfile = "%s/%d_%d.png"%(dir_path,tmp_name,i-tmp_name+1)
+            localfile = "%s/%d_%d.jpg"%(dir_path,tmp_name,i-tmp_name+1)
             with open(localfile, 'rb') as f:
                 executor.submit(uploadfile, filename, f.read(), q)
     while not q.empty():
@@ -109,7 +109,7 @@ def process_uploaded_file_pdf(dir_path ,fname, room_topic, body):
     logger.info("upload all %s"%res)
     # Delete all the files
     delete_files('%s/%d_*.pdf'%(dir_path , tmp_name))
-    delete_files('%s/%d_*.png'%(dir_path , tmp_name))
+    delete_files('%s/%d_*.jpg'%(dir_path , tmp_name))
     if res=='succ':
         tornado.ioloop.IOLoop.instance().add_callback(callback=lambda: RealtimeHandler.on_uploadfile(room_topic,ret))
 
