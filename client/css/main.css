@@ -7,6 +7,10 @@
     fill: none;
 }
 
+.onyx-menu {
+    padding: 0 !important;
+}
+
 .onyx-button:hover {
     /*background-color: rgba(255,255,255,0.3) !important;*/
     /*border: 1px solid rgba(179,179,179,0.5) !important;*/

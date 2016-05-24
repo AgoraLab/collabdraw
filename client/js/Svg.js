@@ -542,8 +542,6 @@ enyo.kind({
         } else {
             this.parent_.$.canvasContainer.applyStyle("margin-top", String(y) + "px");
         }
-        this.parent_.$.canvasContainer.applyStyle("margin-left", String(x) + "px");
-        //_this.cvs.changeSize(w, h, false, false);
     },
 
     getImage: function() {

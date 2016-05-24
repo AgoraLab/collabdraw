@@ -83,22 +83,26 @@ enyo.kind({
             style: "float:right",
             name: "uploadAndNewPageBtn",
             components: [{
-                kind: "onyx.PickerDecorator",
+                kind: "onyx.MenuDecorator",
                 components: [{
-                    name: "optionsPicker",
+                    name: "optionsMenu",
                     onmouseover: "optionsPickerMouseOver",
                     onmouseout: "optionsPickerMouseOut",
-                    style: "background:url(../images/btn_new_gray.png) top left no-repeat transparent;cursor:pointer;",
+                    style: "background:url(../images/btn_new_gray.png) center center no-repeat transparent;cursor:pointer;",
                 }, {
-                    kind: "onyx.Picker",
+                    kind: "onyx.Menu",
                     components: [{
                         name: "upload",
                         ontap: "uploadFileNew",
-                        style: "padding: 15px;background-image: url(../images/btn_computer.png);background-repeat:no-repeat;background-position: center center;cursor:pointer;",
+                        style: "background:url(../images/btn_computer.png) no-repeat 12px center #FFF;cursor:pointer;color: #000;border-bottom:1px solid #000;",
+                        allowHtml: true,
+                        content: "<p style='padding-left: 36px;'>Upload</p>"
                     }, {
                         name: "newPage",
                         ontap: "selectNewPage",
-                        style: "padding: 15px;background-image: url(../images/btn_newpage.png);background-repeat:no-repeat;background-position: center center;cursor:pointer;"
+                        style: "background:url(../images/btn_newpage.png) no-repeat 12px center #FFF;cursor:pointer;color:#000;",
+                        allowHtml: true,
+                        content: "<p style='padding-left: 36px;'>New Page</p>"
                     }],
                 }],
             }, {
@@ -106,7 +110,7 @@ enyo.kind({
                 classes:'above',
                 content:'Attach a file or create a new page.'
             }]
-        }],
+        }, ],
         rendered: function() {
             this.inherited(arguments);
             this.applyStyle("height", 60 + "px");
@@ -1115,11 +1119,11 @@ enyo.kind({
     },
 
     optionsPickerMouseOver: function(inSender, inEvent) {
-        this.$.optionsPicker.applyStyle("background-image", "url(../images/btn_new.png)");
+        this.$.optionsMenu.applyStyle("background-image", "url(../images/btn_new.png)");
     },
 
     optionsPickerMouseOut: function(inSender, inEvent) {
-        this.$.optionsPicker.applyStyle("background-image", "url(../images/btn_new_gray.png)");
+        this.$.optionsMenu.applyStyle("background-image", "url(../images/btn_new_gray.png)");
     },
 
     zoomOutMouseOver: function(inSender, inEvent) {
