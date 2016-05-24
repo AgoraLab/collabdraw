@@ -526,10 +526,24 @@ enyo.kind({
                 }
             }
             if (y >= 30) { y = y - 30; }
-            var img = _this.cvs.image(url, x, y, w, h);
+            var img = _this.cvs.image(url, 0, 0, w, h);
+            _this.changeCanvasSize(x, y, w, h, 60);
             img.toBack();
             //_this.cvs.image(url, 0, 0, _this.parent_.canvasWidth, _this.parent_.canvasHeight);
         });
+    },
+
+    changeCanvasSize(x, y, width, height, extraY) {
+        this.parent_.$.canvasContainer.applyStyle("width", String(width) + "px");
+        this.parent_.$.canvasContainer.applyStyle("height", String(height) + "px");
+        // Since thiere is 60px header bar.
+        if (extraY) {
+            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y + extraY) + "px");
+        } else {
+            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y) + "px");
+        }
+        this.parent_.$.canvasContainer.applyStyle("margin-left", String(x) + "px");
+        //_this.cvs.changeSize(w, h, false, false);
     },
 
     getImage: function() {
@@ -551,6 +565,7 @@ enyo.kind({
             // Blank canvas
             return false;
         } else {
+            this.changeCanvasSize(0, 0, this.parent_.canvasWidth, this.parent_.canvasHeight);
             this.currentPage += 1;
             this.connection.init(this.uid, this.room, this.currentPage);
             return true;
@@ -561,11 +576,11 @@ enyo.kind({
      * Go to the previous page
      */
     prevPage: function() {
-
         if (this.currentPage - 1 <= 0) {
             // do nothing
             return false;
         } else {
+            this.changeCanvasSize(0, 0, this.parent_.canvasWidth, this.parent_.canvasHeight);
             this.currentPage -= 1;
             this.connection.init(this.uid, this.room, this.currentPage);
             return true;
@@ -573,6 +588,7 @@ enyo.kind({
     },
 
     gotoPage: function(pageNum) {
+        this.changeCanvasSize(0, 0, this.parent_.canvasWidth, this.parent_.canvasHeight);
         this.currentPage = pageNum;
         this.connection.init(this.uid, this.room, pageNum);
         this.callback(this.totalPages, this.currentPage);
@@ -1086,8 +1102,8 @@ enyo.kind({
     selectSvgElementByPoint: function(x, y) {
         var indexX, indexY, element;
 
-        for (indexX = x - 3; indexX < x + 3; indexX += 1) {
-            for (indexY = y - 3; indexY < y + 3; indexY += 1) {
+        for (indexX = x - 10; indexX < x + 10; indexX += 1) {
+            for (indexY = y - 10; indexY < y + 10; indexY += 1) {
                 element = this.cvs.getElementByPoint(indexX, indexY);
                 if (element) {
                     if (element.type === 'image') {
@@ -1105,8 +1121,8 @@ enyo.kind({
     selectDomElementByPoint: function(x, y) {
         var indexX, indexY, element;
 
-        for (indexX = x - 3; indexX < x + 3; indexX += 1) {
-            for (indexY = y - 3; indexY < y + 3; indexY += 1) {
+        for (indexX = x - 10; indexX < x + 10; indexX += 1) {
+            for (indexY = y - 10; indexY < y + 10; indexY += 1) {
 
                 element = document.elementFromPoint(indexX, indexY);
                 if (element && (element.id.indexOf('path-') > -1)) {
