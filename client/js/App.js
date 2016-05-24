@@ -635,14 +635,14 @@ enyo.kind({
                 console.log(data);
             },
             afterUploadAll: function(obj) {
-                console.log(obj);
-                // TODO
+                $.notify("File uploaded.", "success");
             },
             onError: function(files, status, errMsg, pd) {
-                // TODO
+                $.notify("File upload error, please try again.", "error");
+                console.log("Upload error with msg: " + errMsg + ", status: " + status);
             },
             onCancel: function(files, pd) {
-                // TODO
+                $.notify("File upload has been cancelled.", "success");
             }
         });
         setTimeout(function() {
