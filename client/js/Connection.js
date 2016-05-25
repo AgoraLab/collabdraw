@@ -22,7 +22,53 @@ enyo.kind({
         this.attempts = 1;
 
         this.messageQueue = new Queue();
+        this.setupNotificationStyle();
         _this = this;
+    },
+
+    setupNotificationStyle: function() {
+        $.noty.defaults = {
+            layout: 'top',
+            theme: 'relax',
+            type: 'warning',
+            text: '', // can be html or string
+            dismissQueue: true, // If you want to use queue feature set this true
+            template: '<div class="noty_message"><span class="noty_text"></span><div class="noty_close"></div></div>',
+            animation: {
+                open: {height: 'toggle'}, // or Animate.css class names like: 'animated bounceInLeft'
+                close: {height: 'toggle'}, // or Animate.css class names like: 'animated bounceOutLeft'
+                easing: 'swing',
+                speed: 500 // opening & closing animation speed
+            },
+            timeout: false, // delay for closing event. Set false for sticky notifications
+            force: false, // adds notification to the beginning of queue when set to true
+            modal: false,
+            maxVisible: 5, // you can set max visible notification for dismissQueue true option,
+            killer: false, // for close all notifications before show
+            closeWith: ['click'], // ['click', 'button', 'hover', 'backdrop'] // backdrop click will close all notifications
+            callback: {
+                onShow: function() {},
+                afterShow: function() {},
+                onClose: function() {},
+                afterClose: function() {},
+                onCloseClick: function() {},
+            },
+            buttons: false // an array of buttons
+        };
+    },
+
+    showWarningMessage: function(params) {
+        if (this.warningMessage && !this.warningMessage.closed) {
+            this.warningMessage.setText(params.text);
+        } else {
+            this.warningMessage = noty(params);
+        }
+    },
+
+    clearWarningMessage: function() {
+        if (this.warningMessage) {
+            this.warningMessage.close();
+        }
     },
 
     createSocket: function(address) {
@@ -42,6 +88,10 @@ enyo.kind({
             // reset attempts of retry
             this.attempts = 1;
             console.log("WebSocket connection established @" + Date.now());
+            _this.clearWarningMessage();
+
+            console.log("Send rest messages in queue...");
+            _this.sendMessageInQueue();
         };
 
         connection.onmessage = function(evt) {
@@ -122,6 +172,7 @@ enyo.kind({
         var reconnectWebSocket = function() {
             var time = generateInterval(_this.attempts);
             console.log("Re-connecting after: " + time + " miliseconds...");
+            _this.showWarningMessage({text: "Network connection is lost, reconnect in " + Math.round(time/1000) + " seconds."});
 
             setTimeout(function () {
                 // We've tried to reconnect so increment the attempts by 1
@@ -129,11 +180,6 @@ enyo.kind({
                 // Connection has closed so try to reconnect.
                 _this.socket = _this.createSocket(address);
             }, time);
-        };
-
-        connection.onopen = function(event) {
-            console.log("WebSocket is ready to connect, send rest messages in queue...");
-            _this.sendMessageInQueue();
         };
 
         connection.onerror = function(err) {
@@ -193,9 +239,24 @@ enyo.kind({
         }
     },
 
+    checkIfOnline: function() {
+        return navigator.onLine;
+    },
+
     sendMessage: function(evt, data) {
+        var message;
         this.enqueueMessage(evt, data);
-        this.sendMessageInQueue();
+        if (this.checkIfOnline()) {
+            this.sendMessageInQueue();
+        } else {
+            message = JSON.stringify({
+                "uid": this.uid,
+                "event": "ping",
+                "data": {}
+            });
+            this.socket.send(message);
+            this.showWarningMessage({text: "Connection is lost."});
+        }
     },
 
     init: function(uid, room, currentPage) {
@@ -280,15 +341,16 @@ enyo.kind({
     },
 
     sendLaserEvent: function(eventName, data) {
-        data = data || {};
-        data["room"] =  this.whiteboard.room;
-        data["page_id"] =  this.whiteboard.getCurrentPageId();
-        message = JSON.stringify({
-            "uid": this.uid,
-            "event": eventName,
-            "data": data
-        });
-        this.socket.send(message);
+        //data = data || {};
+        //data["room"] =  this.whiteboard.room;
+        //data["page_id"] =  this.whiteboard.getCurrentPageId();
+        //message = JSON.stringify({
+            //"uid": this.uid,
+            //"event": eventName,
+            //"data": data
+        //});
+        //this.socket.send(message);
+        this.sendMessage(eventName, data);
     },
 
     deletePage: function() {
