@@ -20,6 +20,8 @@ enyo.kind({
         this.page = 1;
         this.touchMove=undefined;
         this.attempts = 1;
+
+        this.messageQueue = new Queue();
         _this = this;
     },
 
@@ -129,8 +131,13 @@ enyo.kind({
             }, time);
         };
 
+        connection.onopen = function(event) {
+            console.log("WebSocket is ready to connect, send rest messages in queue...");
+            _this.sendMessageInQueue();
+        };
+
         connection.onerror = function(err) {
-            console.log(err);
+            console.error(err);
             console.log("WebSocket connection lost @ " + Date.now());
 
             reconnectWebSocket();
@@ -144,16 +151,51 @@ enyo.kind({
         return connection;
     },
 
-    sendMessage: function(evt, data) {
-        data["room"]=  this.whiteboard.room
-        data["page_id"]=  this.whiteboard.getCurrentPageId()
+    enqueueMessage: function(evt, data) {
+        var message;
+        data["room"]=  this.whiteboard.room;
+        data["page_id"]=  this.whiteboard.getCurrentPageId();
         message = JSON.stringify({
             "uid": this.uid,
             "event": evt,
             "data": data
         });
-        console.log('sendms:',message);
-        this.socket.send(message);
+
+        this.messageQueue.enqueue(message);
+    },
+
+    sendMessageInQueue: function() {
+        var messageBeenSent,
+            message,
+            retryCount = 0;
+
+        while (!this.messageQueue.isEmpty()) {
+            messageBeenSent = true;
+            try {
+                message = this.messageQueue.dequeue();
+                if (message) {
+                    console.log('sending message:', message);
+                    this.socket.send(message);
+                }
+            } catch(err) {
+                console.error("Error, message not been sent, error message is: ", err);
+                messageBeenSent = false;
+            }
+
+            if (!messageBeenSent) {
+                this.messageQueue.enqueue(message);
+                retryCount += 1;
+                if (retryCount > 1000) {
+                    // break out of loop without retrying anymore, leave message in the queue, and resend it next time.
+                    break;
+                }
+            }
+        }
+    },
+
+    sendMessage: function(evt, data) {
+        this.enqueueMessage(evt, data);
+        this.sendMessageInQueue();
     },
 
     init: function(uid, room, currentPage) {
