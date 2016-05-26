@@ -632,18 +632,38 @@ enyo.kind({
                 setTimeout(function() {
                     $(".ajax-file-upload-container").empty();
                 }, 3000);
-                $.notify("File uploaded.", "success");
+                noty({
+                    text: "File uploaded.",
+                    type: "success",
+                    theme: "relax",
+                    timeout: 6000
+                });
                 console.log(data);
             },
             afterUploadAll: function(obj) {
-                $.notify("File uploaded.", "success");
+                noty({
+                    text: "File uploaded.",
+                    type: "success",
+                    theme: "relax",
+                    timeout: 6000
+                });
             },
             onError: function(files, status, errMsg, pd) {
-                $.notify("File upload error, please try again.", "error");
+                noty({
+                    text: "File upload error, please try again.",
+                    type: "error",
+                    theme: "relax",
+                    timeout: 6000
+                });
                 console.log("Upload error with msg: " + errMsg + ", status: " + status);
             },
             onCancel: function(files, pd) {
-                $.notify("File upload has been cancelled.", "success");
+                noty({
+                    text: "File upload has been cancelled.",
+                    type: "success",
+                    theme: "relax",
+                    timeout: 6000
+                });
             }
         });
         setTimeout(function() {
