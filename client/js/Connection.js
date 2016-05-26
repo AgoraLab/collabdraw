@@ -199,8 +199,9 @@ enyo.kind({
 
     enqueueMessage: function(evt, data) {
         var message;
-        data["room"]=  this.whiteboard.room;
-        data["page_id"]=  this.whiteboard.getCurrentPageId();
+        data["room"] =  this.whiteboard.room;
+        data["page_id"] =  this.whiteboard.getCurrentPageId();
+        data["guid"] = JXG.Util.genUUID();
         message = JSON.stringify({
             "uid": this.uid,
             "event": evt,
