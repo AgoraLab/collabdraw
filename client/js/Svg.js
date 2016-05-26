@@ -78,6 +78,7 @@ enyo.kind({
         this.userRole        = userRole;
         this.canvasHeight    = parent.canvasHeight;
         this.canvasWidth     = parent.canvasWidth;
+        this.topMargin       = 0;
     },
 
     /**
@@ -544,16 +545,20 @@ enyo.kind({
     },
 
     changeCanvasSize: function(x, y, width, height, extraY) {
+        var marginTop;
         this.parent_.$.canvasContainer.applyStyle("width", String(width * this.zoomRatio) + "px");
         this.parent_.$.canvasContainer.applyStyle("height", String(height * this.zoomRatio) + "px");
         // Since thiere is 60px header bar.
         if (extraY) {
-            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y / 2 + extraY) + "px");
+            marginTop = y / 2 + extraY;
+            this.parent_.$.canvasContainer.applyStyle("margin-top", String(marginTop) + "px");
         } else {
-            this.parent_.$.canvasContainer.applyStyle("margin-top", String(y / 2) + "px");
+            marginTop = y / 2;
+            this.parent_.$.canvasContainer.applyStyle("margin-top", String(marginTop) + "px");
         }
         this.canvasHeight = height;
         this.canvasWidth = width;
+        this.topMargin = marginTop;
     },
 
     getImage: function() {
@@ -657,7 +662,7 @@ enyo.kind({
         }
 
         if (!this.laserPen) {
-            this.laserPen = this.cvs.circle(x, y, 8);
+            this.laserPen = this.cvs.circle(x, y, 12);
             this.laserPen.attr({
                 stroke: "red",
                 fill: "red",
@@ -667,7 +672,7 @@ enyo.kind({
                 this.laserPen.drag(function(x, y, dx, dy, e) {
                     var nx = self.zoomConvert(dx) - self.zoomConvert(canvasBounds.left);
                     // We have a 60px header bar
-                    var ny = self.zoomConvert(dy - 60);
+                    var ny = self.zoomConvert(dy - 60 - self.topMargin);
                     this.attr({
                         cx: nx,
                         cy: ny
@@ -1164,7 +1169,6 @@ enyo.kind({
             var pageX = x + this.parent_.$.canvasContainer.getBounds().left;
             var pageY = y + this.parent_.$.canvasContainer.getBounds().top;
 
-            //var svgElem = this.cvs.getElementByPoint(pageX, pageY);
             var svgElem = this.selectSvgElementByPoint(pageX, pageY);
             if (svgElem) {
                 // Do not glow laser pen
