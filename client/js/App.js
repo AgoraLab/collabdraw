@@ -60,7 +60,7 @@ enyo.kind({
             content: "agora.io",
             style: "text-transform: uppercase;letter-spacing:0.1em;"
         }, {
-            content: "Page 1",
+            content: $L("Page"),
             name: "channelId",
             style: "text-transform: uppercase;letter-spacing:0.1em;font-size: 0.8em;font-weight:normal;"
         }, {
@@ -76,7 +76,7 @@ enyo.kind({
             }, {
                 kind:'onyx.Tooltip',
                 classes:'above',
-                content:'Logout'
+                content: $L("Logout")
             }]
         }, {
             kind: "onyx.TooltipDecorator",
@@ -96,19 +96,19 @@ enyo.kind({
                         ontap: "uploadFileNew",
                         style: "background:url(../images/btn_computer.png) no-repeat 12px center #FFF;cursor:pointer;color: #000;border-bottom:1px solid #000;",
                         allowHtml: true,
-                        content: "<p style='padding-left: 36px;'>Upload</p>"
+                        content: "<p style='padding-left: 36px;'>" + $L("Upload") + "</p>"
                     }, {
                         name: "newPage",
                         ontap: "selectNewPage",
                         style: "background:url(../images/btn_newpage.png) no-repeat 12px center #FFF;cursor:pointer;color:#000;",
                         allowHtml: true,
-                        content: "<p style='padding-left: 36px;'>New Page</p>"
+                        content: "<p style='padding-left: 36px;'>" + $L("New Page") + "</p>"
                     }],
                 }],
             }, {
                 kind:'onyx.Tooltip',
                 classes:'above',
-                content:'Attach a file or create a new page.'
+                content: $L('Attach a file or create a new page.')
             }]
         }, ],
         rendered: function() {
@@ -164,7 +164,7 @@ enyo.kind({
                                 // update button status after being initialized.
                                 _this.owner.updatePageInfo();
                                 _this.owner.$.loadingPopup.hide();
-                                _this.owner.$.channelId.content = "Page " + _this.owner.whiteboard.getCurrentPage();
+                                _this.owner.$.channelId.content = $L("Page") + " " + _this.owner.whiteboard.getCurrentPage();
                                 // render the change on the fly.
                                 _this.owner.$.channelId.render();
                             }
@@ -195,7 +195,7 @@ enyo.kind({
                 style: "background-image:url(../images/btn_thumbnails_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;cursor:pointer;"
             }, {
                 kind: "onyx.Tooltip",
-                content: "Preview Pages",
+                content: $L("Preview Pages"),
                 classes: "above"
             }]
         }, {
@@ -210,7 +210,7 @@ enyo.kind({
                 style: "background-image:url(../images/btn_enlarge_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;cursor:pointer;"
             }, {
                 kind: "onyx.Tooltip",
-                content: "Zoom In",
+                content: $L("Zoom In"),
                 classes: "above"
             }],
         }, {
@@ -225,7 +225,7 @@ enyo.kind({
                 onmouseout: "zoomOutMouseOut",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Zoom Out",
+                content: $L("Zoom Out"),
                 classes: "above"
             }]
         },
@@ -241,7 +241,7 @@ enyo.kind({
                 style: "background-image:url(../images/btn_del_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;cursor:pointer;",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Delete Page",
+                content: $L("Delete Page"),
                 classes: "above"
             }]
         }, {
@@ -256,7 +256,7 @@ enyo.kind({
                 style: "background-image:url(../images/btn_clear_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;cursor:pointer;",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Clear page",
+                content: $L("Clear Page"),
                 classes: "above"
             }],
         }, {
@@ -271,7 +271,7 @@ enyo.kind({
                 onmouseout: "eraserMouseOut",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Eraser",
+                content: $L("Eraser"),
                 classes: "above"
             }]
         }, {
@@ -286,7 +286,7 @@ enyo.kind({
                 style: "background-image:url(../images/btn_undo_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;cursor:pointer;",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Undo",
+                content: $L("Undo"),
                 classes: "above"
             }]
         }, {
@@ -301,7 +301,7 @@ enyo.kind({
                 style: "background-image:url(../images/btn_redo_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;cursor:pointer;",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Redo",
+                content: $L("Redo"),
                 classes: "above"
             }],
         },
@@ -341,7 +341,7 @@ enyo.kind({
                 style: "background-image:url(../images/btn_choose_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;cursor:pointer;",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Select",
+                content: $L("Select"),
                 classes: "above"
             }],
         }, {
@@ -356,7 +356,7 @@ enyo.kind({
                 style: "background-image:url(../images/btn_laser_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;cursor:pointer;",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Laser",
+                content: $L("Laser"),
                 classes: "above"
             }]
         }, {
@@ -405,7 +405,7 @@ enyo.kind({
                 }],
             }, {
                 kind: "onyx.Tooltip",
-                content: "Shapes",
+                content: $L("Shapes"),
                 classes: "above"
             }]
         },
@@ -434,7 +434,7 @@ enyo.kind({
                 style: "background-image:url(../images/btn_word_gray.png);background-repeat:no-repeat;background-color:transparent;height:25px;cursor:pointer;",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Add Text",
+                content: $L("Add Text"),
                 classes: "above"
             }]
         }, {
@@ -449,7 +449,7 @@ enyo.kind({
                 ontap: "selectHighlighter",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Highlighter",
+                content: $L("Highlighter"),
                 classes: "above"
             }]
         }, {
@@ -464,7 +464,7 @@ enyo.kind({
                 ontap: "selectPen",
             }, {
                 kind: "onyx.Tooltip",
-                content: "Pen",
+                content: $L("Pen"),
                 classes: "above"
             }]
         }, {
@@ -508,7 +508,7 @@ enyo.kind({
                 }]
             }, {
                 kind: "onyx.Tooltip",
-                content: "Line Width",
+                content: $L("Line Width"),
                 classes: "above"
             }]
         }, {
@@ -555,7 +555,7 @@ enyo.kind({
                 }, ],
             }, {
                 kind: "onyx.Tooltip",
-                content: "Color",
+                content: $L("Color"),
                 classes: "above"
             }]
         }, {
