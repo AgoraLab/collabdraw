@@ -121,60 +121,64 @@ enyo.kind({
         fit: true,
         style: "text-align: center;background-color: #5b5b5b; z-index: 0;",
         components: [{
-            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_left.png) center center no-repeat #808080;position:absolute;left:2%;top:50%;cursor:pointer;z-index:10;border-radius:5px;cursor:pointer;",
-            ontap: "gotoPreviousPage",
-            onmouseover: "gotoPreviousPageMouseOver",
-            onmouseout: "gotoPreviousPageMouseOut",
-            name: "gotoPreviousPage",
-        }, {
-            style: "margin: auto; background-color: #FFFFFF;display:inline-block;",
-            ontap: "appclicked",
-            ondragstart: "touchstart",
-            ondragover: "touchmove",
-            ondragfinish: "touchend",
-            name: "canvasContainer",
-            rendered: function() {
-                this.inherited(arguments);
+            kind: "Scroller",
+            classes: "enyo-fit",
+            components: [{
+                style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_left.png) center center no-repeat #808080;position:absolute;left:2%;top:50%;cursor:pointer;z-index:10;border-radius:5px;cursor:pointer;",
+                ontap: "gotoPreviousPage",
+                onmouseover: "gotoPreviousPageMouseOver",
+                onmouseout: "gotoPreviousPageMouseOut",
+                name: "gotoPreviousPage",
+            }, {
+                style: "margin: auto; background-color: #FFFFFF;display:inline-block;",
+                ontap: "appclicked",
+                ondragstart: "touchstart",
+                ondragover: "touchmove",
+                ondragfinish: "touchend",
+                name: "canvasContainer",
+                rendered: function() {
+                    this.inherited(arguments);
 
-                this.applyStyle("width", this.owner.canvasWidth + "px");
-                this.applyStyle("height", this.owner.canvasHeight + "px");
-                this.applyStyle("box-shadow", "0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1)")
-                this.applyStyle("cursor", "auto");
-                this.applyStyle("cursor", "url(../images/mouse.png) 4 4, auto");
+                    this.applyStyle("width", this.owner.canvasWidth + "px");
+                    this.applyStyle("height", this.owner.canvasHeight + "px");
+                    this.applyStyle("box-shadow", "0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1)")
+                    this.applyStyle("cursor", "auto");
+                    this.applyStyle("cursor", "url(../images/mouse.png) 4 4, auto");
 
-                if (window.location.protocol == 'https:') {
+                    if (window.location.protocol == 'https:') {
+                        var websocketAddress = 'wss://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
+                    } else {
+                        var websocketAddress = 'ws://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
+                    }
                     var websocketAddress = 'wss://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
-                } else {
-                    var websocketAddress = 'ws://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
-                }
-                var websocketAddress = 'wss://' + this.owner.appIpAddress + ':' + this.owner.appPort + '/realtime/';
-                if (this.hasNode()) {
-                    var _this = this;
-                    this.owner.$.loadingPopup.show();
-                    this.owner.whiteboard = new WhiteboardSvg(
-                        this.node.getAttribute("id"),
-                        this.owner,
-                        1,
-                        websocketAddress,
-                        this.owner.role,
-                        function(numPages, currentPage) {
-                            // update button status after being initialized.
-                            _this.owner.updatePageInfo();
-                            _this.owner.$.loadingPopup.hide();
-                            _this.owner.$.channelId.content = "Page " + _this.owner.whiteboard.getCurrentPage();
-                            // render the change on the fly.
-                            _this.owner.$.channelId.render();
-                        }
-                    );
-                }
-            },
-        }, {
-            style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_right.png) center center no-repeat #808080;position:absolute;right:2%;top:50%;cursor:pointer;z-index:10;border-radius:5px;cursor:pointer;",
-            ontap: "gotoNextPage",
-            onmouseover: "gotoNextPageMouseOver",
-            onmouseout: "gotoNextPageMouseOut",
-            name: "gotoNextPage",
-        },],
+                    if (this.hasNode()) {
+                        var _this = this;
+                        this.owner.$.loadingPopup.show();
+                        this.owner.whiteboard = new WhiteboardSvg(
+                            this.node.getAttribute("id"),
+                            this.owner,
+                            1,
+                            websocketAddress,
+                            this.owner.role,
+                            function(numPages, currentPage) {
+                                // update button status after being initialized.
+                                _this.owner.updatePageInfo();
+                                _this.owner.$.loadingPopup.hide();
+                                _this.owner.$.channelId.content = "Page " + _this.owner.whiteboard.getCurrentPage();
+                                // render the change on the fly.
+                                _this.owner.$.channelId.render();
+                            }
+                        );
+                    }
+                },
+            }, {
+                style: "display:inline-block;height:40px;width:40px;padding:5px;background:url(../images/btn_right.png) center center no-repeat #808080;position:absolute;right:2%;top:50%;cursor:pointer;z-index:10;border-radius:5px;cursor:pointer;",
+                ontap: "gotoNextPage",
+                onmouseover: "gotoNextPageMouseOver",
+                onmouseout: "gotoNextPageMouseOut",
+                name: "gotoNextPage",
+            },],
+        }],
     }, {
         kind: "onyx.MoreToolbar",
         name: "bottomToolbar",
