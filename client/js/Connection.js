@@ -73,7 +73,7 @@ enyo.kind({
 
     createSocket: function(address) {
         var generateInterval = function(k) {
-            var maxInterval = (Math.pow(2, k) - 1) * 1000;
+            var maxInterval = (Math.pow(2, k)) * 1000;
 
             if (maxInterval > 30*1000) {
                 maxInterval = 30*1000; // If the generated interval is more than 30 seconds, truncate it down to 30 seconds.
@@ -172,7 +172,7 @@ enyo.kind({
         var reconnectWebSocket = function() {
             var time = generateInterval(_this.attempts);
             console.log("Re-connecting after: " + time + " miliseconds...");
-            _this.showWarningMessage({text: "Network connection is lost, reconnect in " + Math.round(time/1000) + " seconds."});
+            _this.showWarningMessage({text: "Network connection is lost, reconnect in about " + Math.round(time/1000) + " seconds."});
 
             setTimeout(function () {
                 // We've tried to reconnect so increment the attempts by 1
@@ -184,9 +184,9 @@ enyo.kind({
 
         connection.onerror = function(err) {
             console.error(err);
-            console.log("WebSocket connection lost @ " + Date.now());
+            console.log("WebSocket connection error @ " + Date.now());
 
-            reconnectWebSocket();
+            //reconnectWebSocket();
         };
 
         connection.onclose = function(event) {
