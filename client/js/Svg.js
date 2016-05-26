@@ -544,8 +544,8 @@ enyo.kind({
     },
 
     changeCanvasSize: function(x, y, width, height, extraY) {
-        this.parent_.$.canvasContainer.applyStyle("width", String(width) + "px");
-        this.parent_.$.canvasContainer.applyStyle("height", String(height) + "px");
+        this.parent_.$.canvasContainer.applyStyle("width", String(width * this.zoomRatio) + "px");
+        this.parent_.$.canvasContainer.applyStyle("height", String(height * this.zoomRatio) + "px");
         // Since thiere is 60px header bar.
         if (extraY) {
             this.parent_.$.canvasContainer.applyStyle("margin-top", String(y / 2 + extraY) + "px");
