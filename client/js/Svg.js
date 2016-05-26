@@ -76,6 +76,8 @@ enyo.kind({
         this.currentSelected = null;
         this.laserPen        = null;
         this.userRole        = userRole;
+        this.canvasHeight    = parent.canvasHeight;
+        this.canvasWidth     = parent.canvasWidth;
     },
 
     /**
@@ -550,6 +552,8 @@ enyo.kind({
         } else {
             this.parent_.$.canvasContainer.applyStyle("margin-top", String(y / 2) + "px");
         }
+        this.canvasHeight = height;
+        this.canvasWidth = width;
     },
 
     getImage: function() {
@@ -737,6 +741,9 @@ enyo.kind({
         }
         this.zoomRatio += 0.1;
         this.cvs.scaleAll(this.zoomRatio);
+        // Adjust convas size accordingly
+        this.parent_.$.canvasContainer.applyStyle("width", String(this.canvasWidth * this.zoomRatio) + "px");
+        this.parent_.$.canvasContainer.applyStyle("height", String(this.canvasHeight * this.zoomRatio) + "px");
 
         if (this.laserPen) {
             this.removeLaser();
@@ -751,6 +758,9 @@ enyo.kind({
         }
         this.zoomRatio -= 0.1;
         this.cvs.scaleAll(this.zoomRatio);
+        // Adjust convas size accordingly
+        this.parent_.$.canvasContainer.applyStyle("width", String(this.canvasWidth * this.zoomRatio) + "px");
+        this.parent_.$.canvasContainer.applyStyle("height", String(this.canvasHeight * this.zoomRatio) + "px");
         // redrew the laser pen, or there will be offset while been dragging around,
         // since it will be calculated by old canvas bounds.
         if (this.laserPen) {
