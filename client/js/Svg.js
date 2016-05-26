@@ -94,6 +94,14 @@ enyo.kind({
         return this.cvs;
     },
 
+    getDrawingItem: function() {
+        return this.drawingItem;
+    },
+
+    setDrawingItem: function(drawingItem) {
+        this.drawingItem = drawingItem;
+    },
+
     // start, move, and up are the drag functions
     //start: function() {
         //// storing original coordinates

@@ -807,15 +807,15 @@ enyo.kind({
 
     showLaser: function() {
         this.laser.on = true;
-        this.laser.previousDrawingItem = this.whiteboard.drawingItem;
-        this.whiteboard.drawingItem = '';
+        this.laser.previousDrawingItem = this.whiteboard.getDrawingItem();
+        this.whiteboard.setDrawingItem("");
         this.whiteboard.drawLaser();
         this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser.png)");
     },
 
     hideLaser: function() {
         this.laser.on = false;
-        this.whiteboard.drawingItem = this.laser.previousDrawingItem;
+        this.whiteboard.setDrawingItem(this.laser.previousDrawingItem);
         this.whiteboard.removeLaser();
         this.$.laserPen.applyStyle("background-image", "url(../images/btn_laser_gray.png)");
     },
@@ -835,7 +835,7 @@ enyo.kind({
         }
 
         this.highlighter.on = false;
-        this.whiteboard.drawingItem = this.highlighter.previousDrawingItem;
+        this.whiteboard.setDrawingItem(this.highlighter.previousDrawingItem);
         this.$.highlighter.applyStyle("background-image", "url(../images/btn_highlighter_gray.png)");
     },
 
@@ -855,7 +855,7 @@ enyo.kind({
 
         this.pen.on = true;
         this.$.pencilButton.applyStyle("background-image", "url(../images/btn_pencil.png)");
-        this.pen.previousDrawingItem = this.whiteboard.drawingItem;
+        this.pen.previousDrawingItem = this.whiteboard.getDrawingItem();
         this.whiteboard.selectPen();
     },
 
@@ -864,7 +864,7 @@ enyo.kind({
 
         this.pen.on = false;
         this.$.pencilButton.applyStyle("background-image", "url(../images/btn_pencil_gray.png)");
-        this.whiteboard.drawingItem = this.pen.previousDrawingItem;
+        this.whiteboard.setDrawingItem(this.pen.previousDrawingItem);
     },
 
     selectPen: function(inSender, inEvent) {
@@ -879,6 +879,7 @@ enyo.kind({
     },
 
     addText: function(inSender, inEvent) {
+        this.textEditing.previousDrawingItem = this.whiteboard.getDrawingItem();
         this.closeEraser();
         this.cancelSelect();
         this.closePen();
@@ -895,7 +896,7 @@ enyo.kind({
 
         this.textEditing.on = true;
         this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word.png)");
-        this.textEditing.previousDrawingItem = this.whiteboard.drawingItem;
+        //this.textEditing.previousDrawingItem = this.whiteboard.getDrawingItem();
         this.whiteboard.addText();
     },
 
@@ -905,6 +906,39 @@ enyo.kind({
         this.textEditing.on = false;
         this.$.addTextButton.applyStyle("background-image", "url(../images/btn_word_gray.png)");
         this.whiteboard.stopAddingText(this.textEditing.previousDrawingItem);
+        this.restoreSelectedButtonState(this.textEditing.previousDrawingItem);
+    },
+
+    restoreSelectedButtonState: function(drawingItem) {
+        switch (drawingItem) {
+            case 'pen':
+                this.selectPen();
+                break;
+            case 'highlighter':
+                this.selectHighlighter();
+                break;
+            case 'circle':
+                this.drawCircle();
+                break;
+            case 'triangle':
+                this.drawTriangle();
+                break;
+            case 'rectangle':
+                this.drawRectangle();
+                break;
+            case 'ellipse':
+                this.drawEllipse();
+                break;
+            case 'arrow':
+                this.drawArrow();
+                break;
+            case 'line':
+                this.drawLine();
+                break;
+            case 'square':
+                this.drawSquare();
+                break;
+        }
     },
 
     setLineWidth1: function(inSender, inEvent) {
@@ -1074,7 +1108,7 @@ enyo.kind({
 
     penPickerMouseOut: function(inSender, inEvent) {
         var allShapes = ['circle', 'triangle', 'rectangle', 'ellipse', 'arrow', 'line', 'square'];
-        if (allShapes.indexOf(this.whiteboard.drawingItem) >= 0) {
+        if (allShapes.indexOf(this.whiteboard.getDrawingItem()) >= 0) {
             // keep it highlighted if current drawing item is one of the shapes.
             return;
         }
@@ -1398,7 +1432,6 @@ enyo.kind({
 
         this.selecting.on = false;
         this.$.selectButton.applyStyle("background-image", "url(../images/btn_choose_gray.png)");
-        //this.whiteboard.drawingItem = this.selecting.previousDrawingItem;
         this.whiteboard.cancelSelect();
         this.whiteboard.stopDoingSelect();
     },
