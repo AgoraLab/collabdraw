@@ -201,7 +201,7 @@ enyo.kind({
         var message;
         data["room"] =  this.whiteboard.room;
         data["page_id"] =  this.whiteboard.getCurrentPageId();
-        data["guid"] = JXG.Util.genUUID();
+        data["msg_id"] = JXG.Util.genUUID();
         message = JSON.stringify({
             "uid": this.uid,
             "event": evt,
