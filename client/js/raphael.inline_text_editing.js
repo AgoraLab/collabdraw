@@ -110,7 +110,7 @@
                     resize: 'none',
                     placeholder: 'Adding text here',
                     border: 'none',
-                    overflow: 'scroll',
+                    overflow: 'auto',
                     "max-width": "200px",
                     "max-height": "200px",
 
