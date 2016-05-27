@@ -54,13 +54,14 @@ def uploadfile(filename, data,q):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     msg={"fname":filename,"fbody":data.decode("latin-1")}
     body=json.dumps(msg)
-    url = "http://119.9.92.228:5100/innerupload"
-    try:
-        ret=http_client.fetch(url, method='POST', headers=headers, body=body)
-        ret=str(ret.body)
-    except:
-        traceback.print_exc()
-        ret='fail'
+    for url in config.UPLOAD_SERVER_ADDR:
+        try:
+            ret=http_client.fetch(url, method='POST', headers=headers, body=body)
+            ret=str(ret.body)
+            break
+        except:
+            traceback.print_exc()
+            ret='fail'
     logger.info("http return %s"%ret.body)
     q.put(ret)
 

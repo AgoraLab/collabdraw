@@ -12,7 +12,6 @@ from .joinhandler import MODE_PPT
 from collections import defaultdict
 from ..dbclient.dbclientfactory import DbClientFactory
 from ..pubsub.pubsubclientfactory import PubSubClientFactory
-# from ..tools.svg import gen_svg
 from ..tools.svg import gen_list_svg
 from tornado import ioloop
 import threading
@@ -66,12 +65,12 @@ class RoomData(object):
                 self.load_image(k)
                 self.load_path(k)
                 image=None if k not in  self.page_image else self.page_image[k]
-                if k in self.page_update_ts and now-self.page_update_ts[k]<10:
+                if k in self.page_update_ts and now-self.page_update_ts[k]<5:
                     plist.append((k, self.page_path[k],image))
                     # gen_svg(self.room, k, self.page_path[k],image)
             roomname="%s_%s"%(self.vid,self.room)
             threading.Thread(target=gen_list_svg, args=(roomname,plist,)).start()
-        ioloop.IOLoop.instance().add_timeout(time.time()+10,self.timer_thumbnail)
+        ioloop.IOLoop.instance().add_timeout(time.time()+5,self.timer_thumbnail)
 
     def init_room(self, url, topic, room, vid):
         if not self.pubsub_client:
@@ -174,7 +173,6 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         fromTs=time.time()
 
         self.logger.info("%s Processing event %s room %s page_id %s page %s" % (id(self), event, data['room'], data.get('page_id',None), data.get('page',None)))
-
         # needed when realse
         if event == "init" :
             # vid = data.get('vid', '')
@@ -195,6 +193,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
         if not self.verified:
             self.close()
             self.logger.error("cookie not verified［ cookie:%s msg:%s ］" % (self.cookie, data))
+            self.send_message(self.construct_message("error", {'code':JoinHandler.VERIFIED_FAILED}))
             return
 
         if self.room_name != data['room'] :
@@ -239,6 +238,7 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
             if 't' in data:
                 msg['t']=data['t']
             self.broadcast_message(self.room_topic(), self.construct_broadcast_message("draw", msg))
+            self.send_message(self.construct_message("draw-click-reply" ,{"msg_id":data.get('msg_id', '')}))
 
         elif event == "delete-page":
             if self.cookie['host'] != '1':
@@ -332,16 +332,12 @@ class RealtimeHandler(tornado.websocket.WebSocketHandler):
 
     def join_room(self):
         self.logger.info("[%s] Joining room %s %d" % (id(self),self.room_name, self.page_id))
-        # self.pubsub_client.subscribe(self.page_list_key(), self)
-        # self.logger.info("before join clients:%s"%(self.topics[self.room_topic()]))
         if self not in self.topics[self.room_topic()]:
             self.topics[self.room_topic()].append(self)
         # self.logger.info("after join clients:%s"%(self.topics[self.room_topic()]))
 
 
     ## Messaging related methods
-    # def construct_key(self, namespace, key, *keys):
-    #     return ":".join([str(namespace), str(key)] + list(map(str, keys)))
     def page_image_key(self):
         return "%s:%s:%s:page_image"%(str(self.vid), self.room_name, self.page_id)
 

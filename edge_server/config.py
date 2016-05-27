@@ -36,9 +36,11 @@ HASH_SALT = "bollacboard"
 # Enable SSL/TLS
 SERVER_CERT = ''
 SERVER_KEY = ''
+UPLOAD_SERVER_ADDR= []
 with open('config.json') as data_file:
     data = json.load(data_file)
     EDGE_REDIS_URL = data["EDGE_REDIS_URL"]
     SERVER_CERT=data["SERVER_CERT"]
     SERVER_KEY=data["SERVER_KEY"]
     CENTER_ADDRESSES=data["CENTER_ADDRESSES"]
+    UPLOAD_SERVER_ADDR=data["UPLOAD_SERVER_ADDR"]

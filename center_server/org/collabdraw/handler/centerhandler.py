@@ -54,6 +54,11 @@ def getCountry(ip):
     loc=IP.find(ip)
     return loc.split('	')[0]
 
+def getState(ip):
+    loc=IP.find(ip)
+    return loc.split('	')[1]
+
+
 def unsigned_hash(v):
     return ctypes.c_ulong(hash(v)).value
 
@@ -78,22 +83,27 @@ class CenterHandler(tornado.web.RequestHandler):
 
     def getEdgeServer(self, vendor_id, cname):
         servers,servers2=[],[]
-        # self.logger.info(self.request.remote_ip)
         client_country=getCountry(self.request.remote_ip)
         self.logger.info(client_country)
         for addr, info in CommonData.edge_servers.items():
             if  CommonData.isEdgeServerValid(addr):
+                server_country=getCountry(info['ip'])
+                server_state=getState(info['ip'])
                 if client_country == "China":
-                    if getCountry(info['ip'])=="China":
+                    if server_country=="China":
+                        if server_state != 'Hong Kong':
+                            servers.insert(-1,addr)
+                        else:
+                            servers.append(addr)
+                elif client_country == "United States":
+                    if server_country == client_country:
                         servers.append(addr)
-                    else:
-                        servers2.append(addr)
                 else:
-                    if getCountry(info['ip']) == "United States":
+                    if server_state == 'Hong Kong':
                         servers.append(addr)
-                    else:
-                        servers2.append(addr)
-        servers.extend(servers2)
+                servers2.append(addr)
+        if len(servers) == 0:
+            servers=servers2
         self.logger.info("allocEdges:%s"%servers)
         if len(servers)>0:
             return servers[0]
