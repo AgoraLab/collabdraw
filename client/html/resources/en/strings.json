@@ -1,6 +1,6 @@
 {
     "App": "App",
-    "Page": "Page",
+    "Page {n}": "Page {n}",
     "Logout": "Log Out",
     "Upload": "Upload",
     "New Page": "New Page",
@@ -20,5 +20,9 @@
     "Highlighter": "Highlighter",
     "Pen": "Pen",
     "Line Width": "Line Width",
-    "Color": "Color"
+    "Color": "Color",
+    "The last page cannot deleted.": "The last page cannot deleted.",
+    "Do you want to delete this page?": "Do you want to delete this page?",
+    "Confirm": "Confirm",
+    "Do you want to clear this page?": "Do you want to clear this page?"
 }

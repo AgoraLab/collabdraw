@@ -1,6 +1,6 @@
 {
     "App": "应用",
-    "Page": "页",
+    "Page {n}": "第{n}页",
     "Logout": "注销",
     "Upload": "上传",
     "New Page": "新页面",
@@ -20,5 +20,9 @@
     "Highlighter": "高亮",
     "Pen": "画笔",
     "Line Width": "线条宽度",
-    "Color": "颜色"
+    "Color": "颜色",
+    "The last page cannot deleted.": "不能删除最后一页。",
+    "Do you want to delete this page?": "确定要删除这一页吗？",
+    "Confirm": "确认",
+    "Do you want to clear this page?": "确定要清空本页所有内容吗？"
 }

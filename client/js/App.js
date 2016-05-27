@@ -164,7 +164,9 @@ enyo.kind({
                                 // update button status after being initialized.
                                 _this.owner.updatePageInfo();
                                 _this.owner.$.loadingPopup.hide();
-                                _this.owner.$.channelId.content = $L("Page") + " " + _this.owner.whiteboard.getCurrentPage();
+                                var template = $L.rb.getString("Page {n}");
+                                var str = template.format({n: _this.owner.whiteboard.getCurrentPage()});
+                                _this.owner.$.channelId.content = str ;
                                 // render the change on the fly.
                                 _this.owner.$.channelId.render();
                             }
@@ -1052,12 +1054,12 @@ enyo.kind({
         var totalPagesNum = this.whiteboard.getNumPages(),
             self = this;
         if (totalPagesNum <= 1) {
-            $.alert("The last page cannot deleted.");
+            $.alert($L("The last page cannot deleted."));
             return;
         }
         var yes = $.confirm({
-            title: "Confirm",
-            content: "Do you want to delete this page?",
+            title: $L("Confirm"),
+            content: $L("Do you want to delete this page?"),
             confirm: function() {
                 self.whiteboard.deletePage();
             },
@@ -1250,8 +1252,8 @@ enyo.kind({
         var self = this;
         self.cancelSelect();
         var yes = $.confirm({
-            title: "Confirm",
-            content: "Do you want to clear this page?",
+            title: $L("Confirm"),
+            content: $L("Do you want to clear this page?"),
             confirm: function() {
                 self.whiteboard.clear(true);
             },
