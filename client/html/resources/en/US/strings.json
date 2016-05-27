@@ -1,3 +1,24 @@
 {
-    "App": "App"
+    "App": "App",
+    "Page": "Page",
+    "Logout": "Log Out",
+    "Upload": "Upload",
+    "New Page": "New Page",
+    "Attach a file or create a new page.": "Attach a file or create a new page.",
+    "Preview Pages": "Preview Pages",
+    "Zoom In": "Zoom In",
+    "Zoom Out": "Zoom Out",
+    "Delete Page": "Delete Page",
+    "Clear Page": "Clear Page",
+    "Eraser": "Eraser",
+    "Undo": "Undo",
+    "Redo": "Redo",
+    "Select": "Select",
+    "Laser": "Laser",
+    "Shapes": "Shapes",
+    "Add Text": "Add Text",
+    "Highlighter": "Highlighter",
+    "Pen": "Pen",
+    "Line Width": "Line Width",
+    "Color": "Color"
 }
