@@ -776,8 +776,9 @@ enyo.kind({
         }
 
         var scrollTop = this.$.scroller.scrollTop;
+        var scrollLeft = this.$.scroller.scrollLeft;
         var canvasBounds = this.$.canvasContainer.getBounds();
-        this.curves.oldx = inEvent.pageX - canvasBounds.left;
+        this.curves.oldx = inEvent.pageX - canvasBounds.left + scrollLeft;
         this.curves.oldy = inEvent.pageY - canvasBounds.top - 60 + scrollTop;
         this.whiteboard.startPath(this.curves.oldx, this.curves.oldy, this.curves.color, this.curves.width, true);
     },
@@ -788,8 +789,9 @@ enyo.kind({
         }
         if (this.curves.oldx != -1 && this.curves.oldy != -1) {
             var scrollTop = this.$.scroller.scrollTop;
+            var scrollLeft = this.$.scroller.scrollLeft;
             var canvasBounds = this.$.canvasContainer.getBounds();
-            x = inEvent.pageX - canvasBounds.left;
+            x = inEvent.pageX - canvasBounds.left + scrollLeft;
             y = inEvent.pageY - canvasBounds.top - 60 + scrollTop;
             this.whiteboard.continuePath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, true);
             this.curves.oldx = x;
@@ -803,8 +805,9 @@ enyo.kind({
         }
         if (this.curves.oldx != -1 && this.curves.oldy != -1) {
             var scrollTop = this.$.scroller.scrollTop;
+            var scrollLeft = this.$.scroller.scrollLeft;
             var canvasBounds = this.$.canvasContainer.getBounds();
-            x = inEvent.pageX - canvasBounds.left;
+            x = inEvent.pageX - canvasBounds.left + scrollLeft;
             y = inEvent.pageY - canvasBounds.top - 60 + scrollTop;
             this.whiteboard.endPath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, undefined, true);
             this.curves.oldx = -1;
