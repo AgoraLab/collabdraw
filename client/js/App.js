@@ -774,9 +774,11 @@ enyo.kind({
         if (this.isGuest()) {
             return;
         }
+
+        var scrollTop = this.$.scroller.scrollTop;
         var canvasBounds = this.$.canvasContainer.getBounds();
         this.curves.oldx = inEvent.pageX - canvasBounds.left;
-        this.curves.oldy = inEvent.pageY - canvasBounds.top - 60;
+        this.curves.oldy = inEvent.pageY - canvasBounds.top - 60 + scrollTop;
         this.whiteboard.startPath(this.curves.oldx, this.curves.oldy, this.curves.color, this.curves.width, true);
     },
 
@@ -785,9 +787,10 @@ enyo.kind({
             return;
         }
         if (this.curves.oldx != -1 && this.curves.oldy != -1) {
+            var scrollTop = this.$.scroller.scrollTop;
             var canvasBounds = this.$.canvasContainer.getBounds();
             x = inEvent.pageX - canvasBounds.left;
-            y = inEvent.pageY - canvasBounds.top - 60;
+            y = inEvent.pageY - canvasBounds.top - 60 + scrollTop;
             this.whiteboard.continuePath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, true);
             this.curves.oldx = x;
             this.curves.oldy = y;
@@ -799,9 +802,10 @@ enyo.kind({
             return;
         }
         if (this.curves.oldx != -1 && this.curves.oldy != -1) {
+            var scrollTop = this.$.scroller.scrollTop;
             var canvasBounds = this.$.canvasContainer.getBounds();
             x = inEvent.pageX - canvasBounds.left;
-            y = inEvent.pageY - canvasBounds.top - 60;
+            y = inEvent.pageY - canvasBounds.top - 60 + scrollTop;
             this.whiteboard.endPath(this.curves.oldx, this.curves.oldy, x, y, this.curves.color, this.curves.width, undefined, true);
             this.curves.oldx = -1;
             this.curves.oldy = -1;
